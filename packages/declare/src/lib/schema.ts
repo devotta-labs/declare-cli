@@ -11,6 +11,10 @@ import type { OrganisationUnitLevel } from './organisationUnitLevel.ts'
 import type { UserRole } from './userRole.ts'
 import type { UserGroup } from './userGroup.ts'
 import type { User } from './user.ts'
+import type { TrackedEntityAttribute } from './trackedEntityAttribute.ts'
+import type { TrackedEntityType } from './trackedEntityType.ts'
+import type { Program } from './program.ts'
+import type { ProgramStage } from './programStage.ts'
 
 export type AnyHandle =
   | Category
@@ -24,6 +28,10 @@ export type AnyHandle =
   | UserRole
   | UserGroup
   | User
+  | TrackedEntityAttribute
+  | TrackedEntityType
+  | Program
+  | ProgramStage
 
 // Grouped input — one readonly array per metadata kind. Every field is
 // optional so you only declare the sections you use.
@@ -39,6 +47,10 @@ export type SchemaInput = {
   userRoles?: readonly UserRole[]
   userGroups?: readonly UserGroup[]
   users?: readonly User[]
+  trackedEntityAttributes?: readonly TrackedEntityAttribute[]
+  trackedEntityTypes?: readonly TrackedEntityType[]
+  programs?: readonly Program[]
+  programStages?: readonly ProgramStage[]
 }
 
 export type Schema = {
@@ -59,6 +71,10 @@ const PAYLOAD_KEY: Record<MetadataKind, string> = {
   UserRole: 'userRoles',
   UserGroup: 'userGroups',
   User: 'users',
+  TrackedEntityAttribute: 'trackedEntityAttributes',
+  TrackedEntityType: 'trackedEntityTypes',
+  Program: 'programs',
+  ProgramStage: 'programStages',
 }
 
 // Assign a stable DHIS2 UID (derived from kind:code) to the top-level object
@@ -147,6 +163,10 @@ export function defineSchema(input: SchemaInput): Schema {
     UserRole: [],
     UserGroup: [],
     User: [],
+    TrackedEntityAttribute: [],
+    TrackedEntityType: [],
+    Program: [],
+    ProgramStage: [],
   }
 
   const groups: readonly (readonly AnyHandle[] | undefined)[] = [
@@ -161,6 +181,10 @@ export function defineSchema(input: SchemaInput): Schema {
     input.userRoles,
     input.userGroups,
     input.users,
+    input.trackedEntityAttributes,
+    input.trackedEntityTypes,
+    input.programs,
+    input.programStages,
   ]
 
   const seen = new Set<string>()
@@ -173,6 +197,21 @@ export function defineSchema(input: SchemaInput): Schema {
       }
       seen.add(key)
       byKind[handle.kind].push(handle as Handle<MetadataKind, { code: string }>)
+    }
+  }
+
+  // Build a stage-code → owning-program-handle index by walking each Program's
+  // `programStages` ref list. Users declare the tree from the Program side
+  // (a program "has" stages); the DHIS2 JSON contract needs the reciprocal
+  // `program` back-ref on every ProgramStage, so we inject it at serialize
+  // time instead of forcing callers to tie the knot themselves.
+  const stageToProgram = new Map<string, Handle<'Program', { code: string }>>()
+  for (const program of byKind.Program as Handle<'Program', { code: string }>[]) {
+    const programInput = program.input as {
+      programStages?: readonly { code: string }[]
+    }
+    for (const stageRef of programInput.programStages ?? []) {
+      stageToProgram.set(stageRef.code, program)
     }
   }
 
@@ -212,6 +251,18 @@ export function defineSchema(input: SchemaInput): Schema {
             delete bodyWithoutSharing.sharing
             const converted = toPayload(bodyWithoutSharing) as Record<string, unknown>
             const withId = withTopLevelId(h.kind, h.code, converted) as Record<string, unknown>
+            // Stitch the ProgramStage ↔ Program back-ref that was deliberately
+            // left off the user-facing schema. If the caller did supply their
+            // own `program` field (unusual, but legal), we keep it.
+            if (kind === 'ProgramStage' && !('program' in withId)) {
+              const owner = stageToProgram.get(h.code)
+              if (owner) {
+                withId.program = {
+                  id: stableUid(`Program:${owner.code}`),
+                  code: owner.code,
+                }
+              }
+            }
             const sharingPayload = toSharingPayload(originalSharing)
             return sharingPayload ? { ...withId, sharing: sharingPayload } : withId
           })

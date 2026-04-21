@@ -30,6 +30,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/declare
 
+  examples/tb-tracker:
+    dependencies:
+      '@devotta-labs/declare':
+        specifier: workspace:*
+        version: link:../../packages/declare
+
   packages/declare:
     dependencies:
       dotenv:

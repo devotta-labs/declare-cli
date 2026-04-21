@@ -12,6 +12,13 @@ export {
 export { defineUserRole, type UserRole } from './userRole.ts'
 export { defineUserGroup, type UserGroup } from './userGroup.ts'
 export { defineUser, type User } from './user.ts'
+export {
+  defineTrackedEntityAttribute,
+  type TrackedEntityAttribute,
+} from './trackedEntityAttribute.ts'
+export { defineTrackedEntityType, type TrackedEntityType } from './trackedEntityType.ts'
+export { defineProgram, ProgramType, ProgramAccessLevel, type Program } from './program.ts'
+export { defineProgramStage, ValidationStrategy, type ProgramStage } from './programStage.ts'
 export { Authority } from './authorities.ts'
 export {
   Access,
@@ -26,7 +33,7 @@ export { defineSchema, type Schema, type AnyHandle } from './schema.ts'
 
 // Re-export shared enums so callers can `import { ValueType } from './lib'`
 // when they want to refer to enum values in their own code.
-export { ValueType, AggregationType } from './core.ts'
+export { ValueType, AggregationType, FeatureType } from './core.ts'
 export { DomainType } from './dataElement.ts'
 export { PeriodType } from './dataSet.ts'
 export { DataDimensionType } from './category.ts'
