@@ -8,6 +8,7 @@ import {
   type Handle,
 } from './core.ts'
 import { DataDimensionType } from './category.ts'
+import { SharingSchema } from './sharing.ts'
 
 export const CategoryComboSchema = z.object({
   code: CodeSchema,
@@ -16,6 +17,7 @@ export const CategoryComboSchema = z.object({
   dataDimensionType: DataDimensionType.default('DISAGGREGATION'),
   categories: z.array(refSchema('Category')).min(1, 'a CategoryCombo needs at least one Category'),
   skipTotal: z.boolean().default(false),
+  sharing: SharingSchema.optional(),
 })
 
 export type CategoryComboInput = z.infer<typeof CategoryComboSchema>

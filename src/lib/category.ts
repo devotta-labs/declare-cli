@@ -8,6 +8,7 @@ import {
   withDerivedShortName,
   type Handle,
 } from './core.ts'
+import { SharingSchema } from './sharing.ts'
 
 export const DataDimensionType = z.enum(['DISAGGREGATION', 'ATTRIBUTE'])
 
@@ -19,6 +20,7 @@ export const CategorySchema = z.object({
   categoryOptions: z
     .array(refSchema('CategoryOption'))
     .min(1, 'a Category needs at least one CategoryOption'),
+  sharing: SharingSchema.optional(),
 })
 
 export type CategoryInput = z.infer<typeof CategorySchema>

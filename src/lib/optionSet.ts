@@ -7,6 +7,7 @@ import {
   makeHandle,
   type Handle,
 } from './core.ts'
+import { SharingSchema } from './sharing.ts'
 
 export const OptionSchema = z.object({
   code: CodeSchema,
@@ -22,6 +23,7 @@ export const OptionSetSchema = z.object({
   description: DescriptionSchema.optional(),
   valueType: ValueType,
   options: z.array(OptionSchema).min(1, 'an OptionSet needs at least one Option'),
+  sharing: SharingSchema.optional(),
 })
 
 export type OptionInput = z.infer<typeof OptionSchema>

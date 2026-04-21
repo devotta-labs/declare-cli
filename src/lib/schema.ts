@@ -87,18 +87,22 @@ function splitOptionSet(code: string, body: unknown): SplitOptionSet {
   const src = body as Record<string, unknown>
   const optionSetId = stableUid(`OptionSet:${code}`)
   const rawOptions = Array.isArray(src.options) ? (src.options as Record<string, unknown>[]) : []
-  const optionRefs: { id: string }[] = []
+  const optionRefs: { id: string; code: string }[] = []
   const optionBodies: Record<string, unknown>[] = []
 
+  // With importStrategy=identifier=CODE, DHIS2 resolves same-bundle refs by
+  // `code`, not `id`. Every ref must carry both — matching what toPayload does
+  // for handles — otherwise the option↔optionSet collection is never wired up
+  // and the dropdown renders empty on the server.
   for (const opt of rawOptions) {
     if (!opt || typeof opt !== 'object') continue
     const optCode = typeof opt.code === 'string' ? opt.code : ''
     const optionId = stableUid(`Option:${code}:${optCode}`)
-    optionRefs.push({ id: optionId })
+    optionRefs.push({ id: optionId, code: optCode })
     optionBodies.push({
       ...opt,
       id: optionId,
-      optionSet: { id: optionSetId },
+      optionSet: { id: optionSetId, code },
     })
   }
 
@@ -182,9 +186,20 @@ export function defineSchema(input: SchemaInput): Schema {
         if (items.length === 0) continue
         if (kind === 'OptionSet') {
           payload[PAYLOAD_KEY[kind]] = items.map((h) => {
-            const { optionSet, options } = splitOptionSet(h.code, toPayload(h.input))
+            // Same sharing-extraction dance as the generic branch below —
+            // pull sharing off before `toPayload` recursively converts handles
+            // to refs, then re-attach a properly-serialized Sharing payload.
+            const rawInput = h.input as Record<string, unknown>
+            const originalSharing = rawInput.sharing as SharingInput | undefined
+            const bodyWithoutSharing = { ...rawInput }
+            delete bodyWithoutSharing.sharing
+            const { optionSet, options } = splitOptionSet(
+              h.code,
+              toPayload(bodyWithoutSharing),
+            )
             hoistedOptions.push(...options)
-            return optionSet
+            const sharingPayload = toSharingPayload(originalSharing)
+            return sharingPayload ? { ...optionSet, sharing: sharingPayload } : optionSet
           })
         } else {
           payload[PAYLOAD_KEY[kind]] = items.map((h) => {

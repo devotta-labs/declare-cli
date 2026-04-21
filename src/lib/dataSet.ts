@@ -54,6 +54,9 @@ export const DataSetSchema = z.object({
   periodType: PeriodType,
   categoryCombo: refSchema('CategoryCombo').optional(),
   dataSetElements: z.array(DataSetElementSchema).min(1, 'a DataSet needs at least one DataElement'),
+  // Data-capture OUs. A DataSet only appears in the Data Entry app for OUs
+  // it is assigned to (DataSet#sources in master — JSON key `organisationUnits`).
+  organisationUnits: z.array(refSchema('OrganisationUnit')).optional(),
   expiryDays: z.number().int().min(0).default(0),
   openFuturePeriods: z.number().int().min(0).default(0),
   openPeriodsAfterCoEndDate: z.number().int().min(0).default(0),

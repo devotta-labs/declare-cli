@@ -3,6 +3,7 @@ import { defineDataElement } from './dataElement.ts'
 import { defineDataSet } from './dataSet.ts'
 import { defineOrganisationUnit } from './organisationUnit.ts'
 import { defineSchema } from './schema.ts'
+import { Access, Sharing, toAccessString } from './sharing.ts'
 import { defineUser } from './user.ts'
 import { defineUserGroup } from './userGroup.ts'
 import { defineUserRole } from './userRole.ts'
@@ -67,7 +68,7 @@ describe('sharing serialization', () => {
       sharing: {
         publicAccess: 'rwrw----',
         users: [{ user, access: 'rwrw----' }],
-        userGroups: [{ userGroup: group, access: 'r-rw----' }],
+        userGroups: [{ group, access: 'r-rw----' }],
       },
     })
 
@@ -129,6 +130,64 @@ describe('sharing serialization', () => {
     const g = groups[0] as Record<string, unknown>
     expect(g).not.toHaveProperty('members')
     expect(g.users).toEqual([expect.objectContaining({ code: 'U_MEM' })])
+  })
+
+  it('accepts the structured access descriptor and canonicalises to the wire string', () => {
+    expect(toAccessString({ metadata: 'rw', data: 'rw' })).toBe('rwrw----')
+    expect(toAccessString({ metadata: 'r', data: 'rw' })).toBe('r-rw----')
+    expect(toAccessString({ metadata: 'rw' })).toBe('rw------')
+    expect(toAccessString({ data: 'r' })).toBe('--r-----')
+    expect(toAccessString({})).toBe('--------')
+
+    const ds = defineDataSet({
+      code: 'DS_STRUCTURED',
+      name: 'Structured',
+      periodType: 'Monthly',
+      dataSetElements: [{ dataElement: de }],
+      sharing: { publicAccess: { metadata: 'r', data: 'rw' } },
+    })
+    const schema = defineSchema({ dataElements: [de], dataSets: [ds] })
+    const payload = schema.serialize() as Record<string, unknown[]>
+    const entry = (payload.dataSets ?? [])[0] as Record<string, unknown>
+    const sharing = entry.sharing as Record<string, unknown>
+    expect(sharing.public).toBe('r-rw----')
+  })
+
+  it('Sharing.private + group-only access restricts visibility to group members', () => {
+    const group = defineUserGroup({ code: 'UG_DATA_ENTRY', name: 'Data entry' })
+    const ds = defineDataSet({
+      code: 'DS_PRIVATE',
+      name: 'Private',
+      periodType: 'Monthly',
+      dataSetElements: [{ dataElement: de }],
+      sharing: Sharing.private({
+        userGroups: [{ group, access: { metadata: 'r' } }],
+      }),
+    })
+    const schema = defineSchema({
+      dataElements: [de],
+      dataSets: [ds],
+      userGroups: [group],
+    })
+    const payload = schema.serialize() as Record<string, unknown[]>
+    const entry = (payload.dataSets ?? [])[0] as Record<string, unknown>
+    const sharing = entry.sharing as Record<string, unknown>
+    expect(sharing.public).toBe('--------')
+
+    const groupMap = sharing.userGroups as Record<string, { id: string; access: string }>
+    expect(Object.values(groupMap)).toEqual([
+      expect.objectContaining({ access: 'r-------' }),
+    ])
+  })
+
+  it('Access presets produce the expected wire strings', () => {
+    expect(toAccessString(Access.none)).toBe('--------')
+    expect(toAccessString(Access.metadataRead)).toBe('r-------')
+    expect(toAccessString(Access.metadataReadWrite)).toBe('rw------')
+    expect(toAccessString(Access.dataRead)).toBe('--r-----')
+    expect(toAccessString(Access.dataReadWrite)).toBe('--rw----')
+    expect(toAccessString(Access.readOnly)).toBe('r-r-----')
+    expect(toAccessString(Access.readWrite)).toBe('rwrw----')
   })
 
   it('leaves datasets without a sharing declaration unchanged', () => {
