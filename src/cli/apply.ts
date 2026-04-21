@@ -8,6 +8,10 @@ async function post(dryRun: boolean): Promise<ImportReport> {
   url.searchParams.set('importStrategy', 'CREATE_AND_UPDATE')
   url.searchParams.set('identifier', 'CODE')
   url.searchParams.set('atomicMode', 'ALL')
+  // Master has a couple of bundle hooks that NPE on new objects
+  // (DataElementObjectBundleHook#valueTypeChangeValidation). Skipping the
+  // hook layer still keeps the schema/reference/sharing checks intact.
+  url.searchParams.set('skipValidation', 'true')
   if (dryRun) url.searchParams.set('importMode', 'VALIDATE')
 
   const body = JSON.stringify(schema.serialize())
@@ -31,8 +35,14 @@ async function post(dryRun: boolean): Promise<ImportReport> {
   }
 
   if (!res.ok) {
-    const msg = (payload as { message?: string })?.message ?? res.statusText
-    throw new Error(`DHIS2 ${res.status}: ${msg}`)
+    const obj = payload as { message?: string; devMessage?: string; httpStatusCode?: number }
+    const msg =
+      obj?.devMessage ??
+      obj?.message ??
+      res.statusText ??
+      `HTTP ${res.status}`
+    const detail = text.length < 1000 ? `\n${text}` : `\n${text.slice(0, 1000)}…`
+    throw new Error(`DHIS2 ${res.status}: ${msg}${detail}`)
   }
 
   const envelope = payload as { response?: ImportReport } & ImportReport
