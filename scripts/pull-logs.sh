@@ -24,7 +24,7 @@ target="all"
 tail_count=1000
 
 usage() {
-  sed -n '3,22p' "${BASH_SOURCE[0]}"
+  sed -n '3,19p' "${BASH_SOURCE[0]}"
 }
 
 # Parse flag args first; fall back to positional for back-compat.

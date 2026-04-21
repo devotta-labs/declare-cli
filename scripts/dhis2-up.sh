@@ -29,6 +29,7 @@ die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 
 command -v docker >/dev/null 2>&1 || die "docker not found on PATH"
 command -v curl   >/dev/null 2>&1 || die "curl not found on PATH"
+command -v node   >/dev/null 2>&1 || die "node not found on PATH"
 
 say "Starting DHIS2 stack via $compose_file"
 docker compose -f "$compose_file" up -d
@@ -92,30 +93,33 @@ token="$(
 
 say "Writing DHIS2_BASE_URL and DHIS2_TOKEN to $env_file"
 # Idempotent upsert: overwrite existing keys, keep every other line.
-python3 - "$env_file" "$base_url" "$token" <<'PY'
-import sys, pathlib
-path, base_url, token = pathlib.Path(sys.argv[1]), sys.argv[2], sys.argv[3]
-updates = {"DHIS2_BASE_URL": base_url, "DHIS2_TOKEN": token}
-
-lines = path.read_text().splitlines() if path.exists() else []
-seen = set()
-out = []
-for line in lines:
-    stripped = line.lstrip()
-    if stripped.startswith("#") or "=" not in stripped:
-        out.append(line); continue
-    key = stripped.split("=", 1)[0].strip()
-    if key in updates:
-        out.append(f"{key}={updates[key]}")
-        seen.add(key)
-    else:
-        out.append(line)
-for key, value in updates.items():
-    if key not in seen:
-        out.append(f"{key}={value}")
-
-path.write_text("\n".join(out) + "\n")
-PY
+# Uses node (already required for the CLI) to avoid a python3 dependency.
+DHIS2_ENV_FILE="$env_file" DHIS2_BASE_URL_VALUE="$base_url" DHIS2_TOKEN_VALUE="$token" \
+  node -e '
+    const fs = require("node:fs");
+    const path = process.env.DHIS2_ENV_FILE;
+    const updates = {
+      DHIS2_BASE_URL: process.env.DHIS2_BASE_URL_VALUE,
+      DHIS2_TOKEN: process.env.DHIS2_TOKEN_VALUE,
+    };
+    const existing = fs.existsSync(path) ? fs.readFileSync(path, "utf8") : "";
+    const lines = existing ? existing.replace(/\n$/, "").split("\n") : [];
+    const seen = new Set();
+    const out = lines.map((line) => {
+      const s = line.replace(/^\s+/, "");
+      if (s.startsWith("#") || !s.includes("=")) return line;
+      const key = s.split("=", 1)[0].trim();
+      if (Object.prototype.hasOwnProperty.call(updates, key)) {
+        seen.add(key);
+        return `${key}=${updates[key]}`;
+      }
+      return line;
+    });
+    for (const [key, value] of Object.entries(updates)) {
+      if (!seen.has(key)) out.push(`${key}=${value}`);
+    }
+    fs.writeFileSync(path, out.join("\n") + "\n");
+  '
 
 say "Container IDs (pipe into scripts/pull-logs.sh):"
 web_id="$(docker compose -f "$compose_file" ps --quiet web || true)"
