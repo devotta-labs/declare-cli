@@ -1,5 +1,5 @@
 import schema from '../metadata/schema.ts'
-import { loadEnv } from './env.ts'
+import { loadEnv, type Env } from './env.ts'
 import { printReport, type ImportReport } from './report.ts'
 
 async function post(dryRun: boolean): Promise<ImportReport> {
@@ -60,4 +60,31 @@ export async function apply(): Promise<void> {
   await post(false)
   // printReport(report, 'Apply')
   console.log('Apply: import succeeded.')
+
+  // skipValidation bypasses the bundle hooks that auto-generate
+  // categoryOptionCombos and refresh organisationUnit paths, so any new
+  // non-default CategoryCombo would have zero COCs (breaks downstream apps
+  // like aggregate-data-entry). Run maintenance to rebuild that derived state.
+  await runMaintenance(loadEnv())
+  console.log('Apply: maintenance completed.')
+}
+
+async function runMaintenance(env: Env): Promise<void> {
+  const url = new URL('/api/maintenance', env.baseUrl)
+  url.searchParams.set('categoryOptionComboUpdate', 'true')
+  url.searchParams.set('ouPathsUpdate', 'true')
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `ApiToken ${env.token}`,
+      Accept: 'application/json',
+    },
+  })
+
+  if (!res.ok) {
+    const text = await res.text()
+    const detail = text.length < 1000 ? `\n${text}` : `\n${text.slice(0, 1000)}…`
+    throw new Error(`DHIS2 maintenance ${res.status}: ${res.statusText}${detail}`)
+  }
 }

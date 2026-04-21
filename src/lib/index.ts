@@ -9,6 +9,19 @@ export {
   defineOrganisationUnitLevel,
   type OrganisationUnitLevel,
 } from './organisationUnitLevel.ts'
+export { defineUserRole, type UserRole } from './userRole.ts'
+export { defineUserGroup, type UserGroup } from './userGroup.ts'
+export { defineUser, type User } from './user.ts'
+export { Authority } from './authorities.ts'
+export {
+  Access,
+  Sharing,
+  type AccessDescriptor,
+  type AccessInput,
+  type AccessLevel,
+  type AccessString,
+  type SharingInput,
+} from './sharing.ts'
 export { defineSchema, type Schema, type AnyHandle } from './schema.ts'
 
 // Re-export shared enums so callers can `import { ValueType } from './lib'`

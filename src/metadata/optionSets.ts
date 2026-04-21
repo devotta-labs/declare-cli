@@ -1,4 +1,4 @@
-import { defineOptionSet } from '../lib/index.ts'
+import { Access, Sharing, defineOptionSet } from '../lib/index.ts'
 
 export const caseClassification = defineOptionSet({
   code: 'MAL_CASE_CLASS',
@@ -9,6 +9,8 @@ export const caseClassification = defineOptionSet({
     { code: 'SUSPECTED', name: 'Suspected' },
     { code: 'IMPORTED', name: 'Imported' },
   ],
+  // Demo-wide public access — see dataElements.ts for the rationale.
+  sharing: Sharing.public(Access.readWrite),
 })
 
 export const optionSets = [caseClassification]

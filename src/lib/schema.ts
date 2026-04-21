@@ -1,4 +1,5 @@
 import { isHandle, stableUid, type Handle, type MetadataKind } from './core.ts'
+import { toSharingPayload, type SharingInput } from './sharing.ts'
 import type { Category } from './category.ts'
 import type { CategoryOption } from './categoryOption.ts'
 import type { CategoryCombo } from './categoryCombo.ts'
@@ -7,6 +8,9 @@ import type { DataElement } from './dataElement.ts'
 import type { DataSet } from './dataSet.ts'
 import type { OrganisationUnit } from './organisationUnit.ts'
 import type { OrganisationUnitLevel } from './organisationUnitLevel.ts'
+import type { UserRole } from './userRole.ts'
+import type { UserGroup } from './userGroup.ts'
+import type { User } from './user.ts'
 
 export type AnyHandle =
   | Category
@@ -17,6 +21,9 @@ export type AnyHandle =
   | DataSet
   | OrganisationUnit
   | OrganisationUnitLevel
+  | UserRole
+  | UserGroup
+  | User
 
 // Grouped input — one readonly array per metadata kind. Every field is
 // optional so you only declare the sections you use.
@@ -29,6 +36,9 @@ export type SchemaInput = {
   dataSets?: readonly DataSet[]
   organisationUnits?: readonly OrganisationUnit[]
   organisationUnitLevels?: readonly OrganisationUnitLevel[]
+  userRoles?: readonly UserRole[]
+  userGroups?: readonly UserGroup[]
+  users?: readonly User[]
 }
 
 export type Schema = {
@@ -46,6 +56,9 @@ const PAYLOAD_KEY: Record<MetadataKind, string> = {
   DataSet: 'dataSets',
   OrganisationUnit: 'organisationUnits',
   OrganisationUnitLevel: 'organisationUnitLevels',
+  UserRole: 'userRoles',
+  UserGroup: 'userGroups',
+  User: 'users',
 }
 
 // Assign a stable DHIS2 UID (derived from kind:code) to the top-level object
@@ -74,18 +87,22 @@ function splitOptionSet(code: string, body: unknown): SplitOptionSet {
   const src = body as Record<string, unknown>
   const optionSetId = stableUid(`OptionSet:${code}`)
   const rawOptions = Array.isArray(src.options) ? (src.options as Record<string, unknown>[]) : []
-  const optionRefs: { id: string }[] = []
+  const optionRefs: { id: string; code: string }[] = []
   const optionBodies: Record<string, unknown>[] = []
 
+  // With importStrategy=identifier=CODE, DHIS2 resolves same-bundle refs by
+  // `code`, not `id`. Every ref must carry both — matching what toPayload does
+  // for handles — otherwise the option↔optionSet collection is never wired up
+  // and the dropdown renders empty on the server.
   for (const opt of rawOptions) {
     if (!opt || typeof opt !== 'object') continue
     const optCode = typeof opt.code === 'string' ? opt.code : ''
     const optionId = stableUid(`Option:${code}:${optCode}`)
-    optionRefs.push({ id: optionId })
+    optionRefs.push({ id: optionId, code: optCode })
     optionBodies.push({
       ...opt,
       id: optionId,
-      optionSet: { id: optionSetId },
+      optionSet: { id: optionSetId, code },
     })
   }
 
@@ -127,6 +144,9 @@ export function defineSchema(input: SchemaInput): Schema {
     DataSet: [],
     OrganisationUnit: [],
     OrganisationUnitLevel: [],
+    UserRole: [],
+    UserGroup: [],
+    User: [],
   }
 
   const groups: readonly (readonly AnyHandle[] | undefined)[] = [
@@ -138,6 +158,9 @@ export function defineSchema(input: SchemaInput): Schema {
     input.dataSets,
     input.organisationUnits,
     input.organisationUnitLevels,
+    input.userRoles,
+    input.userGroups,
+    input.users,
   ]
 
   const seen = new Set<string>()
@@ -163,14 +186,35 @@ export function defineSchema(input: SchemaInput): Schema {
         if (items.length === 0) continue
         if (kind === 'OptionSet') {
           payload[PAYLOAD_KEY[kind]] = items.map((h) => {
-            const { optionSet, options } = splitOptionSet(h.code, toPayload(h.input))
+            // Same sharing-extraction dance as the generic branch below —
+            // pull sharing off before `toPayload` recursively converts handles
+            // to refs, then re-attach a properly-serialized Sharing payload.
+            const rawInput = h.input as Record<string, unknown>
+            const originalSharing = rawInput.sharing as SharingInput | undefined
+            const bodyWithoutSharing = { ...rawInput }
+            delete bodyWithoutSharing.sharing
+            const { optionSet, options } = splitOptionSet(
+              h.code,
+              toPayload(bodyWithoutSharing),
+            )
             hoistedOptions.push(...options)
-            return optionSet
+            const sharingPayload = toSharingPayload(originalSharing)
+            return sharingPayload ? { ...optionSet, sharing: sharingPayload } : optionSet
           })
         } else {
-          payload[PAYLOAD_KEY[kind]] = items.map((h) =>
-            withTopLevelId(h.kind, h.code, toPayload(h.input)),
-          )
+          payload[PAYLOAD_KEY[kind]] = items.map((h) => {
+            // Pull sharing off the original input before the recursive
+            // handle → ref conversion walks into it and loses the Handle
+            // brands that toSharingPayload needs.
+            const rawInput = h.input as Record<string, unknown>
+            const originalSharing = rawInput.sharing as SharingInput | undefined
+            const bodyWithoutSharing = { ...rawInput }
+            delete bodyWithoutSharing.sharing
+            const converted = toPayload(bodyWithoutSharing) as Record<string, unknown>
+            const withId = withTopLevelId(h.kind, h.code, converted) as Record<string, unknown>
+            const sharingPayload = toSharingPayload(originalSharing)
+            return sharingPayload ? { ...withId, sharing: sharingPayload } : withId
+          })
         }
       }
       if (hoistedOptions.length > 0) payload[PAYLOAD_KEY.Option] = hoistedOptions

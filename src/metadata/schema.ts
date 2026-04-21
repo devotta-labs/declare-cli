@@ -7,6 +7,9 @@ import { dataSets } from './dataSets.ts'
 import { optionSets } from './optionSets.ts'
 import { organisationUnitLevels } from './organisationUnits/organisationUnitLevels.ts'
 import { organisationUnits } from './organisationUnits/organisationUnits.ts'
+import { userGroups } from './userGroups/userGroups.ts'
+import { userRoles } from './userRoles/userRoles.ts'
+import { users } from './users/users.ts'
 
 export default defineSchema({
   categoryOptions,
@@ -17,4 +20,7 @@ export default defineSchema({
   dataSets,
   organisationUnitLevels,
   organisationUnits,
+  userRoles,
+  userGroups,
+  users,
 })

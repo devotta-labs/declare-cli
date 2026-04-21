@@ -13,6 +13,7 @@ import {
   withDerivedShortName,
   type Handle,
 } from './core.ts'
+import { SharingSchema } from './sharing.ts'
 
 export const DomainType = z.enum(['AGGREGATE', 'TRACKER'])
 
@@ -33,6 +34,7 @@ export const DataElementSchema = z
     aggregationLevels: z.array(z.number().int().positive()).optional(),
     fieldMask: z.string().max(255).optional(),
     zeroIsSignificant: z.boolean().default(false),
+    sharing: SharingSchema.optional(),
   })
   .refine(
     (v) => !(NUMERIC_AGGREGATIONS.has(v.aggregationType) && !NUMERIC_VALUE_TYPES.has(v.valueType)),

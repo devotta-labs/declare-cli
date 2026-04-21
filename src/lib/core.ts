@@ -11,6 +11,9 @@ export type MetadataKind =
   | 'DataSet'
   | 'OrganisationUnit'
   | 'OrganisationUnitLevel'
+  | 'UserRole'
+  | 'UserGroup'
+  | 'User'
 
 declare const __kind: unique symbol
 declare const __brand: unique symbol
