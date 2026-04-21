@@ -1,4 +1,4 @@
-import { Access, Sharing, defineOptionSet } from '@devotta-labs/dhis2-metadata-as-code'
+import { Access, Sharing, defineOptionSet } from '@devotta-labs/declare'
 
 export const caseClassification = defineOptionSet({
   code: 'MAL_CASE_CLASS',

@@ -1,4 +1,4 @@
-import { defineUserGroup } from '@devotta-labs/dhis2-metadata-as-code'
+import { defineUserGroup } from '@devotta-labs/declare'
 import { demoReporter } from '../users/users.ts'
 
 // Mirrors the data-entry role population — DHIS2 sharing ACLs target users

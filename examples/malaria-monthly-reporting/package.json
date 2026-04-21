@@ -1,8 +1,8 @@
 {
-  "name": "@devotta-labs/example-malaria-monthly-reporting",
+  "name": "@devotta-labs/declare-example-malaria",
   "version": "0.0.1",
   "private": true,
-  "description": "Example DHIS2 metadata schema for a malaria monthly reporting program, consuming @devotta-labs/dhis2-metadata-as-code.",
+  "description": "Example DHIS2 metadata schema for a malaria monthly reporting program, consuming @devotta-labs/declare.",
   "type": "module",
   "scripts": {
     "check": "tsx bin.ts check",
@@ -12,6 +12,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@devotta-labs/dhis2-metadata-as-code": "workspace:*"
+    "@devotta-labs/declare": "workspace:*"
   }
 }

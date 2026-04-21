@@ -1,4 +1,4 @@
-import { Access, Sharing, defineCategory } from '@devotta-labs/dhis2-metadata-as-code'
+import { Access, Sharing, defineCategory } from '@devotta-labs/declare'
 import { age15plus, age5to14, female, male, under5 } from './categoryOptions.ts'
 
 // Demo-wide public access — see dataElements.ts for the rationale.

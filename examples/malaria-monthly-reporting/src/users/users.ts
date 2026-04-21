@@ -1,4 +1,4 @@
-import { defineUser } from '@devotta-labs/dhis2-metadata-as-code'
+import { defineUser } from '@devotta-labs/declare'
 import { norge } from '../organisationUnits/organisationUnits.ts'
 import { dataEntryRole } from '../userRoles/userRoles.ts'
 

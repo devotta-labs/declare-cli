@@ -1,5 +1,5 @@
 {
-  "name": "@devotta-labs/dhis2-metadata-as-code",
+  "name": "@devotta-labs/declare",
   "version": "0.0.1",
   "private": true,
   "description": "Type-safe DHIS2 metadata-as-code framework and CLI.",

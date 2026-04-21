@@ -1,4 +1,4 @@
-import { defineOrganisationUnit } from '@devotta-labs/dhis2-metadata-as-code'
+import { defineOrganisationUnit } from '@devotta-labs/declare'
 
 // DHIS2 requires openingDate on every OU. Use a common historical date so the
 // whole tree shares the same "we've always been here" baseline.

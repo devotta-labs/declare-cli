@@ -1,4 +1,4 @@
-import { defineOrganisationUnitLevel } from '@devotta-labs/dhis2-metadata-as-code'
+import { defineOrganisationUnitLevel } from '@devotta-labs/declare'
 
 export const nationLevel = defineOrganisationUnitLevel({
   code: 'OU_LEVEL_NATION',

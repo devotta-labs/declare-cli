@@ -1,4 +1,4 @@
-import { Authority, defineUserRole } from '@devotta-labs/dhis2-metadata-as-code'
+import { Authority, defineUserRole } from '@devotta-labs/declare'
 
 // Minimal role for demoing aggregate data capture: the user needs
 // F_DATAVALUE_ADD to submit values via the Data Entry app; F_EXPORT_DATA is

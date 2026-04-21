@@ -26,11 +26,11 @@ importers:
 
   examples/malaria-monthly-reporting:
     dependencies:
-      '@devotta-labs/dhis2-metadata-as-code':
+      '@devotta-labs/declare':
         specifier: workspace:*
-        version: link:../../packages/dhis2-metadata-as-code
+        version: link:../../packages/declare
 
-  packages/dhis2-metadata-as-code:
+  packages/declare:
     dependencies:
       dotenv:
         specifier: ^17.4.2

@@ -1,4 +1,4 @@
-import { Access, Sharing, defineDataSet } from '@devotta-labs/dhis2-metadata-as-code'
+import { Access, Sharing, defineDataSet } from '@devotta-labs/declare'
 import {
   malariaCaseClass,
   malariaCases,
