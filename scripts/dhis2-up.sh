@@ -38,12 +38,13 @@ say "Waiting for DHIS2 at $base_url (timeout ${ready_timeout_seconds}s)"
 deadline=$(( $(date +%s) + ready_timeout_seconds ))
 while :; do
   http_code="$(
-    curl --silent --show-error --output /dev/null \
+    curl --silent --output /dev/null \
       --write-out '%{http_code}' \
       --user "$admin_user:$admin_pass" \
       --max-time 5 \
-      "$base_url/api/system/info" || echo "000"
+      "$base_url/api/system/info" || true
   )"
+  http_code="${http_code:-000}"
 
   if [[ "$http_code" == "200" ]]; then
     say "DHIS2 is ready (HTTP 200 from /api/system/info)"
