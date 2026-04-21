@@ -8,13 +8,16 @@ import {
   type Handle,
 } from './core.ts'
 
-// DHIS2 UserGroup. `members` is a Set<User> on the server; referencing users
-// here by handle lets `identifier=CODE` preheat resolve them at import time.
+// DHIS2 UserGroup. The membership Set<User> on the server is serialised as
+// `users` (see @JsonProperty("users") on UserGroup#getMembers), so we keep the
+// DSL field name aligned with the wire format to avoid silent drops during
+// /api/metadata import. Referencing users by handle lets `identifier=CODE`
+// preheat resolve them at import time.
 export const UserGroupSchema = z.object({
   code: CodeSchema,
   name: NameSchema,
   description: DescriptionSchema.optional(),
-  members: z.array(refSchema('User')).optional(),
+  users: z.array(refSchema('User')).optional(),
 })
 
 export type UserGroupInput = z.infer<typeof UserGroupSchema>

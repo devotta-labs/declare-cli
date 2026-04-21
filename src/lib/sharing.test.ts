@@ -102,6 +102,35 @@ describe('sharing serialization', () => {
     ])
   })
 
+  it('serialises UserGroup membership under the DHIS2 `users` wire field', () => {
+    const user = defineUser({
+      code: 'U_MEM',
+      username: 'member',
+      password: 'District1!',
+      firstName: 'Mem',
+      surname: 'Ber',
+      userRoles: [role],
+      organisationUnits: [ou],
+    })
+    const group = defineUserGroup({
+      code: 'UG_WITH_MEMBER',
+      name: 'With member',
+      users: [user],
+    })
+
+    const schema = defineSchema({
+      organisationUnits: [ou],
+      userRoles: [role],
+      userGroups: [group],
+      users: [user],
+    })
+    const payload = schema.serialize() as Record<string, unknown[]>
+    const groups = payload.userGroups ?? []
+    const g = groups[0] as Record<string, unknown>
+    expect(g).not.toHaveProperty('members')
+    expect(g.users).toEqual([expect.objectContaining({ code: 'U_MEM' })])
+  })
+
   it('leaves datasets without a sharing declaration unchanged', () => {
     const ds = defineDataSet({
       code: 'DS_NOSHARE',
