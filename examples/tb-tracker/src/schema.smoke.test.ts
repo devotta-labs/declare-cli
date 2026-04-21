@@ -19,8 +19,8 @@ describe('tb-tracker metadata schema smoke', () => {
   })
 
   it('auto-injects the program back-ref on each ProgramStage payload', () => {
-    const payload = schema.serialize() as Record<string, Record<string, unknown>[]>
-    const stages = payload.programStages
+    const payload = schema.serialize() as Record<string, Record<string, unknown>[] | undefined>
+    const stages = payload.programStages ?? []
     expect(stages.length).toBeGreaterThan(0)
     for (const stage of stages) {
       expect(stage.program).toMatchObject({ code: 'PRG_TB_TRACKER' })
