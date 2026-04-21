@@ -1,4 +1,4 @@
-import { isHandle, type Handle, type MetadataKind } from './core.ts'
+import { isHandle, stableUid, type Handle, type MetadataKind } from './core.ts'
 import type { Category } from './category.ts'
 import type { CategoryOption } from './categoryOption.ts'
 import type { CategoryCombo } from './categoryCombo.ts'
@@ -34,9 +34,60 @@ const PAYLOAD_KEY: Record<MetadataKind, string> = {
   DataSet: 'dataSets',
 }
 
+// Assign a stable DHIS2 UID (derived from kind:code) to the top-level object
+// as `id`. Master validation hooks crash on transient objects with null UIDs
+// (see DefaultCategoryService.validate); for objects that already exist on
+// the server (matched by code), DHIS2 keeps its own UID and our supplied one
+// is a no-op.
+function withTopLevelId(kind: MetadataKind, code: string, body: unknown): unknown {
+  if (!body || typeof body !== 'object') return body
+  return {
+    id: stableUid(`${kind}:${code}`),
+    ...(body as Record<string, unknown>),
+  }
+}
+
+// DHIS2's metadata importer requires Options as top-level entries under
+// `options`, not nested inside OptionSet. Split them out: in the OptionSet
+// body, replace `options: [...]` with id-only refs, and hoist the full
+// Option bodies to a sibling top-level list.
+type SplitOptionSet = {
+  optionSet: Record<string, unknown>
+  options: Record<string, unknown>[]
+}
+
+function splitOptionSet(code: string, body: unknown): SplitOptionSet {
+  const src = body as Record<string, unknown>
+  const optionSetId = stableUid(`OptionSet:${code}`)
+  const rawOptions = Array.isArray(src.options) ? (src.options as Record<string, unknown>[]) : []
+  const optionRefs: { id: string }[] = []
+  const optionBodies: Record<string, unknown>[] = []
+
+  for (const opt of rawOptions) {
+    if (!opt || typeof opt !== 'object') continue
+    const optCode = typeof opt.code === 'string' ? opt.code : ''
+    const optionId = stableUid(`Option:${code}:${optCode}`)
+    optionRefs.push({ id: optionId })
+    optionBodies.push({
+      ...opt,
+      id: optionId,
+      optionSet: { id: optionSetId },
+    })
+  }
+
+  return {
+    optionSet: { id: optionSetId, ...src, options: optionRefs },
+    options: optionBodies,
+  }
+}
+
 function toPayload(value: unknown): unknown {
   if (isHandle(value)) {
-    return { code: value.code }
+    // Include both `code` (for preheat identifier=CODE resolution) and a
+    // stable `id` so that transient stub objects created by Jackson from the
+    // nested ref still have a non-null UID — some master validation hooks
+    // (e.g. CategoryComboObjectBundleHook) crash otherwise.
+    return { id: stableUid(`${value.kind}:${value.code}`), code: value.code }
   }
   if (Array.isArray(value)) {
     return value.map(toPayload)
@@ -77,11 +128,23 @@ export function defineSchema(input: SchemaInput): Schema {
     byKind,
     serialize() {
       const payload: Record<string, unknown[]> = {}
+      const hoistedOptions: Record<string, unknown>[] = []
       for (const kind of Object.keys(byKind) as MetadataKind[]) {
         const items = byKind[kind]
         if (items.length === 0) continue
-        payload[PAYLOAD_KEY[kind]] = items.map((h) => toPayload(h.input))
+        if (kind === 'OptionSet') {
+          payload[PAYLOAD_KEY[kind]] = items.map((h) => {
+            const { optionSet, options } = splitOptionSet(h.code, toPayload(h.input))
+            hoistedOptions.push(...options)
+            return optionSet
+          })
+        } else {
+          payload[PAYLOAD_KEY[kind]] = items.map((h) =>
+            withTopLevelId(h.kind, h.code, toPayload(h.input)),
+          )
+        }
       }
+      if (hoistedOptions.length > 0) payload[PAYLOAD_KEY.Option] = hoistedOptions
       return payload
     },
   }

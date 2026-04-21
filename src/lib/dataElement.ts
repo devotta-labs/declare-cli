@@ -1,32 +1,18 @@
 import { z } from 'zod'
-import { CodeSchema, NameSchema, ShortNameSchema, makeHandle, refSchema, type Handle } from './core.ts'
-
-export const ValueType = z.enum([
-  'NUMBER',
-  'INTEGER',
-  'INTEGER_POSITIVE',
-  'INTEGER_NEGATIVE',
-  'INTEGER_ZERO_OR_POSITIVE',
-  'PERCENTAGE',
-  'UNIT_INTERVAL',
-  'TEXT',
-  'LONG_TEXT',
-  'BOOLEAN',
-  'TRUE_ONLY',
-  'DATE',
-  'DATETIME',
-  'TIME',
-])
-
-export const AggregationType = z.enum([
-  'SUM',
-  'AVERAGE',
-  'AVERAGE_SUM_ORG_UNIT',
-  'COUNT',
-  'MIN',
-  'MAX',
-  'NONE',
-])
+import {
+  AggregationType,
+  CodeSchema,
+  DescriptionSchema,
+  NUMERIC_AGGREGATIONS,
+  NUMERIC_VALUE_TYPES,
+  NameSchema,
+  ShortNameSchema,
+  ValueType,
+  makeHandle,
+  refSchema,
+  withDerivedShortName,
+  type Handle,
+} from './core.ts'
 
 export const DomainType = z.enum(['AGGREGATE', 'TRACKER'])
 
@@ -35,42 +21,32 @@ export const DataElementSchema = z
     code: CodeSchema,
     name: NameSchema,
     shortName: ShortNameSchema.optional(),
-    description: z.string().max(2000).optional(),
+    formName: z.string().max(230).optional(),
+    description: DescriptionSchema.optional(),
+    url: z.string().url().optional(),
     valueType: ValueType,
     aggregationType: AggregationType.default('SUM'),
     domainType: DomainType.default('AGGREGATE'),
     categoryCombo: refSchema('CategoryCombo').optional(),
     optionSet: refSchema('OptionSet').optional(),
+    commentOptionSet: refSchema('OptionSet').optional(),
+    aggregationLevels: z.array(z.number().int().positive()).optional(),
+    fieldMask: z.string().max(255).optional(),
     zeroIsSignificant: z.boolean().default(false),
   })
   .refine(
-    (v) => {
-      const numericAggregates = new Set(['SUM', 'AVERAGE', 'AVERAGE_SUM_ORG_UNIT', 'MIN', 'MAX'])
-      const numericValues = new Set([
-        'NUMBER',
-        'INTEGER',
-        'INTEGER_POSITIVE',
-        'INTEGER_NEGATIVE',
-        'INTEGER_ZERO_OR_POSITIVE',
-        'PERCENTAGE',
-        'UNIT_INTERVAL',
-      ])
-      if (numericAggregates.has(v.aggregationType) && !numericValues.has(v.valueType)) {
-        return false
-      }
-      return true
-    },
+    (v) => !(NUMERIC_AGGREGATIONS.has(v.aggregationType) && !NUMERIC_VALUE_TYPES.has(v.valueType)),
     {
       message:
-        'aggregationType SUM/AVERAGE/MIN/MAX requires a numeric valueType (NUMBER, INTEGER, PERCENTAGE, …)',
+        'numeric aggregationType (SUM/AVERAGE/MIN/MAX/STDDEV/VARIANCE/…) requires a numeric valueType (NUMBER, INTEGER, PERCENTAGE, …)',
       path: ['aggregationType'],
     },
   )
 
 export type DataElementInput = z.infer<typeof DataElementSchema>
-export type DataElement = Handle<'DataElement', DataElementInput>
+export type DataElement = Handle<'DataElement', DataElementInput & { shortName: string }>
 
 export function defineDataElement(input: z.input<typeof DataElementSchema>): DataElement {
   const parsed = DataElementSchema.parse(input)
-  return makeHandle('DataElement', parsed)
+  return makeHandle('DataElement', withDerivedShortName(parsed))
 }

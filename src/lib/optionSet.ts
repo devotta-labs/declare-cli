@@ -1,18 +1,26 @@
 import { z } from 'zod'
-import { CodeSchema, NameSchema, makeHandle, type Handle } from './core.ts'
-
-export const OptionValueType = z.enum(['TEXT', 'NUMBER', 'INTEGER', 'BOOLEAN', 'DATE'])
-export type OptionValueType = z.infer<typeof OptionValueType>
+import {
+  CodeSchema,
+  DescriptionSchema,
+  NameSchema,
+  ValueType,
+  makeHandle,
+  type Handle,
+} from './core.ts'
 
 export const OptionSchema = z.object({
   code: CodeSchema,
   name: NameSchema,
+  sortOrder: z.number().int().min(0).optional(),
+  formName: z.string().max(230).optional(),
+  description: DescriptionSchema.optional(),
 })
 
 export const OptionSetSchema = z.object({
   code: CodeSchema,
   name: NameSchema,
-  valueType: OptionValueType,
+  description: DescriptionSchema.optional(),
+  valueType: ValueType,
   options: z.array(OptionSchema).min(1, 'an OptionSet needs at least one Option'),
 })
 
