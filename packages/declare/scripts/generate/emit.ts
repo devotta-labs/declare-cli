@@ -1,5 +1,5 @@
 import type { MetadataKind } from '../../src/lib/core.ts'
-import { ENTITY_SCHEMAS, KLASS_TO_KIND, TARGETS } from './config.ts'
+import { DEFAULT_TARGET, ENTITY_SCHEMAS, KLASS_TO_KIND, TARGETS } from './config.ts'
 import type { Target } from './config.ts'
 import type { EntityCollection, EntityByTarget } from './collect.ts'
 import type { EnumDef } from './enums.ts'
@@ -163,7 +163,16 @@ export function emitEntity(
       const expr = emitScalar(prop, target)
       if (expr === null) continue
       if (expr.includes('refSchema(')) usesRefSchema = true
-      if (prop.propertyType === 'CONSTANT' || prop.itemPropertyType === 'CONSTANT') {
+      // Track enum usage only when a per-target enum identifier actually
+      // appears in the emitted expression — CONSTANT / itemPropertyType=CONSTANT
+      // properties with an empty `constants` array fall back to `z.string()` /
+      // `z.array(z.string())` and must NOT trigger an enum import (would dangle
+      // or, if klass is null, crash enumName()).
+      if (
+        (prop.propertyType === 'CONSTANT' || prop.itemPropertyType === 'CONSTANT') &&
+        prop.constants &&
+        prop.constants.length > 0
+      ) {
         usedEnums.add(enumName(prop))
       }
       const optional = prop.required === true ? '' : '.optional()'
@@ -227,7 +236,7 @@ export function emitTargets(): string {
     BANNER,
     `export const TARGETS = [${literals}] as const`,
     'export type Target = (typeof TARGETS)[number]',
-    "export const DEFAULT_TARGET: Target = '2.42'",
+    `export const DEFAULT_TARGET: Target = '${DEFAULT_TARGET}'`,
     '',
   ].join('\n')
 }
