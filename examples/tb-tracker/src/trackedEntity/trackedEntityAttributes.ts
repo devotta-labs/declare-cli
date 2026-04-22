@@ -1,18 +1,13 @@
-import { Access, Sharing, defineTrackedEntityAttribute } from '@devotta-labs/declare'
+import { defineTrackedEntityAttribute } from '@devotta-labs/declare'
 import { sexOptionSet } from '../optionSets.ts'
-
-// TEAs are shared between the TrackedEntityType (the "Person" box visible on
-// every programme) and this TB programme's ProgramTrackedEntityAttributes.
-// Public rwrw-- keeps the demo unblocked without burying the reader in a
-// per-TEA sharing dance.
-const publicRW = Sharing.public(Access.readWrite)
+import { captureSharing } from '../sharing.ts'
 
 export const firstNameTea = defineTrackedEntityAttribute({
   code: 'TEA_FIRST_NAME',
   name: 'First name',
   shortName: 'First name',
   valueType: 'TEXT',
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const lastNameTea = defineTrackedEntityAttribute({
@@ -20,7 +15,7 @@ export const lastNameTea = defineTrackedEntityAttribute({
   name: 'Last name',
   shortName: 'Last name',
   valueType: 'TEXT',
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const dateOfBirthTea = defineTrackedEntityAttribute({
@@ -28,7 +23,7 @@ export const dateOfBirthTea = defineTrackedEntityAttribute({
   name: 'Date of birth',
   shortName: 'Date of birth',
   valueType: 'DATE',
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const sexTea = defineTrackedEntityAttribute({
@@ -37,7 +32,7 @@ export const sexTea = defineTrackedEntityAttribute({
   shortName: 'Sex',
   valueType: 'TEXT',
   optionSet: sexOptionSet,
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 // National ID number. `unique: true` pushes DHIS2's global uniqueness
@@ -50,7 +45,7 @@ export const nationalIdTea = defineTrackedEntityAttribute({
   shortName: 'National ID',
   valueType: 'TEXT',
   unique: true,
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const phoneNumberTea = defineTrackedEntityAttribute({
@@ -58,7 +53,7 @@ export const phoneNumberTea = defineTrackedEntityAttribute({
   name: 'Phone number',
   shortName: 'Phone number',
   valueType: 'PHONE_NUMBER',
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 // Programme-scoped TEAs below — only attached to the TB Program, not to the
@@ -69,7 +64,7 @@ export const hivStatusTea = defineTrackedEntityAttribute({
   name: 'HIV status',
   shortName: 'HIV status',
   valueType: 'TEXT',
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const previousTbTreatmentTea = defineTrackedEntityAttribute({
@@ -77,7 +72,7 @@ export const previousTbTreatmentTea = defineTrackedEntityAttribute({
   name: 'Previously treated for TB',
   shortName: 'Prev TB Rx',
   valueType: 'BOOLEAN',
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const trackedEntityAttributes = [

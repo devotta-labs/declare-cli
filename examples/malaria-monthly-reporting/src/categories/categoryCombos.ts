@@ -1,12 +1,12 @@
-import { Access, Sharing, defineCategoryCombo } from '@devotta-labs/declare'
+import { defineCategoryCombo } from '@devotta-labs/declare'
+import { captureSharing } from '../sharing.ts'
 import { ageGroup, sex } from './categories.ts'
 
 export const sexAge = defineCategoryCombo({
   code: 'SEX_AGE',
   name: 'Sex × Age group',
   categories: [sex, ageGroup],
-  // Demo-wide public access — see dataElements.ts for the rationale.
-  sharing: Sharing.public(Access.readWrite),
+  sharing: captureSharing,
 })
 
 export const categoryCombos = [sexAge]

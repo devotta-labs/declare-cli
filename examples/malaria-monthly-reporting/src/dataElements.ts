@@ -1,13 +1,7 @@
-import { Access, Sharing, defineDataElement } from '@devotta-labs/declare'
+import { defineDataElement } from '@devotta-labs/declare'
 import { sexAge } from './categories/categoryCombos.ts'
 import { caseClassification } from './optionSets.ts'
-
-// Every metadata object the Data Entry form walks (DataSet → DataElement →
-// CategoryCombo → Category → CategoryOption, plus OptionSet for coded DEs)
-// is ACL-checked independently. The demo reporter is non-superuser, so we
-// grant public rwrw---- on the whole chain rather than rely on server
-// defaults, which vary by instance configuration.
-const publicRW = Sharing.public(Access.readWrite)
+import { captureSharing } from './sharing.ts'
 
 export const malariaCases = defineDataElement({
   code: 'MAL_CASES',
@@ -16,7 +10,7 @@ export const malariaCases = defineDataElement({
   valueType: 'NUMBER',
   aggregationType: 'SUM',
   categoryCombo: sexAge,
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const malariaDeaths = defineDataElement({
@@ -26,7 +20,7 @@ export const malariaDeaths = defineDataElement({
   valueType: 'NUMBER',
   aggregationType: 'SUM',
   categoryCombo: sexAge,
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const malariaTreated = defineDataElement({
@@ -36,7 +30,7 @@ export const malariaTreated = defineDataElement({
   valueType: 'NUMBER',
   aggregationType: 'SUM',
   categoryCombo: sexAge,
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const malariaCaseClass = defineDataElement({
@@ -46,7 +40,7 @@ export const malariaCaseClass = defineDataElement({
   valueType: 'TEXT',
   aggregationType: 'NONE',
   optionSet: caseClassification,
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const dataElements = [malariaCases, malariaDeaths, malariaTreated, malariaCaseClass]

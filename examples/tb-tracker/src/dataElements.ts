@@ -1,10 +1,10 @@
-import { Access, Sharing, defineDataElement } from '@devotta-labs/declare'
+import { defineDataElement } from '@devotta-labs/declare'
 import { tbScreeningResult, ynuOptionSet } from './optionSets.ts'
+import { captureSharing } from './sharing.ts'
 
 // `domainType: 'TRACKER'` is the critical flag distinguishing event-world data
 // elements from aggregate ones — the Capture app only renders TRACKER DEs on
 // event forms, and ProgramStage.programStageDataElements rejects AGGREGATE ones.
-const publicRW = Sharing.public(Access.readWrite)
 
 export const coughGt2Weeks = defineDataElement({
   code: 'DE_TB_COUGH_GT_2_WEEKS',
@@ -14,7 +14,7 @@ export const coughGt2Weeks = defineDataElement({
   aggregationType: 'NONE',
   domainType: 'TRACKER',
   optionSet: ynuOptionSet,
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const feverGt2Weeks = defineDataElement({
@@ -25,7 +25,7 @@ export const feverGt2Weeks = defineDataElement({
   aggregationType: 'NONE',
   domainType: 'TRACKER',
   optionSet: ynuOptionSet,
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const weightLoss = defineDataElement({
@@ -36,7 +36,7 @@ export const weightLoss = defineDataElement({
   aggregationType: 'NONE',
   domainType: 'TRACKER',
   optionSet: ynuOptionSet,
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const nightSweats = defineDataElement({
@@ -47,7 +47,7 @@ export const nightSweats = defineDataElement({
   aggregationType: 'NONE',
   domainType: 'TRACKER',
   optionSet: ynuOptionSet,
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const knownTbContact = defineDataElement({
@@ -58,7 +58,7 @@ export const knownTbContact = defineDataElement({
   aggregationType: 'NONE',
   domainType: 'TRACKER',
   optionSet: ynuOptionSet,
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const weightKg = defineDataElement({
@@ -68,7 +68,7 @@ export const weightKg = defineDataElement({
   valueType: 'NUMBER',
   aggregationType: 'AVERAGE',
   domainType: 'TRACKER',
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const heightCm = defineDataElement({
@@ -78,7 +78,7 @@ export const heightCm = defineDataElement({
   valueType: 'NUMBER',
   aggregationType: 'AVERAGE',
   domainType: 'TRACKER',
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const screeningResult = defineDataElement({
@@ -89,7 +89,7 @@ export const screeningResult = defineDataElement({
   aggregationType: 'NONE',
   domainType: 'TRACKER',
   optionSet: tbScreeningResult,
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const screeningNotes = defineDataElement({
@@ -99,7 +99,7 @@ export const screeningNotes = defineDataElement({
   valueType: 'LONG_TEXT',
   aggregationType: 'NONE',
   domainType: 'TRACKER',
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const dataElements = [

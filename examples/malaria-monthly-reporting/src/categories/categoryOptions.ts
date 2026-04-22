@@ -1,9 +1,10 @@
-import { Access, Sharing, defineCategoryOption } from '@devotta-labs/declare'
+import { defineCategoryOption } from '@devotta-labs/declare'
+import { captureSharing } from '../sharing.ts'
 
-// CategoryOption ACL gates per-disaggregation data capture — the demo
-// reporter needs rwrw---- on every option in every combo they submit
-// values for. See dataElements.ts for the broader rationale.
-const sharing = Sharing.public(Access.readWrite)
+// CategoryOption ACL gates per-disaggregation data capture — the data-entry
+// user group needs data rw on every option in every combo they submit values
+// for. See ../sharing.ts for the broader rationale.
+const sharing = captureSharing
 
 export const male = defineCategoryOption({ code: 'MALE', name: 'Male', sharing })
 export const female = defineCategoryOption({ code: 'FEMALE', name: 'Female', sharing })

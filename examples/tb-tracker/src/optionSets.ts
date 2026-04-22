@@ -1,10 +1,5 @@
-import { Access, Sharing, defineOptionSet } from '@devotta-labs/declare'
-
-// Demo-wide public rwrw access on every option set. Every object touched by
-// the Capture app's TEI registration & event forms is ACL-checked independently
-// (OptionSet → Option → everything that references them), so we grant public
-// sharing up front instead of relying on instance defaults.
-const publicRW = Sharing.public(Access.readWrite)
+import { defineOptionSet } from '@devotta-labs/declare'
+import { captureSharing } from './sharing.ts'
 
 // Standard ISO-5218 style sex option set. Used both by the Person TEI's `sex`
 // attribute and downstream in the screening event if we ever wanted to capture
@@ -19,7 +14,7 @@ export const sexOptionSet = defineOptionSet({
     { code: 'OTHER', name: 'Other' },
     { code: 'UNKNOWN', name: 'Unknown' },
   ],
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 // Yes / No / Unknown — used by several screening data elements (cough > 2 weeks,
@@ -34,7 +29,7 @@ export const ynuOptionSet = defineOptionSet({
     { code: 'NO', name: 'No' },
     { code: 'UNKNOWN', name: 'Unknown' },
   ],
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 // TB screening outcome. The WHO TB knowledge-sharing platform recommends four
@@ -50,7 +45,7 @@ export const tbScreeningResult = defineOptionSet({
     { code: 'CONFIRMED', name: 'Bacteriologically confirmed' },
     { code: 'REFERRED', name: 'Referred for further investigation' },
   ],
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const optionSets = [sexOptionSet, ynuOptionSet, tbScreeningResult]

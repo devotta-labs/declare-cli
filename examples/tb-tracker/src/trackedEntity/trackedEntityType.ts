@@ -1,4 +1,5 @@
-import { Access, Sharing, defineTrackedEntityType } from '@devotta-labs/declare'
+import { defineTrackedEntityType } from '@devotta-labs/declare'
+import { captureSharing } from '../sharing.ts'
 import {
   dateOfBirthTea,
   firstNameTea,
@@ -62,7 +63,7 @@ export const personTrackedEntityType = defineTrackedEntityType({
       searchable: false,
     },
   ],
-  sharing: Sharing.public(Access.readWrite),
+  sharing: captureSharing,
 })
 
 export const trackedEntityTypes = [personTrackedEntityType]

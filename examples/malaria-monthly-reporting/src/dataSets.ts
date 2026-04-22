@@ -1,4 +1,4 @@
-import { Access, Sharing, defineDataSet } from '@devotta-labs/declare'
+import { defineDataSet } from '@devotta-labs/declare'
 import {
   malariaCaseClass,
   malariaCases,
@@ -16,6 +16,7 @@ import {
   vagan,
   voss,
 } from './organisationUnits/organisationUnits.ts'
+import { captureSharing } from './sharing.ts'
 
 export const malariaMonthly = defineDataSet({
   code: 'DS_MALARIA_MONTHLY',
@@ -42,10 +43,7 @@ export const malariaMonthly = defineDataSet({
     narvik,
     vagan,
   ],
-  // Public metadata read+write and data read+write so the demo reporter (and
-  // anyone else logged into the demo instance) can see the dataset in the
-  // Data Entry app and submit values against it.
-  sharing: Sharing.public(Access.readWrite),
+  sharing: captureSharing,
 })
 
 export const dataSets = [malariaMonthly]
