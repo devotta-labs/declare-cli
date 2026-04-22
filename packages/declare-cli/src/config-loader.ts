@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs'
 import { dirname, isAbsolute, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { createJiti } from 'jiti'
-import type { Schema } from '@devotta-labs/declare'
+import { setTarget, type Schema } from '@devotta-labs/declare'
 import { ConfigSchema, type DeclareConfig } from './config.ts'
 
 const CONFIG_FILENAMES = ['declare.config.ts', 'declare.config.mjs', 'declare.config.js']
@@ -69,6 +69,10 @@ export async function loadSchema(loaded: LoadedConfig): Promise<Schema> {
         `Fix the 'schema' field in ${loaded.configPath}.`,
     )
   }
+
+  // Set the target before the user schema file imports defineX(), so the
+  // right per-version Zod validator is selected at parse time.
+  setTarget(loaded.config.target)
 
   const mod = await jiti.import<unknown>(pathToFileURL(schemaPath).href)
   const schema =

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { DEFAULT_TARGET, TARGETS } from '@devotta-labs/declare'
 
 export const ConfigSchema = z
   .object({
@@ -10,6 +11,7 @@ export const ConfigSchema = z
         'name must be lowercase alphanumeric with dashes (used as Docker compose project name)',
       ),
     schema: z.string().min(1, 'schema path is required'),
+    target: z.enum(TARGETS).default(DEFAULT_TARGET),
     local: z
       .object({
         port: z
