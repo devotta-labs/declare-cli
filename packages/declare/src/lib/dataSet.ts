@@ -11,8 +11,7 @@ import {
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
 
-// DHIS2 uses PeriodType.getName() as the JSON value, which is PascalCase (not
-// the UPPER_SNAKE enum constant from the Java side).
+// PascalCase on the wire (PeriodType.getName()), not UPPER_SNAKE.
 export const PeriodType = z.enum([
   'Daily',
   'Weekly',
@@ -54,8 +53,6 @@ export const DataSetSchema = z.object({
   periodType: PeriodType,
   categoryCombo: refSchema('CategoryCombo').optional(),
   dataSetElements: z.array(DataSetElementSchema).min(1, 'a DataSet needs at least one DataElement'),
-  // Data-capture OUs. A DataSet only appears in the Data Entry app for OUs
-  // it is assigned to (DataSet#sources in master — JSON key `organisationUnits`).
   organisationUnits: z.array(refSchema('OrganisationUnit')).optional(),
   expiryDays: z.number().int().min(0).default(0),
   openFuturePeriods: z.number().int().min(0).default(0),

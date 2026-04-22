@@ -12,14 +12,6 @@ import {
 } from '../dataElements.ts'
 import { captureSharing } from '../sharing.ts'
 
-// "Initial screening" — the first (and, in this minimal example, only) visit
-// of the TB programme. The DHIS2 master distinguishes stage ordering (used
-// for rendering the enrollment timeline) from the stage's repeatability: we
-// mark this stage non-repeatable since a given enrollment only screens once.
-//
-// `autoGenerateEvent: true` plus `openAfterEnrollment: true` means the
-// Capture app opens the empty screening event immediately after registering
-// the TEI — exactly what we want for a demo flow.
 export const initialScreeningStage = defineProgramStage({
   code: 'PS_TB_INITIAL_SCREENING',
   name: 'Initial screening',

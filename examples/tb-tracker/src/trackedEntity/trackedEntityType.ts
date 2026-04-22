@@ -9,15 +9,8 @@ import {
   sexTea,
 } from './trackedEntityAttributes.ts'
 
-// "Person" TrackedEntityType — a reusable container for human TEIs. Attaching
-// the core demographic TEAs here (instead of only on the Program) means any
-// future programme for the same person (e.g. HIV, maternal health) can enrol
-// the same TEI without duplicating registration state.
-//
-// `displayInList` governs which attributes appear as columns in the Capture
-// app's TEI search results; `searchable` surfaces the attribute on the
-// search form. `mandatory` here is the TET-level guarantee that registration
-// cannot complete without the value.
+// Core demographic TEAs live on the TET (not the Program) so other programmes
+// for the same person can reuse the TEI without duplicating registration state.
 export const personTrackedEntityType = defineTrackedEntityType({
   code: 'TET_PERSON',
   name: 'Person',

@@ -8,11 +8,8 @@ import {
   type Handle,
 } from './core.ts'
 
-// DHIS2 UserGroup. The membership Set<User> on the server is serialised as
-// `users` (see @JsonProperty("users") on UserGroup#getMembers), so we keep the
-// DSL field name aligned with the wire format to avoid silent drops during
-// /api/metadata import. Referencing users by handle lets `identifier=CODE`
-// preheat resolve them at import time.
+// Field is `users` (not `members`) to match the wire format — anything else is
+// silently dropped by /api/metadata import.
 export const UserGroupSchema = z.object({
   code: CodeSchema,
   name: NameSchema,

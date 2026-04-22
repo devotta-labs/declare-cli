@@ -12,22 +12,10 @@ import {
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
 
-// DHIS2 master: org.hisp.dhis.program.ProgramType. `WITH_REGISTRATION` means a
-// tracker program (enrols TrackedEntities); `WITHOUT_REGISTRATION` means an
-// event-only program. We only cover tracker programs end-to-end right now —
-// event programs parse fine but the Capture app needs a TET-less Program to be
-// wired slightly differently, so leave that as a future extension.
 export const ProgramType = z.enum(['WITH_REGISTRATION', 'WITHOUT_REGISTRATION'])
 
-// DHIS2 master: org.hisp.dhis.common.AccessLevel. Governs how non-owning users
-// see TEIs in the Capture app. OPEN (default) is simplest — everyone assigned
-// to the program OU sees every TEI.
 export const ProgramAccessLevel = z.enum(['OPEN', 'AUDITED', 'PROTECTED', 'CLOSED'])
 
-// DHIS2 master: org.hisp.dhis.program.ProgramTrackedEntityAttribute. Embedded
-// join linking a TrackedEntityAttribute to a Program with presentation and
-// validation rules (mandatory, searchable, display order). Not a top-level
-// metadata object — lives inline on Program.programTrackedEntityAttributes.
 const ProgramTrackedEntityAttributeSchema = z.object({
   trackedEntityAttribute: refSchema('TrackedEntityAttribute'),
   displayInList: z.boolean().default(false),
@@ -37,10 +25,6 @@ const ProgramTrackedEntityAttributeSchema = z.object({
   sortOrder: z.number().int().min(0).optional(),
 })
 
-// DHIS2 master: org.hisp.dhis.program.Program. The top-level object for both
-// tracker and event programs. ProgramStages are listed here by ref; the
-// serializer auto-emits the reciprocal `program` back-ref on each stage so
-// callers never have to deal with the circular relationship.
 export const ProgramSchema = z
   .object({
     code: CodeSchema,

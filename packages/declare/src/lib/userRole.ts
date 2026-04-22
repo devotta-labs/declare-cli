@@ -7,10 +7,8 @@ import {
   type Handle,
 } from './core.ts'
 
-// DHIS2 UserRole#authorities is a `Set<String>`; any server-known or custom
-// authority value is accepted. We don't restrict to a Zod enum so app-module
-// authorities (e.g. `M_dhis-web-dataentry`) or custom ones keep working — see
-// `authorities.ts` for a curated list of core ones.
+// Authorities are free-form strings — any server-known or custom value is valid
+// (app-module authorities like `M_dhis-web-dataentry`, custom app authorities).
 export const UserRoleSchema = z.object({
   code: CodeSchema,
   name: NameSchema,

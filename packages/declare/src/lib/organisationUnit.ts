@@ -10,8 +10,6 @@ import {
   type Handle,
 } from './core.ts'
 
-// DHIS2 rejects metadata imports with `Missing required property 'openingDate'`
-// (see JobConfigurationRunErrorsControllerTest), so we require it here too.
 const DateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'expected a YYYY-MM-DD date')
 
 export const OrganisationUnitSchema = z.object({

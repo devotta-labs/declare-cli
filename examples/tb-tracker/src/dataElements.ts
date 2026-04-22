@@ -2,9 +2,8 @@ import { defineDataElement } from '@devotta-labs/declare'
 import { tbScreeningResult, ynuOptionSet } from './optionSets.ts'
 import { captureSharing } from './sharing.ts'
 
-// `domainType: 'TRACKER'` is the critical flag distinguishing event-world data
-// elements from aggregate ones — the Capture app only renders TRACKER DEs on
-// event forms, and ProgramStage.programStageDataElements rejects AGGREGATE ones.
+// domainType: 'TRACKER' is required — ProgramStage rejects AGGREGATE DEs and
+// the Capture app only renders TRACKER ones on event forms.
 
 export const coughGt2Weeks = defineDataElement({
   code: 'DE_TB_COUGH_GT_2_WEEKS',

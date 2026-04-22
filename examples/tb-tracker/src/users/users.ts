@@ -2,10 +2,7 @@ import { defineUser } from '@devotta-labs/declare'
 import { norge } from '../organisationUnits/organisationUnits.ts'
 import { trackerDataEntryRole } from '../userRoles/userRoles.ts'
 
-// Demo TB nurse account. Structurally identical to the malaria demoReporter —
-// country-root OU assignment so the user can drill to any kommune in the
-// Capture app, plain-text password because this is a disposable demo account,
-// not a production credential.
+// Plaintext password — throwaway demo account on a disposable instance.
 export const demoTbNurse = defineUser({
   code: 'USER_TB_NURSE',
   username: 'tbnurse',

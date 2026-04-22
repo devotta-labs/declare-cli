@@ -1,27 +1,15 @@
 import { z } from 'zod'
 import { isHandle, refSchema, stableUid } from './core.ts'
 
-// DHIS2 access strings are 8 chars: r/w metadata at positions 0,1 and r/w
-// data at positions 2,3; positions 4-7 are unused. See
-// org.hisp.dhis.security.acl.AccessStringHelper.
-//
-// Examples:
-//   "--------"  AccessStringHelper.DEFAULT  (no access)
-//   "rw------"  read + write metadata
-//   "r-rw----"  metadata read + data read/write
-//   "rwrw----"  full metadata + data read/write
-//   "--rw----"  data read/write only
+// DHIS2 access strings are 8 chars: r/w metadata at 0,1; r/w data at 2,3;
+// positions 4-7 unused (always `-`). Examples: "rw------", "r-rw----", "rwrw----".
 type R = 'r' | '-'
 type W = 'w' | '-'
 
-// Template-literal type — TS rejects typos like 'rwrs----' or 'rwrw---' at
-// authoring time, before the zod regex runs.
 export type AccessString = `${R}${W}${R}${W}----`
 
 const ACCESS_STRING_RE = /^[r-][w-][r-][w-]----$/
 
-// Structured form. Each axis can be read-only, read-write, or absent (no
-// access). Serializes to the 8-char wire string via `toAccessString`.
 export type AccessLevel = 'r' | 'rw'
 export type AccessDescriptor = {
   metadata?: AccessLevel | undefined
@@ -41,8 +29,6 @@ export function toAccessString(access: AccessInput): AccessString {
   return `${levelChars(access.metadata)}${levelChars(access.data)}----` as AccessString
 }
 
-// Named presets for the combinations that actually come up. Everything else —
-// e.g. `{ metadata: 'rw', data: 'r' }` — is clearer spelled out inline.
 export const Access = {
   none: {} satisfies AccessDescriptor,
   metadataRead: { metadata: 'r' } satisfies AccessDescriptor,
@@ -69,8 +55,6 @@ const AccessStringSchema = z
     'access string must be 8 chars of r/w/- with positions 4-7 all "-"',
   )
 
-// Accept either the raw 8-char form or the structured descriptor, canonicalise
-// to the wire string so everything downstream handles a single shape.
 export const AccessSchema = z
   .union([AccessStringSchema, AccessDescriptorSchema])
   .transform((v): AccessString =>
@@ -97,12 +81,8 @@ export const SharingSchema = z.object({
     .optional(),
 })
 
-// The authoring shape — what users pass into `defineXxx({ sharing })`. Each
-// access field can be the raw string or the structured descriptor.
 export type SharingInput = z.input<typeof SharingSchema>
 
-// Ergonomic wrappers. `Sharing.private()` makes the "no public access, only
-// these groups" pattern one line instead of three.
 type SharingTargets = {
   users?: SharingInput['users']
   userGroups?: SharingInput['userGroups']
@@ -117,8 +97,7 @@ export const Sharing = {
   },
 } as const
 
-// DHIS2's Sharing JSON shape (`public` key, not `publicAccess`, and maps
-// keyed by uid — see org.hisp.dhis.user.sharing.Sharing).
+// Wire shape: `public` (not `publicAccess`); users/userGroups keyed by uid.
 export type SharingPayload = {
   public?: string
   owner: null
@@ -128,10 +107,8 @@ export type SharingPayload = {
 
 export function toSharingPayload(sharing: SharingInput | undefined): SharingPayload | undefined {
   if (!sharing) return undefined
-  // Re-parse: callers may pass either the authoring form (raw string or
-  // descriptor) or the already-canonicalised form off a parsed Handle.input.
-  // The union+transform is idempotent on strings, so this is safe and lets
-  // us have a single normalisation site.
+  // Idempotent re-parse — callers pass either authoring form or an already-
+  // canonicalised value off Handle.input.
   const parsed = SharingSchema.parse(sharing)
 
   const users: SharingPayload['users'] = {}

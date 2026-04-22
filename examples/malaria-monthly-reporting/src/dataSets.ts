@@ -29,9 +29,6 @@ export const malariaMonthly = defineDataSet({
     { dataElement: malariaTreated },
     { dataElement: malariaCaseClass },
   ],
-  // Assigned to every kommune (level 3). DataSets only show up in the Data
-  // Entry app for OUs they're assigned to, and reporting happens at the leaf
-  // level in this demo — fylker/country are aggregation-only.
   organisationUnits: [
     sel,
     lillehammer,

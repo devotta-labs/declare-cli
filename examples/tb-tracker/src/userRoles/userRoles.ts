@@ -1,14 +1,7 @@
 import { Authority, defineUserRole } from '@devotta-labs/declare'
 
-// Demo tracker role. Mirrors the structure of malaria-monthly-reporting's
-// data-entry role but swaps the aggregate authorities for the tracker/Capture
-// app surface — enrolling TEIs, running screening events, and reading the
-// resulting analytics.
-//
-// `M_dhis-web-capture` and `M_dhis-web-tracker-capture` are the "see app"
-// authorities for the bundled Capture and (legacy) Tracker Capture apps. We
-// grant both so the launcher shows them, independent of which one is set as
-// the instance-default tracker entry point.
+// `M_dhis-web-capture` / `M_dhis-web-tracker-capture` are "see app" authorities
+// — granted for both so either tracker entry point shows in the launcher.
 export const trackerDataEntryRole = defineUserRole({
   code: 'UR_TB_DATA_ENTRY',
   name: 'TB data entry',

@@ -67,7 +67,6 @@ export const NameSchema = z.string().min(1, 'name is required').max(230)
 export const ShortNameSchema = z.string().min(1).max(50)
 export const DescriptionSchema = z.string().max(2000)
 
-// DHIS2 master ValueType (org.hisp.dhis.common.ValueType).
 export const ValueType = z.enum([
   'TEXT',
   'LONG_TEXT',
@@ -99,7 +98,6 @@ export const ValueType = z.enum([
 ])
 export type ValueType = z.infer<typeof ValueType>
 
-// DHIS2 master AggregationType (org.hisp.dhis.analytics.AggregationType).
 export const AggregationType = z.enum([
   'SUM',
   'AVERAGE',
@@ -125,12 +123,9 @@ export const AggregationType = z.enum([
 ])
 export type AggregationType = z.infer<typeof AggregationType>
 
-// DHIS2 master FeatureType (org.hisp.dhis.organisationunit.FeatureType).
 export const FeatureType = z.enum(['NONE', 'POINT', 'POLYGON', 'MULTI_POLYGON', 'SYMBOL'])
 export type FeatureType = z.infer<typeof FeatureType>
 
-// The subset of ValueTypes that carry numeric semantics. Used for cross-field
-// refinements (e.g. SUM only makes sense on numeric data).
 export const NUMERIC_VALUE_TYPES = new Set<ValueType>([
   'NUMBER',
   'INTEGER',
@@ -141,9 +136,8 @@ export const NUMERIC_VALUE_TYPES = new Set<ValueType>([
   'UNIT_INTERVAL',
 ])
 
-// Aggregations that reduce data numerically, so the underlying value type must
-// be numeric too. LAST/FIRST/COUNT/NONE/CUSTOM/DEFAULT are not on this list —
-// they work on any value type.
+// Aggregations that require a numeric value type. LAST/FIRST/COUNT/NONE/CUSTOM/
+// DEFAULT are omitted — they work on any value type.
 export const NUMERIC_AGGREGATIONS = new Set<AggregationType>([
   'SUM',
   'AVERAGE',
@@ -163,22 +157,15 @@ export function refSchema<K extends MetadataKind>(kind: K) {
   )
 }
 
-// DHIS2 requires a non-null shortName on most Nameable types. Rather than make
-// the caller repeat the name, derive it from `name` when omitted, truncated to
-// the server's 50-char limit.
+// DHIS2 requires a non-null shortName on most Nameable types; derive from name.
 export function withDerivedShortName<T extends { name: string; shortName?: string | undefined }>(
   value: T,
 ): T & { shortName: string } {
   return { ...value, shortName: value.shortName ?? value.name.slice(0, 50) }
 }
 
-// DHIS2 UIDs are 11-char strings matching [A-Za-z][A-Za-z0-9]{10}. Some master
-// validation hooks (e.g. CategoryComboObjectBundleHook → DefaultCategoryService)
-// assume a non-null UID on transient objects while the bundle is still being
-// validated, so we supply one up-front. Deriving it from `kind:code` gives a
-// stable UID across runs — matters only until the object first exists on the
-// server; after that, the server keeps its own UID and our supplied one is a
-// no-op for matches by code.
+// DHIS2 UIDs: [A-Za-z][A-Za-z0-9]{10}. Derived from kind:code for stability;
+// used only for new objects (existing ones keep the server's UID on code-match).
 const UID_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 const UID_ALPHANUM = `${UID_LETTERS}0123456789`
 

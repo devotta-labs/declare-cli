@@ -25,19 +25,6 @@ import {
 import { personTrackedEntityType } from '../trackedEntity/trackedEntityType.ts'
 import { initialScreeningStage } from './programStages.ts'
 
-// Tuberculosis registration programme. `WITH_REGISTRATION` + a Person TET =
-// a tracker program: the Capture app first registers a person, then opens
-// their enrollment timeline with stage-specific events.
-//
-// `accessLevel: 'OPEN'` means any user assigned to a programme OU can see
-// every TEI enrolled under that OU. Tighter levels (PROTECTED / CLOSED) make
-// for more realistic infectious-disease privacy but complicate the demo flow.
-//
-// OUs are limited to kommuner + Norge (skipping fylker) because capturing
-// events at fylke level is unusual in DHIS2 deployments — clinical encounters
-// happen at a health facility, which in this demo tree lives at kommune
-// level. Norge itself is included so superuser smoke-tests at the root OU
-// don't fail with "no program access at this OU".
 export const tbProgram = defineProgram({
   code: 'PRG_TB_TRACKER',
   name: 'TB tracker',

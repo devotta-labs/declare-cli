@@ -1,9 +1,6 @@
 import { defineCategoryOption } from '@devotta-labs/declare'
 import { captureSharing } from '../sharing.ts'
 
-// CategoryOption ACL gates per-disaggregation data capture — the data-entry
-// user group needs data rw on every option in every combo they submit values
-// for. See ../sharing.ts for the broader rationale.
 const sharing = captureSharing
 
 export const male = defineCategoryOption({ code: 'MALE', name: 'Male', sharing })

@@ -31,8 +31,6 @@ export {
 } from './sharing.ts'
 export { defineSchema, type Schema, type AnyHandle } from './schema.ts'
 
-// Re-export shared enums so callers can `import { ValueType } from './lib'`
-// when they want to refer to enum values in their own code.
 export { ValueType, AggregationType, FeatureType } from './core.ts'
 export { DomainType } from './dataElement.ts'
 export { PeriodType } from './dataSet.ts'

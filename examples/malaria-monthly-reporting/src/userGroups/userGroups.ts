@@ -1,9 +1,8 @@
 import { defineUserGroup } from '@devotta-labs/declare'
 import { demoReporter } from '../users/users.ts'
 
-// Mirrors the data-entry role population — DHIS2 sharing ACLs target users
-// and user groups, never roles directly, so granting visibility to "everyone
-// with the data-entry role" means sharing with this group.
+// DHIS2 sharing ACLs target users and user groups only (never roles) — this
+// group mirrors the data-entry role population so we can share with it.
 export const dataEntryUsers = defineUserGroup({
   code: 'UG_DATA_ENTRY',
   name: 'Data entry users',

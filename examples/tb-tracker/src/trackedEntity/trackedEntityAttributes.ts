@@ -35,10 +35,6 @@ export const sexTea = defineTrackedEntityAttribute({
   sharing: captureSharing,
 })
 
-// National ID number. `unique: true` pushes DHIS2's global uniqueness
-// constraint onto the attribute — the same national ID cannot be registered
-// twice across the instance, which is exactly the semantics a real TB
-// surveillance system would want.
 export const nationalIdTea = defineTrackedEntityAttribute({
   code: 'TEA_NATIONAL_ID',
   name: 'National ID',
@@ -56,9 +52,7 @@ export const phoneNumberTea = defineTrackedEntityAttribute({
   sharing: captureSharing,
 })
 
-// Programme-scoped TEAs below — only attached to the TB Program, not to the
-// Person TET, because they're clinically meaningful only once someone is
-// enrolled for TB screening.
+// Programme-scoped TEAs — attached to the TB Program only, not the Person TET.
 export const hivStatusTea = defineTrackedEntityAttribute({
   code: 'TEA_HIV_STATUS',
   name: 'HIV status',

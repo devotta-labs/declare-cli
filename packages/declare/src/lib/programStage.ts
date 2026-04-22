@@ -12,15 +12,8 @@ import {
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
 
-// DHIS2 master: org.hisp.dhis.program.ValidationStrategy. Controls when the
-// server validates compulsory data values — on COMPLETE only, or every time a
-// value is inserted/updated. ON_COMPLETE matches the default Capture app UX.
 export const ValidationStrategy = z.enum(['ON_COMPLETE', 'ON_UPDATE_AND_INSERT'])
 
-// DHIS2 master: org.hisp.dhis.program.ProgramStageDataElement. Embedded join
-// between a DataElement and a ProgramStage with per-stage presentation rules
-// (sortOrder, mandatory, etc). Not a top-level metadata object — lives inline
-// inside ProgramStage.programStageDataElements.
 const ProgramStageDataElementSchema = z.object({
   dataElement: refSchema('DataElement'),
   compulsory: z.boolean().default(false),
@@ -32,11 +25,6 @@ const ProgramStageDataElementSchema = z.object({
   sortOrder: z.number().int().min(0).optional(),
 })
 
-// DHIS2 master: org.hisp.dhis.program.ProgramStage. Represents a discrete
-// visit/step within a tracker program (e.g. "Initial screening", "Follow-up").
-// The back-reference to the owning Program is injected by the schema
-// serializer based on Program.programStages, so users only need to list stage
-// handles on the parent program.
 export const ProgramStageSchema = z.object({
   code: CodeSchema,
   name: NameSchema,

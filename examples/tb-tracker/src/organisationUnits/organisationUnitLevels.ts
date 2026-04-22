@@ -1,9 +1,6 @@
 import { defineOrganisationUnitLevel } from '@devotta-labs/declare'
 
-// Copied verbatim from the malaria-monthly-reporting example so both demo
-// programs live in the same Norge / fylke / kommune hierarchy. Keeping the
-// codes identical means a fresh DHIS2 instance with both examples applied
-// shares a single OU tree instead of duplicating levels.
+// Codes match malaria-monthly-reporting so both examples share one OU tree.
 export const nationLevel = defineOrganisationUnitLevel({
   code: 'OU_LEVEL_NATION',
   name: 'National',

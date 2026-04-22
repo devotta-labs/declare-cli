@@ -1,10 +1,7 @@
 import { defineOrganisationUnit } from '@devotta-labs/declare'
 
-// DHIS2 requires openingDate on every OU. Use a common historical date so the
-// whole tree shares the same "we've always been here" baseline.
 const OPENING_DATE = '1970-01-01'
 
-// Level 1 — the country.
 export const norge = defineOrganisationUnit({
   code: 'NORGE',
   name: 'Norge',
@@ -12,7 +9,6 @@ export const norge = defineOrganisationUnit({
   openingDate: OPENING_DATE,
 })
 
-// Level 2 — fylker (three of them, Innlandet included).
 export const innlandet = defineOrganisationUnit({
   code: 'FYLKE_INNLANDET',
   name: 'Innlandet',
@@ -37,7 +33,6 @@ export const nordland = defineOrganisationUnit({
   parent: norge,
 })
 
-// Level 3 — kommuner. Three per fylke; Sel lives under Innlandet.
 export const sel = defineOrganisationUnit({
   code: 'KOMM_SEL',
   name: 'Sel',

@@ -12,11 +12,6 @@ import {
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
 
-// DHIS2 master: org.hisp.dhis.trackedentity.TrackedEntityTypeAttribute. Embedded
-// object that joins a TrackedEntityType to a TrackedEntityAttribute plus the
-// display/search flags that control how the attribute surfaces in the Capture
-// app's TEI search & registration forms. Not a top-level entity — lives inline
-// inside TrackedEntityType.trackedEntityTypeAttributes.
 const TrackedEntityTypeAttributeSchema = z.object({
   trackedEntityAttribute: refSchema('TrackedEntityAttribute'),
   displayInList: z.boolean().default(false),
@@ -24,8 +19,6 @@ const TrackedEntityTypeAttributeSchema = z.object({
   searchable: z.boolean().default(false),
 })
 
-// DHIS2 master: org.hisp.dhis.trackedentity.TrackedEntityType. Represents the
-// "kind" of tracked entity (e.g. Person, Case, Commodity).
 export const TrackedEntityTypeSchema = z.object({
   code: CodeSchema,
   name: NameSchema,

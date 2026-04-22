@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { CodeSchema, NameSchema, makeHandle, type Handle } from './core.ts'
 
-// DHIS2 OrganisationUnitLevel has @PropertyRange(min = 1, max = 999) on `level`.
 export const OrganisationUnitLevelSchema = z.object({
   code: CodeSchema,
   name: NameSchema,

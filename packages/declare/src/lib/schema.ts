@@ -33,8 +33,6 @@ export type AnyHandle =
   | Program
   | ProgramStage
 
-// Grouped input — one readonly array per metadata kind. Every field is
-// optional so you only declare the sections you use.
 export type SchemaInput = {
   categoryOptions?: readonly CategoryOption[]
   categories?: readonly Category[]
@@ -77,11 +75,9 @@ const PAYLOAD_KEY: Record<MetadataKind, string> = {
   ProgramStage: 'programStages',
 }
 
-// Assign a stable DHIS2 UID (derived from kind:code) to the top-level object
-// as `id`. Master validation hooks crash on transient objects with null UIDs
-// (see DefaultCategoryService.validate); for objects that already exist on
-// the server (matched by code), DHIS2 keeps its own UID and our supplied one
-// is a no-op.
+// DHIS2 master validation hooks crash on transient objects with null UIDs; supply
+// a stable one derived from kind:code. For existing objects matched by code, the
+// server keeps its own UID and ours is ignored.
 function withTopLevelId(kind: MetadataKind, code: string, body: unknown): unknown {
   if (!body || typeof body !== 'object') return body
   return {
@@ -90,10 +86,7 @@ function withTopLevelId(kind: MetadataKind, code: string, body: unknown): unknow
   }
 }
 
-// DHIS2's metadata importer requires Options as top-level entries under
-// `options`, not nested inside OptionSet. Split them out: in the OptionSet
-// body, replace `options: [...]` with id-only refs, and hoist the full
-// Option bodies to a sibling top-level list.
+// DHIS2's importer requires Options at top-level, not nested in OptionSet.
 type SplitOptionSet = {
   optionSet: Record<string, unknown>
   options: Record<string, unknown>[]
@@ -106,10 +99,8 @@ function splitOptionSet(code: string, body: unknown): SplitOptionSet {
   const optionRefs: { id: string; code: string }[] = []
   const optionBodies: Record<string, unknown>[] = []
 
-  // With importStrategy=identifier=CODE, DHIS2 resolves same-bundle refs by
-  // `code`, not `id`. Every ref must carry both — matching what toPayload does
-  // for handles — otherwise the option↔optionSet collection is never wired up
-  // and the dropdown renders empty on the server.
+  // identifier=CODE resolves same-bundle refs by code; include both id and code
+  // or the option↔optionSet link never wires up.
   for (const opt of rawOptions) {
     if (!opt || typeof opt !== 'object') continue
     const optCode = typeof opt.code === 'string' ? opt.code : ''
@@ -130,10 +121,8 @@ function splitOptionSet(code: string, body: unknown): SplitOptionSet {
 
 function toPayload(value: unknown): unknown {
   if (isHandle(value)) {
-    // Include both `code` (for preheat identifier=CODE resolution) and a
-    // stable `id` so that transient stub objects created by Jackson from the
-    // nested ref still have a non-null UID — some master validation hooks
-    // (e.g. CategoryComboObjectBundleHook) crash otherwise.
+    // Both id and code: code for identifier=CODE preheat; id so transient stubs
+    // have a non-null UID (some master validation hooks crash otherwise).
     return { id: stableUid(`${value.kind}:${value.code}`), code: value.code }
   }
   if (Array.isArray(value)) {
@@ -200,11 +189,8 @@ export function defineSchema(input: SchemaInput): Schema {
     }
   }
 
-  // Build a stage-code → owning-program-handle index by walking each Program's
-  // `programStages` ref list. Users declare the tree from the Program side
-  // (a program "has" stages); the DHIS2 JSON contract needs the reciprocal
-  // `program` back-ref on every ProgramStage, so we inject it at serialize
-  // time instead of forcing callers to tie the knot themselves.
+  // DHIS2 needs a reciprocal `program` back-ref on each ProgramStage; inject it
+  // at serialize time rather than making callers tie the knot.
   const stageToProgram = new Map<string, Handle<'Program', { code: string }>>()
   for (const program of byKind.Program as Handle<'Program', { code: string }>[]) {
     const programInput = program.input as {
@@ -225,9 +211,6 @@ export function defineSchema(input: SchemaInput): Schema {
         if (items.length === 0) continue
         if (kind === 'OptionSet') {
           payload[PAYLOAD_KEY[kind]] = items.map((h) => {
-            // Same sharing-extraction dance as the generic branch below —
-            // pull sharing off before `toPayload` recursively converts handles
-            // to refs, then re-attach a properly-serialized Sharing payload.
             const rawInput = h.input as Record<string, unknown>
             const originalSharing = rawInput.sharing as SharingInput | undefined
             const bodyWithoutSharing = { ...rawInput }
@@ -242,18 +225,14 @@ export function defineSchema(input: SchemaInput): Schema {
           })
         } else {
           payload[PAYLOAD_KEY[kind]] = items.map((h) => {
-            // Pull sharing off the original input before the recursive
-            // handle → ref conversion walks into it and loses the Handle
-            // brands that toSharingPayload needs.
+            // Extract sharing before toPayload recurses — the handle → ref
+            // conversion strips the brands toSharingPayload needs.
             const rawInput = h.input as Record<string, unknown>
             const originalSharing = rawInput.sharing as SharingInput | undefined
             const bodyWithoutSharing = { ...rawInput }
             delete bodyWithoutSharing.sharing
             const converted = toPayload(bodyWithoutSharing) as Record<string, unknown>
             const withId = withTopLevelId(h.kind, h.code, converted) as Record<string, unknown>
-            // Stitch the ProgramStage ↔ Program back-ref that was deliberately
-            // left off the user-facing schema. If the caller did supply their
-            // own `program` field (unusual, but legal), we keep it.
             if (kind === 'ProgramStage' && !('program' in withId)) {
               const owner = stageToProgram.get(h.code)
               if (owner) {

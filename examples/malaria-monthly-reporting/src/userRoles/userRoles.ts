@@ -1,15 +1,7 @@
 import { Authority, defineUserRole } from '@devotta-labs/declare'
 
-// Minimal role for demoing aggregate data capture: the user needs
-// F_DATAVALUE_ADD to submit values via the Data Entry app; F_EXPORT_DATA is
-// included so the same account can navigate to analytics / reports during
-// the demo without surprises. Intentionally does **not** grant ALL so the
-// demo stays recognisably non-superuser.
-//
-// M_dhis-web-aggregate-data-entry is the "see app" authority for the bundled
-// Aggregate Data Entry app (App#getSeeAppAuthority = `M_` + `dhis-web-` +
-// shortName). Without it the app is hidden from the launcher even when all
-// F_ authorities are present.
+// `M_dhis-web-aggregate-data-entry` is the "see app" authority — without it the
+// Data Entry app is hidden from the launcher even with F_DATAVALUE_ADD granted.
 export const dataEntryRole = defineUserRole({
   code: 'UR_DATA_ENTRY',
   name: 'Data entry',

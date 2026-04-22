@@ -13,11 +13,6 @@ import {
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
 
-// DHIS2 master: org.hisp.dhis.trackedentity.TrackedEntityAttribute. A TEA is
-// a reusable attribute of a TrackedEntity (e.g. first name, date of birth).
-// The same TEA is referenced from both TrackedEntityType.trackedEntityType-
-// Attributes and Program.programTrackedEntityAttributes, so it lives as its
-// own top-level metadata object.
 export const TrackedEntityAttributeSchema = z.object({
   code: CodeSchema,
   name: NameSchema,
@@ -25,9 +20,8 @@ export const TrackedEntityAttributeSchema = z.object({
   formName: z.string().max(230).optional(),
   description: DescriptionSchema.optional(),
   valueType: ValueType,
-  // Required in DHIS2 master (non-null column) even though DHIS2's own UI
-  // forms hide it — the REST API will 409 on import without a value. Default
-  // to NONE because TEAs are rarely aggregated like data values.
+  // Non-null column server-side — import 409s without a value, even though the
+  // DHIS2 UI hides the field. Default NONE since TEAs are rarely aggregated.
   aggregationType: AggregationType.default('NONE'),
   optionSet: refSchema('OptionSet').optional(),
   unique: z.boolean().default(false),
