@@ -13,8 +13,7 @@ export async function stop(loaded: LoadedConfig, _args: readonly string[]): Prom
     return
   }
 
-  ui.step(`Stopping and wiping stack ${pc.cyan(env.project)}`)
+  ui.step(`Stopping ${pc.cyan(env.project)}`)
   await composeDownWipe(env)
   ui.success('Stack stopped, database volume wiped.')
-  ui.dim('  code is the single source of truth — next `declare-cli start` rebuilds from schema.')
 }

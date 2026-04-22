@@ -1,6 +1,7 @@
 import { defineProgram, defineProgramStage } from '@devotta-labs/declare'
 import { visitNotes } from './dataElements.ts'
 import { country, facility } from './organisationUnits.ts'
+import { captureSharing } from './sharing.ts'
 import { firstNameTea, lastNameTea, personTrackedEntityType } from './trackedEntity.ts'
 
 export const visitStage = defineProgramStage({
@@ -17,6 +18,7 @@ export const visitStage = defineProgramStage({
   programStageDataElements: [
     { dataElement: visitNotes, compulsory: false, sortOrder: 1 },
   ],
+  sharing: captureSharing,
 })
 
 export const programStages = [visitStage]
@@ -41,6 +43,7 @@ export const examplePrograms = defineProgram({
     { trackedEntityAttribute: firstNameTea, displayInList: true, mandatory: true, searchable: true, sortOrder: 1 },
     { trackedEntityAttribute: lastNameTea, displayInList: true, mandatory: true, searchable: true, sortOrder: 2 },
   ],
+  sharing: captureSharing,
 })
 
 export const programs = [examplePrograms]

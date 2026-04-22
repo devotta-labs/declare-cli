@@ -73,10 +73,9 @@ export async function init(args: readonly string[]): Promise<void> {
 
   const nameAnswer = await text({
     message: 'Project name',
-    placeholder: initialName,
-    initialValue: initialName,
+    placeholder: 'dhis2',
     validate: (v) => {
-      if (!v) return 'Name is required'
+      if (!v) return undefined
       if (!/^[a-z0-9][a-z0-9-]*$/.test(v)) {
         return 'Use lowercase letters, digits, and hyphens only (must start with a letter or digit)'
       }
@@ -84,7 +83,7 @@ export async function init(args: readonly string[]): Promise<void> {
     },
   })
   if (isCancel(nameAnswer)) cancelAndExit()
-  const name = nameAnswer as string
+  const name = (nameAnswer as string) || 'dhis2'
 
   const templateAnswer = await select({
     message: 'Choose a starter template',

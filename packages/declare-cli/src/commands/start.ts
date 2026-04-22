@@ -1,3 +1,4 @@
+import { spinner } from '@clack/prompts'
 import type { LoadedConfig } from '../config-loader.ts'
 import {
   assertDockerAvailable,
@@ -30,9 +31,7 @@ export async function start(loaded: LoadedConfig, _args: readonly string[]): Pro
   const state = await webContainerState(env)
   const alreadyRunning = state === 'running'
 
-  if (alreadyRunning) {
-    ui.info(`Stack ${pc.cyan(env.project)} already running — waiting for readiness.`)
-  } else {
+  if (!alreadyRunning) {
     const portFree = await isPortFree(env.webPort)
     if (!portFree) {
       throw new Error(
@@ -40,25 +39,33 @@ export async function start(loaded: LoadedConfig, _args: readonly string[]): Pro
           `Change \`local.port\` in declare.config.ts, or free the port.`,
       )
     }
-    ui.step(`Starting local DHIS2 stack (${pc.cyan(env.project)})`)
-    ui.dim('  first boot pulls ~1 GB of images and runs Flyway migrations (can take several minutes)')
-    await composeUp(env)
-    ui.success('Containers are up.')
   }
 
-  ui.step(`Waiting for DHIS2 at ${baseUrl}`)
-  const started = Date.now()
-  await waitUntilReady(baseUrl, {
-    onProgress: (p) => {
-      if (p.kind === 'ready') return
-      const secs = Math.round((Date.now() - started) / 1000)
-      const code = p.httpCode == null ? 'no response' : `HTTP ${p.httpCode}`
-      process.stdout.write(pc.dim(`  still waiting (${code}, ${secs}s)\n`))
-    },
-  })
-  ui.success(`DHIS2 is ready at ${pc.cyan(baseUrl)}`)
+  const s = spinner()
 
-  await applyLoaded(loaded)
+  if (alreadyRunning) {
+    ui.info(`Stack ${pc.cyan(env.project)} already running.`)
+  } else {
+    s.start('Initializing Docker')
+    try {
+      await composeUp(env, { quiet: true })
+    } catch (err) {
+      s.stop('Docker initialization failed', 1)
+      throw err
+    }
+    s.stop('Docker ready')
+  }
+
+  s.start('Starting up DHIS2')
+  try {
+    await waitUntilReady(baseUrl)
+  } catch (err) {
+    s.stop('DHIS2 failed to become ready', 1)
+    throw err
+  }
+  s.stop(`DHIS2 ready at ${baseUrl}`)
+
+  await applyLoaded(loaded, { silent: true })
 
   ui.raw('')
   ui.raw(`${pc.bold('Credentials:')} admin / district`)
