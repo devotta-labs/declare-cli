@@ -2,7 +2,7 @@
   "name": "@devotta-labs/declare",
   "version": "0.0.1",
   "private": true,
-  "description": "Type-safe DHIS2 metadata-as-code framework and CLI.",
+  "description": "Type-safe DHIS2 metadata-as-code framework.",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -17,7 +17,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "dotenv": "^17.4.2",
     "zod": "^3.23.8"
   }
 }

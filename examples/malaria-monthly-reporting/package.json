@@ -5,13 +5,19 @@
   "description": "Example DHIS2 metadata schema for a malaria monthly reporting program, consuming @devotta-labs/declare.",
   "type": "module",
   "scripts": {
-    "check": "tsx bin.ts check",
-    "plan": "tsx bin.ts plan",
-    "apply": "tsx bin.ts apply",
+    "start": "declare-cli start",
+    "stop": "declare-cli stop",
+    "reset": "declare-cli reset",
+    "status": "declare-cli status",
+    "logs": "declare-cli logs",
+    "check": "declare-cli check",
+    "plan": "declare-cli plan",
+    "apply": "declare-cli apply",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
+    "@devotta-labs/declare-cli": "workspace:*",
     "@devotta-labs/declare": "workspace:*"
   }
 }

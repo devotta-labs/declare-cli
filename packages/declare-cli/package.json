@@ -1,0 +1,34 @@
+{
+  "name": "@devotta-labs/declare-cli",
+  "version": "0.0.1",
+  "private": true,
+  "description": "CLI for @devotta-labs/declare — scaffold DHIS2 metadata projects, run a local DHIS2, and apply schemas.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "bin": {
+    "declare-cli": "./bin/declare-cli.mjs"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "bin",
+    "src",
+    "templates"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.8.2",
+    "@devotta-labs/declare": "workspace:*",
+    "execa": "^9.5.2",
+    "jiti": "^2.4.2",
+    "picocolors": "^1.1.1",
+    "zod": "^3.23.8"
+  }
+}

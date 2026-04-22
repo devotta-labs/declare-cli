@@ -8,10 +8,7 @@
     "plan": "turbo run plan",
     "apply": "turbo run apply",
     "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
-    "dhis2:up": "bash scripts/dhis2-up.sh",
-    "dhis2:down": "bash scripts/dhis2-down.sh",
-    "dhis2:logs": "bash scripts/pull-logs.sh"
+    "test": "turbo run test"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",

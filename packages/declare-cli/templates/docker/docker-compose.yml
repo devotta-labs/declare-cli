@@ -1,10 +1,11 @@
-# Local empty DHIS2 stack for developing against the metadata-as-code CLI.
-# NOT for production use. Derived from dhis2/dhis2-core's docker-compose.yml.
+# Local empty DHIS2 stack used by @devotta-labs/declare-cli.
+# NOT for production use.
 #
-# Bring up / tear down via scripts/dhis2-up.sh and scripts/dhis2-down.sh
-# (or pnpm dhis2:up / dhis2:down).
-
-name: dhis2-mac
+# Isolation between declare projects is done at invocation time:
+#   docker compose -f <this> -p <declare.config.ts name> up/down/ps/logs
+#
+# The host port is substituted from DHIS2_WEB_PORT at `declare-cli start`; the
+# default (8080) only applies if someone runs `docker compose` directly.
 
 services:
   web:
@@ -14,12 +15,12 @@ services:
       - ./log4j2.xml:/opt/dhis2/log4j2.xml:ro
     environment:
       JAVA_TOOL_OPTIONS: "-Dlog4j2.configurationFile=/opt/dhis2/log4j2.xml"
-      DB_HOSTNAME: "${DB_HOSTNAME:-db}"
-      DB_NAME: "${DB_NAME:-dhis}"
-      DB_USERNAME: "${DB_USERNAME:-dhis}"
-      DB_PASSWORD: "${DB_PASSWORD:-dhis}"
+      DB_HOSTNAME: db
+      DB_NAME: dhis
+      DB_USERNAME: dhis
+      DB_PASSWORD: dhis
     ports:
-      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:${DHIS2_WEB_PORT:-8080}:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -27,14 +28,12 @@ services:
   db:
     image: ghcr.io/baosystems/postgis:12-3.3
     environment:
-      POSTGRES_USER: "${DB_USERNAME:-dhis}"
-      POSTGRES_DB: "${DB_NAME:-dhis}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD:-dhis}"
-      PGPASSWORD: "${DB_PASSWORD:-dhis}"
+      POSTGRES_USER: dhis
+      POSTGRES_DB: dhis
+      POSTGRES_PASSWORD: dhis
+      PGPASSWORD: dhis
     volumes:
       - db-data:/var/lib/postgresql/data
-    ports:
-      - "127.0.0.1:5433:5432"
     healthcheck:
       test:
         - CMD-SHELL

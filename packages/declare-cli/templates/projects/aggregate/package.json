@@ -1,8 +1,7 @@
 {
-  "name": "tb-tracker",
+  "name": "{{name}}",
   "version": "0.0.1",
   "private": true,
-  "description": "Example DHIS2 tracker metadata schema for a tuberculosis registration programme, consuming @devotta-labs/declare.",
   "type": "module",
   "scripts": {
     "start": "declare-cli start",
@@ -12,12 +11,10 @@
     "logs": "declare-cli logs",
     "check": "declare-cli check",
     "plan": "declare-cli plan",
-    "apply": "declare-cli apply",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "apply": "declare-cli apply"
   },
   "dependencies": {
-    "@devotta-labs/declare-cli": "workspace:*",
-    "@devotta-labs/declare": "workspace:*"
+    "@devotta-labs/declare": "{{declareDep}}",
+    "@devotta-labs/declare-cli": "{{declareDep}}"
   }
 }
