@@ -141,6 +141,13 @@ export function emitEnums(enums: readonly EnumDef[]): string {
       const literals = values.map((v) => `'${escapeString(v)}'`).join(', ')
       parts.push(`export const ${constName} = z.enum([${literals}])`)
     }
+    // Per-target lookup so hand-written wrappers can pick the versioned enum
+    // without hard-coding target strings. Prevents accidental clobber with the
+    // unversioned union when the wrapper needs to attach a default or modifier.
+    const byTargetEntries = TARGETS.map(
+      (t) => `  '${t}': ${def.name}_${targetSuffix(t)},`,
+    ).join('\n')
+    parts.push(`export const ${def.name}ByTarget = {\n${byTargetEntries}\n} as const`)
     parts.push('')
   }
   return parts.join('\n')

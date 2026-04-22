@@ -1,11 +1,10 @@
 import { z } from 'zod'
 import { ProgramBaseByTarget } from '../generated/program.ts'
-import { ProgramAccessLevel, ProgramType } from '../generated/enums.ts'
-import { getTarget } from '../generated/runtime.ts'
+import { ProgramAccessLevel, ProgramAccessLevelByTarget, ProgramType } from '../generated/enums.ts'
+import { getTarget, type Target } from '../generated/runtime.ts'
 import {
   CodeSchema,
   DescriptionSchema,
-  FeatureType,
   NameSchema,
   ShortNameSchema,
   makeHandle,
@@ -26,13 +25,16 @@ const ProgramTrackedEntityAttributeSchema = z.object({
   sortOrder: z.number().int().min(0).optional(),
 })
 
-const overrides = {
+// `programType` and `featureType` are intentionally not re-declared — the
+// per-target base already enforces the versioned enum and doesn't need a
+// modifier, so re-declaring with the unversioned union would silently admit
+// values dropped by the target.
+const overridesFor = (target: Target) => ({
   code: CodeSchema,
   name: NameSchema,
   shortName: ShortNameSchema.optional(),
   formName: z.string().max(230).optional(),
   description: DescriptionSchema.optional(),
-  programType: ProgramType,
   trackedEntityType: refSchema('TrackedEntityType').optional(),
   categoryCombo: refSchema('CategoryCombo').optional(),
   // New in 2.42 — server auto-assigns the default CategoryCombo.
@@ -40,8 +42,7 @@ const overrides = {
   organisationUnits: z.array(refSchema('OrganisationUnit')).min(1),
   programStages: z.array(refSchema('ProgramStage')).optional(),
   programTrackedEntityAttributes: z.array(ProgramTrackedEntityAttributeSchema).optional(),
-  featureType: FeatureType.optional(),
-  accessLevel: ProgramAccessLevel.default('OPEN'),
+  accessLevel: ProgramAccessLevelByTarget[target].default('OPEN'),
   displayFrontPageList: z.boolean().default(false),
   displayIncidentDate: z.boolean().default(false),
   onlyEnrollOnce: z.boolean().default(false),
@@ -58,7 +59,7 @@ const overrides = {
   enrollmentDateLabel: z.string().max(230).optional(),
   incidentDateLabel: z.string().max(230).optional(),
   sharing: SharingSchema.optional(),
-}
+})
 
 const trackerRefine = (v: { programType: z.infer<typeof ProgramType>; trackedEntityType?: unknown }) =>
   !(v.programType === 'WITH_REGISTRATION' && !v.trackedEntityType)
@@ -68,18 +69,20 @@ const trackerRefineMessage = {
 }
 
 const SCHEMAS = {
-  '2.40': ProgramBaseByTarget['2.40'].extend(overrides).refine(trackerRefine, trackerRefineMessage),
-  '2.41': ProgramBaseByTarget['2.41'].extend(overrides).refine(trackerRefine, trackerRefineMessage),
-  '2.42': ProgramBaseByTarget['2.42'].extend(overrides).refine(trackerRefine, trackerRefineMessage),
+  '2.40': ProgramBaseByTarget['2.40'].extend(overridesFor('2.40')).refine(trackerRefine, trackerRefineMessage),
+  '2.41': ProgramBaseByTarget['2.41'].extend(overridesFor('2.41')).refine(trackerRefine, trackerRefineMessage),
+  '2.42': ProgramBaseByTarget['2.42'].extend(overridesFor('2.42')).refine(trackerRefine, trackerRefineMessage),
 } as const
 
-export type ProgramInput = z.input<(typeof SCHEMAS)['2.42']>
+// Input/output types span every supported target so authoring works regardless
+// of which target is configured; runtime parse enforces the actual target.
+export type ProgramInput = { [T in Target]: z.input<(typeof SCHEMAS)[T]> }[Target]
 export type Program = Handle<
   'Program',
-  z.output<(typeof SCHEMAS)['2.42']> & { shortName: string }
+  { [T in Target]: z.output<(typeof SCHEMAS)[T]> }[Target] & { shortName: string }
 >
 
 export function defineProgram(input: ProgramInput): Program {
-  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
+  const parsed = SCHEMAS[getTarget()].parse(input) as { [T in Target]: z.output<(typeof SCHEMAS)[T]> }[Target]
   return makeHandle('Program', withDerivedShortName(parsed))
 }

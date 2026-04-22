@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { OptionSetBaseByTarget } from '../generated/optionSet.ts'
-import { ValueType } from '../generated/enums.ts'
-import { getTarget } from '../generated/runtime.ts'
+import { getTarget, type Target } from '../generated/runtime.ts'
 import {
   CodeSchema,
   DescriptionSchema,
@@ -22,11 +21,13 @@ export const OptionSchema = z.object({
   description: DescriptionSchema.optional(),
 })
 
+// Intentionally does NOT re-declare `valueType` — the generated per-target base
+// already uses the versioned `ValueType_2_XX` enum; re-declaring with the
+// unversioned union would silently re-admit values the target has dropped.
 const overrides = {
   code: CodeSchema,
   name: NameSchema,
   description: DescriptionSchema.optional(),
-  valueType: ValueType,
   // Server-incremented on every change; authors never set this.
   version: z.number().int().optional(),
   options: z.array(OptionSchema).min(1, 'an OptionSet needs at least one Option'),
@@ -40,10 +41,15 @@ const SCHEMAS = {
 } as const
 
 export type OptionInput = z.infer<typeof OptionSchema>
-export type OptionSetInput = z.input<(typeof SCHEMAS)['2.42']>
-export type OptionSet = Handle<'OptionSet', z.output<(typeof SCHEMAS)['2.42']>>
+// Input/output types span every supported target so authoring works regardless
+// of which target is configured; runtime parse enforces the actual target.
+export type OptionSetInput = { [T in Target]: z.input<(typeof SCHEMAS)[T]> }[Target]
+export type OptionSet = Handle<
+  'OptionSet',
+  { [T in Target]: z.output<(typeof SCHEMAS)[T]> }[Target]
+>
 
 export function defineOptionSet(input: OptionSetInput): OptionSet {
-  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
+  const parsed = SCHEMAS[getTarget()].parse(input) as { [T in Target]: z.output<(typeof SCHEMAS)[T]> }[Target]
   return makeHandle('OptionSet', parsed)
 }

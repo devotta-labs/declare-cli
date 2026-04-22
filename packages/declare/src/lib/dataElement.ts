@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { DataElementBaseByTarget } from '../generated/dataElement.ts'
-import { AggregationType, DomainType } from '../generated/enums.ts'
-import { getTarget } from '../generated/runtime.ts'
+import { AggregationType, AggregationTypeByTarget, DomainType, DomainTypeByTarget } from '../generated/enums.ts'
+import { getTarget, type Target } from '../generated/runtime.ts'
 import {
   CodeSchema,
   NUMERIC_AGGREGATIONS,
@@ -19,17 +19,19 @@ export { DomainType }
 
 // Hand-layer overrides applied on top of each per-target generated Base:
 // stricter `code`, authoring-time defaults, the Sharing DSL, and the
-// cross-field refinement DHIS2 enforces only at import time.
-const overrides = {
+// cross-field refinement DHIS2 enforces only at import time. CONSTANT
+// fields pull from `<Enum>ByTarget[target]` so defaults don't clobber
+// the versioned enum with the unversioned union.
+const overridesFor = (target: Target) => ({
   code: CodeSchema,
   name: NameSchema,
   shortName: ShortNameSchema.optional(),
-  aggregationType: AggregationType.default('SUM'),
-  domainType: DomainType.default('AGGREGATE'),
+  aggregationType: AggregationTypeByTarget[target].default('SUM'),
+  domainType: DomainTypeByTarget[target].default('AGGREGATE'),
   categoryCombo: refSchema('CategoryCombo').optional(),
   zeroIsSignificant: z.boolean().default(false),
   sharing: SharingSchema.optional(),
-}
+})
 
 const numericAggRefine = (v: {
   aggregationType: z.infer<typeof AggregationType>
@@ -44,18 +46,20 @@ const numericAggMessage = {
 }
 
 const SCHEMAS = {
-  '2.40': DataElementBaseByTarget['2.40'].extend(overrides).refine(numericAggRefine, numericAggMessage),
-  '2.41': DataElementBaseByTarget['2.41'].extend(overrides).refine(numericAggRefine, numericAggMessage),
-  '2.42': DataElementBaseByTarget['2.42'].extend(overrides).refine(numericAggRefine, numericAggMessage),
+  '2.40': DataElementBaseByTarget['2.40'].extend(overridesFor('2.40')).refine(numericAggRefine, numericAggMessage),
+  '2.41': DataElementBaseByTarget['2.41'].extend(overridesFor('2.41')).refine(numericAggRefine, numericAggMessage),
+  '2.42': DataElementBaseByTarget['2.42'].extend(overridesFor('2.42')).refine(numericAggRefine, numericAggMessage),
 } as const
 
-export type DataElementInput = z.input<(typeof SCHEMAS)['2.42']>
+// Input/output types span every supported target so authoring works regardless
+// of which target is configured; runtime parse enforces the actual target.
+export type DataElementInput = { [T in Target]: z.input<(typeof SCHEMAS)[T]> }[Target]
 export type DataElement = Handle<
   'DataElement',
-  z.output<(typeof SCHEMAS)['2.42']> & { shortName: string }
+  { [T in Target]: z.output<(typeof SCHEMAS)[T]> }[Target] & { shortName: string }
 >
 
 export function defineDataElement(input: DataElementInput): DataElement {
-  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
+  const parsed = SCHEMAS[getTarget()].parse(input) as { [T in Target]: z.output<(typeof SCHEMAS)[T]> }[Target]
   return makeHandle('DataElement', withDerivedShortName(parsed))
 }
