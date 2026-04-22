@@ -2,7 +2,7 @@
 
 Type-safe DHIS2 metadata-as-code framework. Declare categories, data elements, org units, tracker programs, and more in TypeScript; validate them with Zod at load time; serialize to a `/api/metadata` payload.
 
-Most users consume this package together with [`@devotta-labs/declare-cli`](https://www.npmjs.com/package/@devotta-labs/declare-cli), which runs a local DHIS2 in Docker and applies the schema for you.
+Usually consumed together with [`@devotta-labs/declare-cli`](https://www.npmjs.com/package/@devotta-labs/declare-cli), which runs a local DHIS2 and applies the schema.
 
 ## Install
 
@@ -42,4 +42,4 @@ export default defineSchema({
 })
 ```
 
-See the [repository](https://github.com/devotta-labs/declare-cli) for full documentation, example schemas, and the `declare-cli` that drives the workflow end-to-end.
+See the [repository](https://github.com/devotta-labs/declare-cli) for examples and more documentation.
