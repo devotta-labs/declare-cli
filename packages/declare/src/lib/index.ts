@@ -41,6 +41,7 @@ export {
   setTarget,
   withTarget,
 } from '../generated/runtime.ts'
+export type { ConfiguredTargets, CurrentTarget } from './currentTarget.ts'
 
 export { ValueType, AggregationType, FeatureType } from './core.ts'
 export { DomainType } from './dataElement.ts'

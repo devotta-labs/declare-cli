@@ -8,6 +8,7 @@ import { logs } from './commands/logs.ts'
 import { check } from './commands/check.ts'
 import { plan } from './commands/plan.ts'
 import { apply } from './commands/apply.ts'
+import { typegen } from './commands/typegen.ts'
 import { ui, pc } from './ui.ts'
 
 const USAGE = `${pc.bold('declare-cli')} — DHIS2 metadata-as-code CLI
@@ -25,6 +26,7 @@ ${pc.bold('Local DHIS2 stack:')}
   ${pc.cyan('logs')} [--web|--db]    tail container logs (use --follow to stream)
 
 ${pc.bold('Schema operations:')}
+  ${pc.cyan('typegen')}              generate TypeScript types for the configured DHIS2 version
   ${pc.cyan('check')}                validate the schema locally (no network)
   ${pc.cyan('plan')}                 dry-run the schema against the local stack
   ${pc.cyan('apply')}                push the schema to the local stack
@@ -46,6 +48,7 @@ const CONFIG_REQUIRED: Record<string, (loaded: LoadedConfig, args: readonly stri
   reset,
   status,
   logs,
+  typegen,
   check,
   plan,
   apply,

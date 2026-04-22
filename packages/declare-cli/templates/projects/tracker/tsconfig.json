@@ -13,5 +13,5 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["declare.config.ts", "src/**/*"]
+  "include": ["declare.config.ts", "declare-env.d.ts", "src/**/*"]
 }

@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { TrackedEntityTypeBaseByTarget } from '../generated/trackedEntityType.ts'
 import { FeatureTypeByTarget } from '../generated/enums.ts'
 import { getTarget, type Target } from '../generated/runtime.ts'
+import type { CurrentTarget } from './currentTarget.ts'
 import {
   CodeSchema,
   DescriptionSchema,
@@ -41,15 +42,16 @@ const SCHEMAS = {
   '2.42': TrackedEntityTypeBaseByTarget['2.42'].extend(overridesFor('2.42')),
 } as const
 
-// Input/output types span every supported target so authoring works regardless
-// of which target is configured; runtime parse enforces the actual target.
-export type TrackedEntityTypeInput = { [T in Target]: z.input<(typeof SCHEMAS)[T]> }[Target]
+// Input/output types are narrowed to the target the user configured via
+// `declare-cli typegen`. Without typegen, CurrentTarget falls back to the
+// full Target union.
+export type TrackedEntityTypeInput = z.input<(typeof SCHEMAS)[CurrentTarget]>
 export type TrackedEntityType = Handle<
   'TrackedEntityType',
-  { [T in Target]: z.output<(typeof SCHEMAS)[T]> }[Target] & { shortName: string }
+  z.output<(typeof SCHEMAS)[CurrentTarget]> & { shortName: string }
 >
 
 export function defineTrackedEntityType(input: TrackedEntityTypeInput): TrackedEntityType {
-  const parsed = SCHEMAS[getTarget()].parse(input) as { [T in Target]: z.output<(typeof SCHEMAS)[T]> }[Target]
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)[CurrentTarget]>
   return makeHandle('TrackedEntityType', withDerivedShortName(parsed))
 }

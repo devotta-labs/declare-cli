@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { DEFAULT_TARGET, TARGETS } from '@devotta-labs/declare'
+import { TARGETS } from '@devotta-labs/declare'
 
 export const ConfigSchema = z
   .object({
@@ -11,7 +11,10 @@ export const ConfigSchema = z
         'name must be lowercase alphanumeric with dashes (used as Docker compose project name)',
       ),
     schema: z.string().min(1, 'schema path is required'),
-    target: z.enum(TARGETS).default(DEFAULT_TARGET),
+    // Required: the DHIS2 version this schema targets. Drives both the per-
+    // version Zod validators at runtime and the TS narrowing via the
+    // declare-env.d.ts written by `declare-cli typegen`.
+    target: z.enum(TARGETS),
     local: z
       .object({
         port: z

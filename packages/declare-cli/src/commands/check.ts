@@ -1,23 +1,17 @@
 import { loadSchema, type LoadedConfig } from '../config-loader.ts'
 import { pc, ui } from '../ui.ts'
+import { typegen } from './typegen.ts'
 
 export async function check(loaded: LoadedConfig, _args: readonly string[]): Promise<void> {
+  // Refresh declare-env.d.ts first so the user's editor TS narrows to the
+  // configured target on the next reload. Fast (a single file write that
+  // no-ops when unchanged); the runtime parse below still enforces the target
+  // regardless of TS state.
+  await typegen(loaded)
   const schema = await loadSchema(loaded)
 
-  ui.success('Schema validated by Zod at load time — no errors.')
-  ui.raw('')
-  ui.raw(pc.bold('objects by kind:'))
-
   let total = 0
-  for (const [kind, items] of Object.entries(schema.byKind)) {
-    if (items.length === 0) continue
-    total += items.length
-    ui.raw(`  ${pc.cyan(kind.padEnd(24))} ${items.length}`)
-    for (const h of items) {
-      ui.raw(`    ${pc.dim('•')} ${h.code}`)
-    }
-  }
+  for (const items of Object.values(schema.byKind)) total += items.length
 
-  ui.raw('')
-  ui.raw(`${pc.bold('total:')} ${total}`)
+  ui.success(`Validation passed - ${pc.bold(total)} items checked.`)
 }

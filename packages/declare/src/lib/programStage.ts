@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { ProgramStageBaseByTarget } from '../generated/programStage.ts'
 import { FeatureTypeByTarget, ValidationStrategy, ValidationStrategyByTarget } from '../generated/enums.ts'
 import { getTarget, type Target } from '../generated/runtime.ts'
+import type { CurrentTarget } from './currentTarget.ts'
 import {
   CodeSchema,
   DescriptionSchema,
@@ -62,15 +63,16 @@ const SCHEMAS = {
   '2.42': ProgramStageBaseByTarget['2.42'].extend(overridesFor('2.42')),
 } as const
 
-// Input/output types span every supported target so authoring works regardless
-// of which target is configured; runtime parse enforces the actual target.
-export type ProgramStageInput = { [T in Target]: z.input<(typeof SCHEMAS)[T]> }[Target]
+// Input/output types are narrowed to the target the user configured via
+// `declare-cli typegen`. Without typegen, CurrentTarget falls back to the
+// full Target union.
+export type ProgramStageInput = z.input<(typeof SCHEMAS)[CurrentTarget]>
 export type ProgramStage = Handle<
   'ProgramStage',
-  { [T in Target]: z.output<(typeof SCHEMAS)[T]> }[Target] & { shortName: string }
+  z.output<(typeof SCHEMAS)[CurrentTarget]> & { shortName: string }
 >
 
 export function defineProgramStage(input: ProgramStageInput): ProgramStage {
-  const parsed = SCHEMAS[getTarget()].parse(input) as { [T in Target]: z.output<(typeof SCHEMAS)[T]> }[Target]
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)[CurrentTarget]>
   return makeHandle('ProgramStage', withDerivedShortName(parsed))
 }

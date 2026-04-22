@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { OptionSetBaseByTarget } from '../generated/optionSet.ts'
-import { getTarget, type Target } from '../generated/runtime.ts'
+import { getTarget } from '../generated/runtime.ts'
+import type { CurrentTarget } from './currentTarget.ts'
 import {
   CodeSchema,
   DescriptionSchema,
@@ -41,15 +42,13 @@ const SCHEMAS = {
 } as const
 
 export type OptionInput = z.infer<typeof OptionSchema>
-// Input/output types span every supported target so authoring works regardless
-// of which target is configured; runtime parse enforces the actual target.
-export type OptionSetInput = { [T in Target]: z.input<(typeof SCHEMAS)[T]> }[Target]
-export type OptionSet = Handle<
-  'OptionSet',
-  { [T in Target]: z.output<(typeof SCHEMAS)[T]> }[Target]
->
+// Input/output types are narrowed to the target the user configured via
+// `declare-cli typegen`. Without typegen, CurrentTarget falls back to the
+// full Target union.
+export type OptionSetInput = z.input<(typeof SCHEMAS)[CurrentTarget]>
+export type OptionSet = Handle<'OptionSet', z.output<(typeof SCHEMAS)[CurrentTarget]>>
 
 export function defineOptionSet(input: OptionSetInput): OptionSet {
-  const parsed = SCHEMAS[getTarget()].parse(input) as { [T in Target]: z.output<(typeof SCHEMAS)[T]> }[Target]
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)[CurrentTarget]>
   return makeHandle('OptionSet', parsed)
 }

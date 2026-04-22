@@ -3,13 +3,16 @@ import { mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { cancel, confirm, intro, isCancel, outro, select, text } from '@clack/prompts'
+import { DEFAULT_TARGET, TARGETS, type Target } from '@devotta-labs/declare'
 import { pc, ui } from '../ui.ts'
+import { writeDeclareEnv } from './typegen.ts'
 
 type Template = 'blank' | 'aggregate' | 'tracker'
 
 type Substitutions = {
   name: string
   port: number
+  target: Target
   declareDep: string
 }
 
@@ -25,6 +28,7 @@ type Flags = {
   name?: string
   template?: Template
   port?: number
+  target?: Target
   yes: boolean
   positional: string[]
 }
@@ -46,6 +50,10 @@ function parseFlags(args: readonly string[]): Flags {
       const v = args[++i]
       if (v === undefined) throw new Error('--port requires a value')
       flags.port = Number(v)
+    } else if (a === '--target') {
+      const v = args[++i]
+      if (v === undefined) throw new Error('--target requires a value')
+      flags.target = v as Target
     }
     else if (!a.startsWith('-')) flags.positional.push(a)
     else throw new Error(`Unknown argument for \`init\`: ${a}`)
@@ -62,10 +70,12 @@ export async function init(args: readonly string[]): Promise<void> {
     const name = initialName
     const template = flags.template ?? 'blank'
     const port = flags.port ?? 8080
+    const target = flags.target ?? DEFAULT_TARGET
     validateName(name)
     validateTemplate(template)
     validatePort(port)
-    await runScaffold(cwd, name, template, port)
+    validateTarget(target)
+    await runScaffold(cwd, name, template, port, target)
     return
   }
 
@@ -109,30 +119,43 @@ export async function init(args: readonly string[]): Promise<void> {
   if (isCancel(portAnswer)) cancelAndExit()
   const port = Number(portAnswer)
 
-  const target = resolveTarget(cwd, name)
-  if (target !== cwd && existsSync(target)) {
-    const entries = (await stat(target)).isDirectory() ? await readdir(target) : []
+  const targetAnswer = await select<Target>({
+    message: 'DHIS2 target version',
+    options: TARGETS.map((t) =>
+      t === DEFAULT_TARGET
+        ? { value: t, label: t, hint: 'default' }
+        : { value: t, label: t },
+    ),
+    initialValue: flags.target ?? DEFAULT_TARGET,
+  })
+  if (isCancel(targetAnswer)) cancelAndExit()
+  const target = targetAnswer
+
+  const projectDir = resolveProjectDir(cwd, name)
+  if (projectDir !== cwd && existsSync(projectDir)) {
+    const entries = (await stat(projectDir)).isDirectory() ? await readdir(projectDir) : []
     if (entries.length > 0) {
       const ok = await confirm({
-        message: `${relative(cwd, target)} is not empty. Continue?`,
+        message: `${relative(cwd, projectDir)} is not empty. Continue?`,
         initialValue: false,
       })
       if (isCancel(ok) || !ok) cancelAndExit()
     }
   }
 
-  await runScaffold(cwd, name, template, port)
+  ui.raw('')
+  await runScaffold(cwd, name, template, port, target)
 
   outro(pc.green('Project scaffolded.'))
 
   ui.raw(pc.bold('Next steps:'))
-  if (target !== cwd) ui.raw(`  cd ${relative(cwd, target)}`)
+  if (projectDir !== cwd) ui.raw(`  cd ${relative(cwd, projectDir)}`)
   ui.raw('  pnpm install')
   ui.raw('  pnpm start')
   ui.raw('')
 }
 
-function resolveTarget(cwd: string, name: string): string {
+function resolveProjectDir(cwd: string, name: string): string {
   return name === basename(cwd) ? cwd : resolve(cwd, name)
 }
 
@@ -141,10 +164,18 @@ async function runScaffold(
   name: string,
   template: Template,
   port: number,
+  target: Target,
 ): Promise<void> {
-  const target = resolveTarget(cwd, name)
+  const projectDir = resolveProjectDir(cwd, name)
   const declareDep = (await detectMonorepo(cwd)) ? 'workspace:*' : '^0.1.0'
-  await scaffold(template, target, { name, port, declareDep })
+  await scaffold(template, projectDir, { name, port, target, declareDep })
+
+  // Generate declare-env.d.ts immediately so a fresh `pnpm install && pnpm
+  // exec tsc --noEmit` works without a preceding `declare-cli check`. We use
+  // the already-known target directly rather than loadConfig, since the
+  // scaffolded project hasn't run `pnpm install` yet and jiti.import would
+  // fail to resolve @devotta-labs/declare-cli from it.
+  await writeDeclareEnv(projectDir, target)
 }
 
 function validateName(name: string): void {
@@ -164,6 +195,12 @@ function validateTemplate(template: string): asserts template is Template {
 function validatePort(port: number): void {
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     throw new Error(`Invalid port '${port}'. Enter a port between 1 and 65535.`)
+  }
+}
+
+function validateTarget(target: string): asserts target is Target {
+  if (!(TARGETS as readonly string[]).includes(target)) {
+    throw new Error(`Invalid target '${target}'. Choose: ${TARGETS.join(', ')}.`)
   }
 }
 
@@ -214,5 +251,6 @@ function renderTemplate(source: string, subs: Substitutions): string {
   return source
     .replace(/\{\{name\}\}/g, subs.name)
     .replace(/\{\{port\}\}/g, String(subs.port))
+    .replace(/\{\{target\}\}/g, subs.target)
     .replace(/\{\{declareDep\}\}/g, subs.declareDep)
 }
