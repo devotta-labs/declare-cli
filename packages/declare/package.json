@@ -1,8 +1,24 @@
 {
   "name": "@devotta-labs/declare",
-  "version": "0.0.1",
-  "private": true,
+  "version": "0.1.0",
   "description": "Type-safe DHIS2 metadata-as-code framework.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devotta-labs/declare-cli.git",
+    "directory": "packages/declare"
+  },
+  "homepage": "https://github.com/devotta-labs/declare-cli#readme",
+  "bugs": {
+    "url": "https://github.com/devotta-labs/declare-cli/issues"
+  },
+  "keywords": [
+    "dhis2",
+    "metadata",
+    "typescript",
+    "zod",
+    "schema"
+  ],
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -11,6 +27,15 @@
       "types": "./src/index.ts",
       "default": "./src/index.ts"
     }
+  },
+  "files": [
+    "src",
+    "!src/**/*.test.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

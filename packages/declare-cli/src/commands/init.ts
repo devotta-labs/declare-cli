@@ -143,7 +143,7 @@ async function runScaffold(
   port: number,
 ): Promise<void> {
   const target = resolveTarget(cwd, name)
-  const declareDep = (await detectMonorepo(cwd)) ? 'workspace:*' : '^0.0.1'
+  const declareDep = (await detectMonorepo(cwd)) ? 'workspace:*' : '^0.1.0'
   await scaffold(template, target, { name, port, declareDep })
 }
 

@@ -1,5 +1,5 @@
 {
-  "name": "dhis2-metadata-as-code",
+  "name": "declare-cli",
   "version": "0.0.1",
   "private": true,
   "type": "module",

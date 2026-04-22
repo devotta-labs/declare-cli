@@ -1,8 +1,24 @@
 {
   "name": "@devotta-labs/declare-cli",
-  "version": "0.0.1",
-  "private": true,
+  "version": "0.1.0",
   "description": "CLI for @devotta-labs/declare — scaffold DHIS2 metadata projects, run a local DHIS2, and apply schemas.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devotta-labs/declare-cli.git",
+    "directory": "packages/declare-cli"
+  },
+  "homepage": "https://github.com/devotta-labs/declare-cli#readme",
+  "bugs": {
+    "url": "https://github.com/devotta-labs/declare-cli/issues"
+  },
+  "keywords": [
+    "dhis2",
+    "metadata",
+    "cli",
+    "typescript",
+    "docker"
+  ],
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -18,8 +34,13 @@
   "files": [
     "bin",
     "src",
-    "templates"
+    "templates",
+    "README.md",
+    "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
