@@ -10,6 +10,8 @@ import {
   NameSchema,
   ShortNameSchema,
   makeHandle,
+  optionSetValueTypeMessage,
+  optionSetValueTypeRefine,
   refSchema,
   withDerivedShortName,
   type Handle,
@@ -47,9 +49,18 @@ const numericAggMessage = {
 }
 
 const SCHEMAS = {
-  '2.40': DataElementBaseByTarget['2.40'].extend(overridesFor('2.40')).refine(numericAggRefine, numericAggMessage),
-  '2.41': DataElementBaseByTarget['2.41'].extend(overridesFor('2.41')).refine(numericAggRefine, numericAggMessage),
-  '2.42': DataElementBaseByTarget['2.42'].extend(overridesFor('2.42')).refine(numericAggRefine, numericAggMessage),
+  '2.40': DataElementBaseByTarget['2.40']
+    .extend(overridesFor('2.40'))
+    .refine(numericAggRefine, numericAggMessage)
+    .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
+  '2.41': DataElementBaseByTarget['2.41']
+    .extend(overridesFor('2.41'))
+    .refine(numericAggRefine, numericAggMessage)
+    .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
+  '2.42': DataElementBaseByTarget['2.42']
+    .extend(overridesFor('2.42'))
+    .refine(numericAggRefine, numericAggMessage)
+    .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
 } as const
 
 // Input/output types are narrowed to the target the user configured via

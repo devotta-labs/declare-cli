@@ -9,6 +9,8 @@ import {
   NameSchema,
   ShortNameSchema,
   makeHandle,
+  optionSetValueTypeMessage,
+  optionSetValueTypeRefine,
   refSchema,
   withDerivedShortName,
   type Handle,
@@ -45,9 +47,15 @@ const overridesFor = (target: Target) => ({
 })
 
 const SCHEMAS = {
-  '2.40': TrackedEntityAttributeBaseByTarget['2.40'].extend(overridesFor('2.40')),
-  '2.41': TrackedEntityAttributeBaseByTarget['2.41'].extend(overridesFor('2.41')),
-  '2.42': TrackedEntityAttributeBaseByTarget['2.42'].extend(overridesFor('2.42')),
+  '2.40': TrackedEntityAttributeBaseByTarget['2.40']
+    .extend(overridesFor('2.40'))
+    .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
+  '2.41': TrackedEntityAttributeBaseByTarget['2.41']
+    .extend(overridesFor('2.41'))
+    .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
+  '2.42': TrackedEntityAttributeBaseByTarget['2.42']
+    .extend(overridesFor('2.42'))
+    .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
 } as const
 
 // Input/output types are narrowed to the target the user configured via

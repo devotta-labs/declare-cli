@@ -99,6 +99,27 @@ export const NUMERIC_AGGREGATIONS = new Set<AggregationType>([
   'VARIANCE',
 ])
 
+// Shared between DataElement and TrackedEntityAttribute: when an `optionSet` is
+// attached, DHIS2 requires its valueType to match the owning field's valueType
+// (a TEXT option set cannot back a NUMBER data element, etc). The server
+// rejects mismatches at import with an opaque 409; catch it here so authors
+// see a precise error at declare-time. `refSchema` passes the full Handle
+// through untransformed, so we can read `input.valueType` off it at runtime.
+export const optionSetValueTypeRefine = (v: {
+  optionSet?: unknown
+  valueType: string
+}) => {
+  if (!v.optionSet) return true
+  const osValueType = (v.optionSet as { input?: { valueType?: string } }).input?.valueType
+  if (!osValueType) return true
+  return v.valueType === osValueType
+}
+
+export const optionSetValueTypeMessage = {
+  message: "optionSet's valueType must match the field's valueType",
+  path: ['optionSet'],
+}
+
 export function refSchema<K extends MetadataKind>(kind: K) {
   return z.custom<Ref<K>>(
     (v) => isHandle(v) && (v as Handle<MetadataKind, { code: string }>).kind === kind,
