@@ -14,6 +14,10 @@ export type MetadataKind =
   | 'UserRole'
   | 'UserGroup'
   | 'User'
+  | 'TrackedEntityAttribute'
+  | 'TrackedEntityType'
+  | 'Program'
+  | 'ProgramStage'
 
 declare const __kind: unique symbol
 declare const __brand: unique symbol
@@ -120,6 +124,10 @@ export const AggregationType = z.enum([
   'DEFAULT',
 ])
 export type AggregationType = z.infer<typeof AggregationType>
+
+// DHIS2 master FeatureType (org.hisp.dhis.organisationunit.FeatureType).
+export const FeatureType = z.enum(['NONE', 'POINT', 'POLYGON', 'MULTI_POLYGON', 'SYMBOL'])
+export type FeatureType = z.infer<typeof FeatureType>
 
 // The subset of ValueTypes that carry numeric semantics. Used for cross-field
 // refinements (e.g. SUM only makes sense on numeric data).

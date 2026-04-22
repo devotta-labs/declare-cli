@@ -1,0 +1,17 @@
+{
+  "name": "tb-tracker",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Example DHIS2 tracker metadata schema for a tuberculosis registration programme, consuming @devotta-labs/declare.",
+  "type": "module",
+  "scripts": {
+    "check": "tsx bin.ts check",
+    "plan": "tsx bin.ts plan",
+    "apply": "tsx bin.ts apply",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@devotta-labs/declare": "workspace:*"
+  }
+}
