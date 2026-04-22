@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import { TrackedEntityAttributeBaseByTarget } from '../generated/trackedEntityAttribute.ts'
+import { getTarget } from '../generated/runtime.ts'
 import {
   AggregationType,
   CodeSchema,
@@ -13,7 +15,7 @@ import {
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
 
-export const TrackedEntityAttributeSchema = z.object({
+const overrides = {
   code: CodeSchema,
   name: NameSchema,
   shortName: ShortNameSchema.optional(),
@@ -34,18 +36,26 @@ export const TrackedEntityAttributeSchema = z.object({
   displayInListNoProgram: z.boolean().default(false),
   sortOrderInListNoProgram: z.number().int().min(0).optional(),
   skipSynchronization: z.boolean().default(false),
+  // New in 2.42 — server-defaulted, authors don't set this directly.
+  trigramIndexable: z.boolean().default(false),
   sharing: SharingSchema.optional(),
-})
+}
 
-export type TrackedEntityAttributeInput = z.infer<typeof TrackedEntityAttributeSchema>
+const SCHEMAS = {
+  '2.40': TrackedEntityAttributeBaseByTarget['2.40'].extend(overrides),
+  '2.41': TrackedEntityAttributeBaseByTarget['2.41'].extend(overrides),
+  '2.42': TrackedEntityAttributeBaseByTarget['2.42'].extend(overrides),
+} as const
+
+export type TrackedEntityAttributeInput = z.input<(typeof SCHEMAS)['2.42']>
 export type TrackedEntityAttribute = Handle<
   'TrackedEntityAttribute',
-  TrackedEntityAttributeInput & { shortName: string }
+  z.output<(typeof SCHEMAS)['2.42']> & { shortName: string }
 >
 
 export function defineTrackedEntityAttribute(
-  input: z.input<typeof TrackedEntityAttributeSchema>,
+  input: TrackedEntityAttributeInput,
 ): TrackedEntityAttribute {
-  const parsed = TrackedEntityAttributeSchema.parse(input)
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
   return makeHandle('TrackedEntityAttribute', withDerivedShortName(parsed))
 }

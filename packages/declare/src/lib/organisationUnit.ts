@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import { OrganisationUnitBaseByTarget } from '../generated/organisationUnit.ts'
+import { getTarget } from '../generated/runtime.ts'
 import {
   CodeSchema,
   DescriptionSchema,
@@ -12,7 +14,7 @@ import {
 
 const DateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'expected a YYYY-MM-DD date')
 
-export const OrganisationUnitSchema = z.object({
+const overrides = {
   code: CodeSchema,
   name: NameSchema,
   shortName: ShortNameSchema.optional(),
@@ -26,17 +28,21 @@ export const OrganisationUnitSchema = z.object({
   address: z.string().max(255).optional(),
   email: z.string().email().optional(),
   phoneNumber: z.string().max(150).optional(),
-})
+}
 
-export type OrganisationUnitInput = z.infer<typeof OrganisationUnitSchema>
+const SCHEMAS = {
+  '2.40': OrganisationUnitBaseByTarget['2.40'].extend(overrides),
+  '2.41': OrganisationUnitBaseByTarget['2.41'].extend(overrides),
+  '2.42': OrganisationUnitBaseByTarget['2.42'].extend(overrides),
+} as const
+
+export type OrganisationUnitInput = z.input<(typeof SCHEMAS)['2.42']>
 export type OrganisationUnit = Handle<
   'OrganisationUnit',
-  OrganisationUnitInput & { shortName: string }
+  z.output<(typeof SCHEMAS)['2.42']> & { shortName: string }
 >
 
-export function defineOrganisationUnit(
-  input: z.input<typeof OrganisationUnitSchema>,
-): OrganisationUnit {
-  const parsed = OrganisationUnitSchema.parse(input)
+export function defineOrganisationUnit(input: OrganisationUnitInput): OrganisationUnit {
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
   return makeHandle('OrganisationUnit', withDerivedShortName(parsed))
 }

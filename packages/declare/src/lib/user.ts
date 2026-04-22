@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import { UserBaseByTarget } from '../generated/user.ts'
+import { getTarget } from '../generated/runtime.ts'
 import { CodeSchema, makeHandle, refSchema, type Handle } from './core.ts'
 
 const UsernameSchema = z
@@ -14,7 +16,7 @@ const PasswordSchema = z
   .min(8, 'password must be at least 8 characters')
   .max(60, 'password must be at most 60 characters')
 
-export const UserSchema = z.object({
+const overrides = {
   code: CodeSchema,
   username: UsernameSchema,
   password: PasswordSchema,
@@ -30,12 +32,18 @@ export const UserSchema = z.object({
     .min(1, 'a User needs at least one data-capture OU'),
   dataViewOrganisationUnits: z.array(refSchema('OrganisationUnit')).optional(),
   teiSearchOrganisationUnits: z.array(refSchema('OrganisationUnit')).optional(),
-})
+}
 
-export type UserInput = z.infer<typeof UserSchema>
-export type User = Handle<'User', UserInput>
+const SCHEMAS = {
+  '2.40': UserBaseByTarget['2.40'].extend(overrides),
+  '2.41': UserBaseByTarget['2.41'].extend(overrides),
+  '2.42': UserBaseByTarget['2.42'].extend(overrides),
+} as const
 
-export function defineUser(input: z.input<typeof UserSchema>): User {
-  const parsed = UserSchema.parse(input)
+export type UserInput = z.input<(typeof SCHEMAS)['2.42']>
+export type User = Handle<'User', z.output<(typeof SCHEMAS)['2.42']>>
+
+export function defineUser(input: UserInput): User {
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
   return makeHandle('User', parsed)
 }

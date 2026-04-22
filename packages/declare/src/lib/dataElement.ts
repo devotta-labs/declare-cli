@@ -1,13 +1,13 @@
 import { z } from 'zod'
+import { DataElementBaseByTarget } from '../generated/dataElement.ts'
+import { AggregationType, DomainType } from '../generated/enums.ts'
+import { getTarget } from '../generated/runtime.ts'
 import {
-  AggregationType,
   CodeSchema,
-  DescriptionSchema,
   NUMERIC_AGGREGATIONS,
   NUMERIC_VALUE_TYPES,
   NameSchema,
   ShortNameSchema,
-  ValueType,
   makeHandle,
   refSchema,
   withDerivedShortName,
@@ -15,40 +15,47 @@ import {
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
 
-export const DomainType = z.enum(['AGGREGATE', 'TRACKER'])
+export { DomainType }
 
-export const DataElementSchema = z
-  .object({
-    code: CodeSchema,
-    name: NameSchema,
-    shortName: ShortNameSchema.optional(),
-    formName: z.string().max(230).optional(),
-    description: DescriptionSchema.optional(),
-    url: z.string().url().optional(),
-    valueType: ValueType,
-    aggregationType: AggregationType.default('SUM'),
-    domainType: DomainType.default('AGGREGATE'),
-    categoryCombo: refSchema('CategoryCombo').optional(),
-    optionSet: refSchema('OptionSet').optional(),
-    commentOptionSet: refSchema('OptionSet').optional(),
-    aggregationLevels: z.array(z.number().int().positive()).optional(),
-    fieldMask: z.string().max(255).optional(),
-    zeroIsSignificant: z.boolean().default(false),
-    sharing: SharingSchema.optional(),
-  })
-  .refine(
-    (v) => !(NUMERIC_AGGREGATIONS.has(v.aggregationType) && !NUMERIC_VALUE_TYPES.has(v.valueType)),
-    {
-      message:
-        'numeric aggregationType (SUM/AVERAGE/MIN/MAX/STDDEV/VARIANCE/…) requires a numeric valueType (NUMBER, INTEGER, PERCENTAGE, …)',
-      path: ['aggregationType'],
-    },
-  )
+// Hand-layer overrides applied on top of each per-target generated Base:
+// stricter `code`, authoring-time defaults, the Sharing DSL, and the
+// cross-field refinement DHIS2 enforces only at import time.
+const overrides = {
+  code: CodeSchema,
+  name: NameSchema,
+  shortName: ShortNameSchema.optional(),
+  aggregationType: AggregationType.default('SUM'),
+  domainType: DomainType.default('AGGREGATE'),
+  categoryCombo: refSchema('CategoryCombo').optional(),
+  zeroIsSignificant: z.boolean().default(false),
+  sharing: SharingSchema.optional(),
+}
 
-export type DataElementInput = z.infer<typeof DataElementSchema>
-export type DataElement = Handle<'DataElement', DataElementInput & { shortName: string }>
+const numericAggRefine = (v: {
+  aggregationType: z.infer<typeof AggregationType>
+  valueType: string
+}) =>
+  !(NUMERIC_AGGREGATIONS.has(v.aggregationType) && !NUMERIC_VALUE_TYPES.has(v.valueType as never))
 
-export function defineDataElement(input: z.input<typeof DataElementSchema>): DataElement {
-  const parsed = DataElementSchema.parse(input)
+const numericAggMessage = {
+  message:
+    'numeric aggregationType (SUM/AVERAGE/MIN/MAX/STDDEV/VARIANCE/…) requires a numeric valueType (NUMBER, INTEGER, PERCENTAGE, …)',
+  path: ['aggregationType'],
+}
+
+const SCHEMAS = {
+  '2.40': DataElementBaseByTarget['2.40'].extend(overrides).refine(numericAggRefine, numericAggMessage),
+  '2.41': DataElementBaseByTarget['2.41'].extend(overrides).refine(numericAggRefine, numericAggMessage),
+  '2.42': DataElementBaseByTarget['2.42'].extend(overrides).refine(numericAggRefine, numericAggMessage),
+} as const
+
+export type DataElementInput = z.input<(typeof SCHEMAS)['2.42']>
+export type DataElement = Handle<
+  'DataElement',
+  z.output<(typeof SCHEMAS)['2.42']> & { shortName: string }
+>
+
+export function defineDataElement(input: DataElementInput): DataElement {
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
   return makeHandle('DataElement', withDerivedShortName(parsed))
 }

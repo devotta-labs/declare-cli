@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import { DataSetBaseByTarget } from '../generated/dataSet.ts'
+import { getTarget } from '../generated/runtime.ts'
 import {
   CodeSchema,
   DescriptionSchema,
@@ -12,6 +14,8 @@ import {
 import { SharingSchema } from './sharing.ts'
 
 // PascalCase on the wire (PeriodType.getName()), not UPPER_SNAKE.
+// /api/schemas.json returns periodType as a plain TEXT field, so this list is
+// authoring-only — the server accepts any known period type string.
 export const PeriodType = z.enum([
   'Daily',
   'Weekly',
@@ -44,7 +48,7 @@ export const DataSetElementSchema = z.object({
   categoryCombo: refSchema('CategoryCombo').optional(),
 })
 
-export const DataSetSchema = z.object({
+const overrides = {
   code: CodeSchema,
   name: NameSchema,
   shortName: ShortNameSchema.optional(),
@@ -52,6 +56,8 @@ export const DataSetSchema = z.object({
   description: DescriptionSchema.optional(),
   periodType: PeriodType,
   categoryCombo: refSchema('CategoryCombo').optional(),
+  // Legacy mobile-client flag — server-defaulted, rarely set by authors.
+  mobile: z.boolean().default(false),
   dataSetElements: z.array(DataSetElementSchema).min(1, 'a DataSet needs at least one DataElement'),
   organisationUnits: z.array(refSchema('OrganisationUnit')).optional(),
   expiryDays: z.number().int().min(0).default(0),
@@ -68,12 +74,21 @@ export const DataSetSchema = z.object({
   dataElementDecoration: z.boolean().default(false),
   notifyCompletingUser: z.boolean().default(false),
   sharing: SharingSchema.optional(),
-})
+}
 
-export type DataSetInput = z.infer<typeof DataSetSchema>
-export type DataSet = Handle<'DataSet', DataSetInput & { shortName: string }>
+const SCHEMAS = {
+  '2.40': DataSetBaseByTarget['2.40'].extend(overrides),
+  '2.41': DataSetBaseByTarget['2.41'].extend(overrides),
+  '2.42': DataSetBaseByTarget['2.42'].extend(overrides),
+} as const
 
-export function defineDataSet(input: z.input<typeof DataSetSchema>): DataSet {
-  const parsed = DataSetSchema.parse(input)
+export type DataSetInput = z.input<(typeof SCHEMAS)['2.42']>
+export type DataSet = Handle<
+  'DataSet',
+  z.output<(typeof SCHEMAS)['2.42']> & { shortName: string }
+>
+
+export function defineDataSet(input: DataSetInput): DataSet {
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
   return makeHandle('DataSet', withDerivedShortName(parsed))
 }

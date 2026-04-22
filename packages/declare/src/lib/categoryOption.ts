@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import { CategoryOptionBaseByTarget } from '../generated/categoryOption.ts'
+import { getTarget } from '../generated/runtime.ts'
 import {
   CodeSchema,
   DescriptionSchema,
@@ -12,7 +14,7 @@ import { SharingSchema } from './sharing.ts'
 
 const DateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'expected a YYYY-MM-DD date')
 
-export const CategoryOptionSchema = z.object({
+const overrides = {
   code: CodeSchema,
   name: NameSchema,
   shortName: ShortNameSchema.optional(),
@@ -21,12 +23,21 @@ export const CategoryOptionSchema = z.object({
   startDate: DateSchema.optional(),
   endDate: DateSchema.optional(),
   sharing: SharingSchema.optional(),
-})
+}
 
-export type CategoryOptionInput = z.infer<typeof CategoryOptionSchema>
-export type CategoryOption = Handle<'CategoryOption', CategoryOptionInput & { shortName: string }>
+const SCHEMAS = {
+  '2.40': CategoryOptionBaseByTarget['2.40'].extend(overrides),
+  '2.41': CategoryOptionBaseByTarget['2.41'].extend(overrides),
+  '2.42': CategoryOptionBaseByTarget['2.42'].extend(overrides),
+} as const
 
-export function defineCategoryOption(input: z.input<typeof CategoryOptionSchema>): CategoryOption {
-  const parsed = CategoryOptionSchema.parse(input)
+export type CategoryOptionInput = z.input<(typeof SCHEMAS)['2.42']>
+export type CategoryOption = Handle<
+  'CategoryOption',
+  z.output<(typeof SCHEMAS)['2.42']> & { shortName: string }
+>
+
+export function defineCategoryOption(input: CategoryOptionInput): CategoryOption {
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
   return makeHandle('CategoryOption', withDerivedShortName(parsed))
 }

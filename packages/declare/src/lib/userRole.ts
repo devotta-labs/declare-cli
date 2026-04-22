@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import { UserRoleBaseByTarget } from '../generated/userRole.ts'
+import { getTarget } from '../generated/runtime.ts'
 import {
   CodeSchema,
   DescriptionSchema,
@@ -9,18 +11,24 @@ import {
 
 // Authorities are free-form strings — any server-known or custom value is valid
 // (app-module authorities like `M_dhis-web-dataentry`, custom app authorities).
-export const UserRoleSchema = z.object({
+const overrides = {
   code: CodeSchema,
   name: NameSchema,
   description: DescriptionSchema.optional(),
   authorities: z.array(z.string().min(1)).default([]),
   restrictions: z.array(z.string().min(1)).optional(),
-})
+}
 
-export type UserRoleInput = z.infer<typeof UserRoleSchema>
-export type UserRole = Handle<'UserRole', UserRoleInput>
+const SCHEMAS = {
+  '2.40': UserRoleBaseByTarget['2.40'].extend(overrides),
+  '2.41': UserRoleBaseByTarget['2.41'].extend(overrides),
+  '2.42': UserRoleBaseByTarget['2.42'].extend(overrides),
+} as const
 
-export function defineUserRole(input: z.input<typeof UserRoleSchema>): UserRole {
-  const parsed = UserRoleSchema.parse(input)
+export type UserRoleInput = z.input<(typeof SCHEMAS)['2.42']>
+export type UserRole = Handle<'UserRole', z.output<(typeof SCHEMAS)['2.42']>>
+
+export function defineUserRole(input: UserRoleInput): UserRole {
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
   return makeHandle('UserRole', parsed)
 }

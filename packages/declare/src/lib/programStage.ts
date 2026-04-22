@@ -1,4 +1,7 @@
 import { z } from 'zod'
+import { ProgramStageBaseByTarget } from '../generated/programStage.ts'
+import { ValidationStrategy } from '../generated/enums.ts'
+import { getTarget } from '../generated/runtime.ts'
 import {
   CodeSchema,
   DescriptionSchema,
@@ -12,7 +15,7 @@ import {
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
 
-export const ValidationStrategy = z.enum(['ON_COMPLETE', 'ON_UPDATE_AND_INSERT'])
+export { ValidationStrategy }
 
 const ProgramStageDataElementSchema = z.object({
   dataElement: refSchema('DataElement'),
@@ -25,7 +28,7 @@ const ProgramStageDataElementSchema = z.object({
   sortOrder: z.number().int().min(0).optional(),
 })
 
-export const ProgramStageSchema = z.object({
+const overrides = {
   code: CodeSchema,
   name: NameSchema,
   shortName: ShortNameSchema.optional(),
@@ -52,12 +55,21 @@ export const ProgramStageSchema = z.object({
   dueDateLabel: z.string().max(230).optional(),
   programStageDataElements: z.array(ProgramStageDataElementSchema).optional(),
   sharing: SharingSchema.optional(),
-})
+}
 
-export type ProgramStageInput = z.infer<typeof ProgramStageSchema>
-export type ProgramStage = Handle<'ProgramStage', ProgramStageInput & { shortName: string }>
+const SCHEMAS = {
+  '2.40': ProgramStageBaseByTarget['2.40'].extend(overrides),
+  '2.41': ProgramStageBaseByTarget['2.41'].extend(overrides),
+  '2.42': ProgramStageBaseByTarget['2.42'].extend(overrides),
+} as const
 
-export function defineProgramStage(input: z.input<typeof ProgramStageSchema>): ProgramStage {
-  const parsed = ProgramStageSchema.parse(input)
+export type ProgramStageInput = z.input<(typeof SCHEMAS)['2.42']>
+export type ProgramStage = Handle<
+  'ProgramStage',
+  z.output<(typeof SCHEMAS)['2.42']> & { shortName: string }
+>
+
+export function defineProgramStage(input: ProgramStageInput): ProgramStage {
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
   return makeHandle('ProgramStage', withDerivedShortName(parsed))
 }

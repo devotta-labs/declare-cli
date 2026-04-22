@@ -67,64 +67,13 @@ export const NameSchema = z.string().min(1, 'name is required').max(230)
 export const ShortNameSchema = z.string().min(1).max(50)
 export const DescriptionSchema = z.string().max(2000)
 
-export const ValueType = z.enum([
-  'TEXT',
-  'LONG_TEXT',
-  'MULTI_TEXT',
-  'LETTER',
-  'PHONE_NUMBER',
-  'EMAIL',
-  'BOOLEAN',
-  'TRUE_ONLY',
-  'DATE',
-  'DATETIME',
-  'TIME',
-  'NUMBER',
-  'UNIT_INTERVAL',
-  'PERCENTAGE',
-  'INTEGER',
-  'INTEGER_POSITIVE',
-  'INTEGER_NEGATIVE',
-  'INTEGER_ZERO_OR_POSITIVE',
-  'USERNAME',
-  'COORDINATE',
-  'ORGANISATION_UNIT',
-  'REFERENCE',
-  'AGE',
-  'URL',
-  'FILE_RESOURCE',
-  'IMAGE',
-  'GEOJSON',
-])
-export type ValueType = z.infer<typeof ValueType>
-
-export const AggregationType = z.enum([
-  'SUM',
-  'AVERAGE',
-  'AVERAGE_SUM_ORG_UNIT',
-  'LAST',
-  'LAST_AVERAGE_ORG_UNIT',
-  'LAST_LAST_ORG_UNIT',
-  'LAST_IN_PERIOD',
-  'LAST_IN_PERIOD_AVERAGE_ORG_UNIT',
-  'FIRST',
-  'FIRST_AVERAGE_ORG_UNIT',
-  'FIRST_FIRST_ORG_UNIT',
-  'COUNT',
-  'STDDEV',
-  'VARIANCE',
-  'MIN',
-  'MAX',
-  'MIN_SUM_ORG_UNIT',
-  'MAX_SUM_ORG_UNIT',
-  'NONE',
-  'CUSTOM',
-  'DEFAULT',
-])
-export type AggregationType = z.infer<typeof AggregationType>
-
-export const FeatureType = z.enum(['NONE', 'POINT', 'POLYGON', 'MULTI_POLYGON', 'SYMBOL'])
-export type FeatureType = z.infer<typeof FeatureType>
+// The canonical enum surface is generated from /api/schemas.json snapshots —
+// see packages/declare/scripts/generate.ts. We re-export the union variants
+// here so existing lib/<entity>.ts imports keep working and so consumers that
+// `import { ValueType } from '@devotta-labs/declare'` pick up new constants
+// without touching core.ts.
+export { AggregationType, FeatureType, ValueType } from '../generated/enums.ts'
+import type { AggregationType, ValueType } from '../generated/enums.ts'
 
 export const NUMERIC_VALUE_TYPES = new Set<ValueType>([
   'NUMBER',

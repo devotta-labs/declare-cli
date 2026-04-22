@@ -31,6 +31,17 @@ export {
 } from './sharing.ts'
 export { defineSchema, type Schema, type AnyHandle } from './schema.ts'
 
+export {
+  TARGETS,
+  DEFAULT_TARGET,
+  type Target,
+} from '../generated/targets.ts'
+export {
+  getTarget,
+  setTarget,
+  withTarget,
+} from '../generated/runtime.ts'
+
 export { ValueType, AggregationType, FeatureType } from './core.ts'
 export { DomainType } from './dataElement.ts'
 export { PeriodType } from './dataSet.ts'
