@@ -1,4 +1,4 @@
-# dhis2-metadata-as-code
+# declare-cli
 
 Declare DHIS2 metadata (categories, data elements, org units, programs, …) in TypeScript, validate it with Zod at load time, and push it to a local DHIS2 via the `/api/metadata` endpoint.
 

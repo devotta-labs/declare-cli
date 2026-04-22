@@ -42,4 +42,4 @@ export default defineSchema({
 })
 ```
 
-See the [repository](https://github.com/devotta-labs/dhis2-metadata-as-code) for full documentation, example schemas, and the `declare-cli` that drives the workflow end-to-end.
+See the [repository](https://github.com/devotta-labs/declare-cli) for full documentation, example schemas, and the `declare-cli` that drives the workflow end-to-end.

@@ -5,12 +5,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/devotta-labs/dhis2-metadata-as-code.git",
+    "url": "git+https://github.com/devotta-labs/declare-cli.git",
     "directory": "packages/declare-cli"
   },
-  "homepage": "https://github.com/devotta-labs/dhis2-metadata-as-code#readme",
+  "homepage": "https://github.com/devotta-labs/declare-cli#readme",
   "bugs": {
-    "url": "https://github.com/devotta-labs/dhis2-metadata-as-code/issues"
+    "url": "https://github.com/devotta-labs/declare-cli/issues"
   },
   "keywords": [
     "dhis2",

@@ -59,4 +59,4 @@ export default defineConfig({
 
 Pick different `local.port` values across projects to run multiple DHIS2 stacks side-by-side.
 
-See the [repository](https://github.com/devotta-labs/dhis2-metadata-as-code) for full documentation and example schemas.
+See the [repository](https://github.com/devotta-labs/declare-cli) for full documentation and example schemas.
