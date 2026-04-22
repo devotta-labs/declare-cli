@@ -39,7 +39,8 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "gen:schemas": "tsx scripts/generate.ts"
   },
   "dependencies": {
     "zod": "^3.23.8"
