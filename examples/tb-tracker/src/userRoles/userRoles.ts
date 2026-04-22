@@ -20,6 +20,7 @@ export const trackerDataEntryRole = defineUserRole({
     Authority.F_TRACKED_ENTITY_INSTANCE_LIST,
     Authority.F_PROGRAM_ENROLLMENT,
     Authority.F_PROGRAM_UNENROLLMENT,
+    Authority.F_ENROLLMENT_CASCADE_DELETE,
     Authority.F_PROGRAM_STAGE_INSTANCE_ADD,
     Authority.F_PROGRAM_STAGE_INSTANCE_SEARCH,
     Authority.F_PROGRAM_STAGE_INSTANCE_DELETE,

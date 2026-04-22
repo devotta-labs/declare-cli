@@ -1,4 +1,5 @@
-import { Access, Sharing, defineOptionSet } from '@devotta-labs/declare'
+import { defineOptionSet } from '@devotta-labs/declare'
+import { captureSharing } from './sharing.ts'
 
 export const caseClassification = defineOptionSet({
   code: 'MAL_CASE_CLASS',
@@ -9,8 +10,7 @@ export const caseClassification = defineOptionSet({
     { code: 'SUSPECTED', name: 'Suspected' },
     { code: 'IMPORTED', name: 'Imported' },
   ],
-  // Demo-wide public access — see dataElements.ts for the rationale.
-  sharing: Sharing.public(Access.readWrite),
+  sharing: captureSharing,
 })
 
 export const optionSets = [caseClassification]

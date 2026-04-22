@@ -1,4 +1,4 @@
-import { Access, Sharing, defineProgramStage } from '@devotta-labs/declare'
+import { defineProgramStage } from '@devotta-labs/declare'
 import {
   coughGt2Weeks,
   feverGt2Weeks,
@@ -10,8 +10,7 @@ import {
   weightKg,
   weightLoss,
 } from '../dataElements.ts'
-
-const publicRW = Sharing.public(Access.readWrite)
+import { captureSharing } from '../sharing.ts'
 
 // "Initial screening" — the first (and, in this minimal example, only) visit
 // of the TB programme. The DHIS2 master distinguishes stage ordering (used
@@ -44,7 +43,7 @@ export const initialScreeningStage = defineProgramStage({
     { dataElement: screeningResult, compulsory: true, sortOrder: 8 },
     { dataElement: screeningNotes, compulsory: false, sortOrder: 9 },
   ],
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const programStages = [initialScreeningStage]

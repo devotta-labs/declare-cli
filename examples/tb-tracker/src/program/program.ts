@@ -1,4 +1,4 @@
-import { Access, Sharing, defineProgram } from '@devotta-labs/declare'
+import { defineProgram } from '@devotta-labs/declare'
 import {
   bergen,
   bodo,
@@ -11,6 +11,7 @@ import {
   vagan,
   voss,
 } from '../organisationUnits/organisationUnits.ts'
+import { captureSharing } from '../sharing.ts'
 import {
   dateOfBirthTea,
   firstNameTea,
@@ -23,8 +24,6 @@ import {
 } from '../trackedEntity/trackedEntityAttributes.ts'
 import { personTrackedEntityType } from '../trackedEntity/trackedEntityType.ts'
 import { initialScreeningStage } from './programStages.ts'
-
-const publicRW = Sharing.public(Access.readWrite)
 
 // Tuberculosis registration programme. `WITH_REGISTRATION` + a Person TET =
 // a tracker program: the Capture app first registers a person, then opens
@@ -114,7 +113,7 @@ export const tbProgram = defineProgram({
       sortOrder: 8,
     },
   ],
-  sharing: publicRW,
+  sharing: captureSharing,
 })
 
 export const programs = [tbProgram]
