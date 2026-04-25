@@ -105,19 +105,19 @@ export const ENTITY_DEFINITIONS = {
   ProgramRuleVariable: {
     schemaName: 'programRuleVariable',
     payloadKey: 'programRuleVariables',
-    klass: 'org.hisp.dhis.program.ProgramRuleVariable',
+    klass: 'org.hisp.dhis.programrule.ProgramRuleVariable',
     authoring: true,
   },
   ProgramRuleAction: {
     schemaName: 'programRuleAction',
     payloadKey: 'programRuleActions',
-    klass: 'org.hisp.dhis.program.ProgramRuleAction',
+    klass: 'org.hisp.dhis.programrule.ProgramRuleAction',
     authoring: false,
   },
   ProgramRule: {
     schemaName: 'programRule',
     payloadKey: 'programRules',
-    klass: 'org.hisp.dhis.program.ProgramRule',
+    klass: 'org.hisp.dhis.programrule.ProgramRule',
     authoring: true,
   },
 } as const satisfies Record<string, EntityDefinition>
