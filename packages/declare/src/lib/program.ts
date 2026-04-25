@@ -26,10 +26,7 @@ const ProgramTrackedEntityAttributeSchema = z.object({
   sortOrder: z.number().int().min(0).optional(),
 })
 
-// `programType` and `featureType` are intentionally not re-declared — the
-// per-target base already enforces the versioned enum and doesn't need a
-// modifier, so re-declaring with the unversioned union would silently admit
-// values dropped by the target.
+// Do not re-declare programType or featureType; generated bases keep them target-specific.
 const overridesFor = (target: Target) => ({
   code: CodeSchema,
   name: NameSchema,
@@ -38,7 +35,6 @@ const overridesFor = (target: Target) => ({
   description: DescriptionSchema.optional(),
   trackedEntityType: refSchema('TrackedEntityType').optional(),
   categoryCombo: refSchema('CategoryCombo').optional(),
-  // New in 2.42 — server auto-assigns the default CategoryCombo.
   enrollmentCategoryCombo: refSchema('CategoryCombo').optional(),
   organisationUnits: z.array(refSchema('OrganisationUnit')).min(1),
   programStages: z.array(refSchema('ProgramStage')).optional(),
@@ -75,9 +71,6 @@ const SCHEMAS = {
   '2.42': ProgramBaseByTarget['2.42'].extend(overridesFor('2.42')).refine(trackerRefine, trackerRefineMessage),
 } as const
 
-// Input/output types are narrowed to the target the user configured via
-// `declare-cli typegen`. Without typegen, CurrentTarget falls back to the
-// full Target union.
 export type ProgramInput = z.input<(typeof SCHEMAS)[CurrentTarget]>
 export type Program = Handle<
   'Program',

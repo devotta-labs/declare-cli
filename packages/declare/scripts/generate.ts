@@ -1,13 +1,3 @@
-// Generator entrypoint. Reads committed /api/schemas.json snapshots from
-// packages/declare/snapshots/, derives per-target Zod base schemas + shared
-// enums, and writes everything under packages/declare/src/generated/.
-//
-//     pnpm --filter @devotta-labs/declare gen:schemas
-//
-// The output is fully deterministic: the same snapshots produce the same
-// output, so re-running after a snapshot refresh either produces a no-op
-// diff or a minimal, reviewable delta.
-
 import { readFile, rm, writeFile, mkdir } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -54,8 +44,6 @@ async function writeOut(filename: string, contents: string): Promise<void> {
 async function main(): Promise<void> {
   const snapshots = await loadSnapshots()
 
-  // Fresh output dir — prevents stale per-entity files from sticking around if
-  // we ever remove an entity from ENTITY_SCHEMAS.
   if (existsSync(OUT_DIR)) await rm(OUT_DIR, { recursive: true, force: true })
   await mkdir(OUT_DIR, { recursive: true })
 

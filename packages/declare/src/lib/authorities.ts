@@ -1,5 +1,4 @@
-// Curated subset of DHIS2 authorities. Not a Zod enum — callers may pass any
-// string (app-module or custom authorities are valid server-side).
+// Curated subset; UserRole.authorities still accepts any server-known string.
 export const Authority = {
   ALL: 'ALL',
 

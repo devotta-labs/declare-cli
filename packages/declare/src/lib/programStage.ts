@@ -63,9 +63,6 @@ const SCHEMAS = {
   '2.42': ProgramStageBaseByTarget['2.42'].extend(overridesFor('2.42')),
 } as const
 
-// Input/output types are narrowed to the target the user configured via
-// `declare-cli typegen`. Without typegen, CurrentTarget falls back to the
-// full Target union.
 export type ProgramStageInput = z.input<(typeof SCHEMAS)[CurrentTarget]>
 export type ProgramStage = Handle<
   'ProgramStage',

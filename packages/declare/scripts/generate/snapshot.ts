@@ -1,6 +1,3 @@
-// Minimal typed view of the subset of /api/schemas.json we read. Every field
-// we touch is here so mis-spellings fail typecheck.
-
 export type SnapshotPropertyType =
   | 'BOOLEAN'
   | 'COLLECTION'

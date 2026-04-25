@@ -1,11 +1,5 @@
-# Local empty DHIS2 stack used by @devotta-labs/declare-cli.
-# NOT for production use.
-#
-# Isolation between declare projects is done at invocation time:
-#   docker compose -f <this> -p <declare.config.ts name> up/down/ps/logs
-#
-# The host port is substituted from DHIS2_WEB_PORT at `declare-cli start`; the
-# default (8080) only applies if someone runs `docker compose` directly.
+# Local DHIS2 stack for declare-cli projects. Not for production use.
+# declare-cli start substitutes DHIS2_WEB_PORT; 8080 is the manual fallback.
 
 services:
   web:

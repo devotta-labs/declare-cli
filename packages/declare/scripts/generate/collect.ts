@@ -5,11 +5,6 @@ import type { Snapshot, SnapshotProperty, SnapshotSchema } from './snapshot.ts'
 
 export type EntityByTarget = Record<Target, readonly SnapshotProperty[]>
 
-/**
- * For each MetadataKind, a map of target → the filtered, de-duped property list.
- * Only owner/persisted/writable fields survive; entity- and global-level skips
- * are applied here so downstream emitters can treat the list as authoritative.
- */
 export type EntityCollection = Record<MetadataKind, EntityByTarget>
 
 function filterProperties(
@@ -20,9 +15,7 @@ function filterProperties(
   const skipEntity = ENTITY_SKIP_FIELDS[kind]
   const props = schema.properties.filter((p) => {
     if (p.persisted !== true || p.owner !== true || p.writable !== true) return false
-    // Match against every alias the snapshot might use, so skip lists can be
-    // written in whichever form reads best (Java `fieldName`, API
-    // `collectionName`, or the canonical `name`).
+    // Skip lists may use API, Java, or canonical snapshot names.
     const aliases: readonly string[] = [
       p.name,
       p.fieldName ?? p.name,
@@ -32,7 +25,6 @@ function filterProperties(
     if (aliases.some((a) => skipEntity.has(a))) return false
     return true
   })
-  // Stable order — snapshots aren't alphabetical; sorting makes diffs tiny.
   return [...props].sort((a, b) => a.name.localeCompare(b.name))
 }
 

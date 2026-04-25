@@ -52,11 +52,6 @@ export const NameSchema = z.string().min(1, 'name is required').max(230)
 export const ShortNameSchema = z.string().min(1).max(50)
 export const DescriptionSchema = z.string().max(2000)
 
-// The canonical enum surface is generated from /api/schemas.json snapshots —
-// see packages/declare/scripts/generate.ts. We re-export the union variants
-// here so existing lib/<entity>.ts imports keep working and so consumers that
-// `import { ValueType } from '@devotta-labs/declare'` pick up new constants
-// without touching core.ts.
 export { AggregationType, FeatureType, ValueType } from '../generated/enums.ts'
 import type { AggregationType, ValueType } from '../generated/enums.ts'
 
@@ -70,8 +65,6 @@ export const NUMERIC_VALUE_TYPES = new Set<ValueType>([
   'UNIT_INTERVAL',
 ])
 
-// Aggregations that require a numeric value type. LAST/FIRST/COUNT/NONE/CUSTOM/
-// DEFAULT are omitted — they work on any value type.
 export const NUMERIC_AGGREGATIONS = new Set<AggregationType>([
   'SUM',
   'AVERAGE',
@@ -84,12 +77,7 @@ export const NUMERIC_AGGREGATIONS = new Set<AggregationType>([
   'VARIANCE',
 ])
 
-// Shared between DataElement and TrackedEntityAttribute: when an `optionSet` is
-// attached, DHIS2 requires its valueType to match the owning field's valueType
-// (a TEXT option set cannot back a NUMBER data element, etc). The server
-// rejects mismatches at import with an opaque 409; catch it here so authors
-// see a precise error at declare-time. `refSchema` passes the full Handle
-// through untransformed, so we can read `input.valueType` off it at runtime.
+// DHIS2 rejects option sets whose valueType differs from the owning field.
 export const optionSetValueTypeRefine = (v: {
   optionSet?: unknown
   valueType: string
@@ -112,15 +100,12 @@ export function refSchema<K extends MetadataKind>(kind: K) {
   )
 }
 
-// DHIS2 requires a non-null shortName on most Nameable types; derive from name.
 export function withDerivedShortName<T extends { name: string; shortName?: string | undefined }>(
   value: T,
 ): T & { shortName: string } {
   return { ...value, shortName: value.shortName ?? value.name.slice(0, 50) }
 }
 
-// DHIS2 UIDs: [A-Za-z][A-Za-z0-9]{10}. Derived from kind:code for stability;
-// used only for new objects (existing ones keep the server's UID on code-match).
 const UID_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 const UID_ALPHANUM = `${UID_LETTERS}0123456789`
 
