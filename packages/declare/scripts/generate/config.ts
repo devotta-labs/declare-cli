@@ -41,8 +41,8 @@ export const ENTITY_SCHEMAS: Readonly<Record<string, MetadataKind>> = {
  * Java class → MetadataKind for REFERENCE / COLLECTION itemKlass properties.
  *
  * Limited to kinds the authoring DSL supports. A REFERENCE whose klass is not
- * listed is emitted as `z.unknown().optional()` and logged — the generator
- * never silently drops a field.
+ * listed fails generation unless the field is explicitly skipped below. The
+ * generator never silently drops a field.
  */
 export const KLASS_TO_KIND: Readonly<Record<string, MetadataKind>> = {
   'org.hisp.dhis.category.Category': 'Category',
@@ -107,6 +107,7 @@ export const GLOBAL_SKIP_FIELDS: ReadonlySet<string> = new Set([
   'externalAccess',
   'userAccesses',
   'userGroupAccesses',
+  'sharing',
 
   // complex types without hand-written Zod support (yet)
   'style',
@@ -126,16 +127,23 @@ export const ENTITY_SKIP_FIELDS: Readonly<Record<MetadataKind, ReadonlySet<strin
   CategoryCombo: new Set<string>(),
   OptionSet: new Set<string>(['options']),                       // hand layer hoists options
   Option: new Set<string>(),
-  DataElement: new Set<string>(),
+  DataElement: new Set<string>([
+    'legendSets',                                                 // not in DSL surface
+  ]),
   DataSet: new Set<string>([
     'dataSetElements',                                            // typed { dataElement, categoryCombo }
+    'dataEntryForm',                                              // not in DSL surface
     'dataInputPeriods',                                           // complex collection, TODO
     'compulsoryDataElementOperands',                              // complex collection
+    'workflow',                                                   // not in DSL surface
     'indicators',                                                 // not in DSL surface
     'legendSets',
     'sections',
   ]),
-  OrganisationUnit: new Set<string>(['children']),                // computed
+  OrganisationUnit: new Set<string>([
+    'children',                                                   // computed
+    'image',                                                      // file resource support not in DSL surface
+  ]),
   OrganisationUnitLevel: new Set<string>(),
   UserRole: new Set<string>(['members', 'users']),                // set server-side via users.userRoles
   UserGroup: new Set<string>(['managedGroups', 'managedByGroups']),
@@ -154,6 +162,8 @@ export const ENTITY_SKIP_FIELDS: Readonly<Record<MetadataKind, ReadonlySet<strin
     'trackedEntityTypeAttributes',                                // typed sub-schema
   ]),
   Program: new Set<string>([
+    'dataEntryForm',                                              // not in DSL surface
+    'expiryPeriodType',                                           // complex PeriodType, not in DSL surface
     'programStages',                                              // typed ref[]
     'programTrackedEntityAttributes',                             // typed sub-schema
     'programSections',                                            // not in DSL surface
@@ -164,6 +174,7 @@ export const ENTITY_SKIP_FIELDS: Readonly<Record<MetadataKind, ReadonlySet<strin
     'userRoles',                                                  // access control via sharing
   ]),
   ProgramStage: new Set<string>([
+    'dataEntryForm',                                              // not in DSL surface
     'programStageDataElements',                                   // typed sub-schema
     'programStageSections',
     'notificationTemplates',

@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { UserGroupBaseByTarget } from '../generated/userGroup.ts'
 import { getTarget } from '../generated/runtime.ts'
+import type { CurrentTarget } from './currentTarget.ts'
 import {
   CodeSchema,
   DescriptionSchema,
@@ -25,10 +26,10 @@ const SCHEMAS = {
   '2.42': UserGroupBaseByTarget['2.42'].extend(overrides),
 } as const
 
-export type UserGroupInput = z.input<(typeof SCHEMAS)['2.42']>
-export type UserGroup = Handle<'UserGroup', z.output<(typeof SCHEMAS)['2.42']>>
+export type UserGroupInput = z.input<(typeof SCHEMAS)[CurrentTarget]>
+export type UserGroup = Handle<'UserGroup', z.output<(typeof SCHEMAS)[CurrentTarget]>>
 
 export function defineUserGroup(input: UserGroupInput): UserGroup {
-  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)[CurrentTarget]>
   return makeHandle('UserGroup', parsed)
 }

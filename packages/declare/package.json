@@ -38,7 +38,7 @@
     "access": "public"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p type-tests/target-2-40/tsconfig.json && tsc --noEmit -p type-tests/target-2-42/tsconfig.json",
     "test": "vitest run",
     "gen:schemas": "tsx scripts/generate.ts"
   },

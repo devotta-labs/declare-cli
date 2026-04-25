@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { OrganisationUnitLevelBaseByTarget } from '../generated/organisationUnitLevel.ts'
 import { getTarget } from '../generated/runtime.ts'
+import type { CurrentTarget } from './currentTarget.ts'
 import { CodeSchema, NameSchema, makeHandle, type Handle } from './core.ts'
 
 const overrides = {
@@ -16,15 +17,15 @@ const SCHEMAS = {
   '2.42': OrganisationUnitLevelBaseByTarget['2.42'].extend(overrides),
 } as const
 
-export type OrganisationUnitLevelInput = z.input<(typeof SCHEMAS)['2.42']>
+export type OrganisationUnitLevelInput = z.input<(typeof SCHEMAS)[CurrentTarget]>
 export type OrganisationUnitLevel = Handle<
   'OrganisationUnitLevel',
-  z.output<(typeof SCHEMAS)['2.42']>
+  z.output<(typeof SCHEMAS)[CurrentTarget]>
 >
 
 export function defineOrganisationUnitLevel(
   input: OrganisationUnitLevelInput,
 ): OrganisationUnitLevel {
-  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)[CurrentTarget]>
   return makeHandle('OrganisationUnitLevel', parsed)
 }

@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { UserBaseByTarget } from '../generated/user.ts'
 import { getTarget } from '../generated/runtime.ts'
+import type { CurrentTarget } from './currentTarget.ts'
 import { CodeSchema, makeHandle, refSchema, type Handle } from './core.ts'
 
 const UsernameSchema = z
@@ -40,10 +41,10 @@ const SCHEMAS = {
   '2.42': UserBaseByTarget['2.42'].extend(overrides),
 } as const
 
-export type UserInput = z.input<(typeof SCHEMAS)['2.42']>
-export type User = Handle<'User', z.output<(typeof SCHEMAS)['2.42']>>
+export type UserInput = z.input<(typeof SCHEMAS)[CurrentTarget]>
+export type User = Handle<'User', z.output<(typeof SCHEMAS)[CurrentTarget]>>
 
 export function defineUser(input: UserInput): User {
-  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)['2.42']>
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)[CurrentTarget]>
   return makeHandle('User', parsed)
 }

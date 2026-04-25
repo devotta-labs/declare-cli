@@ -70,6 +70,24 @@ function emitScalar(prop: SnapshotProperty, target: Target): string | null {
   }
 }
 
+function unsupportedPropertyMessage(
+  kind: MetadataKind,
+  target: Target,
+  prop: SnapshotProperty,
+): string {
+  const parts = [
+    `propertyType=${prop.propertyType}`,
+    prop.klass ? `klass=${prop.klass}` : null,
+    prop.itemPropertyType ? `itemPropertyType=${prop.itemPropertyType}` : null,
+    prop.itemKlass ? `itemKlass=${prop.itemKlass}` : null,
+  ].filter((p): p is string => p !== null)
+
+  return [
+    `Cannot emit ${kind}.${apiFieldName(prop)} for DHIS2 ${target} (${parts.join(', ')}).`,
+    'Add emitter support, map its klass in KLASS_TO_KIND, or add an explicit skip in generate/config.ts if the hand layer owns it.',
+  ].join(' ')
+}
+
 function emitCollection(prop: SnapshotProperty, target: Target): string | null {
   const item = prop.itemPropertyType
   if (item === 'REFERENCE') {
@@ -168,7 +186,9 @@ export function emitEntity(
     const lines: string[] = []
     for (const prop of props) {
       const expr = emitScalar(prop, target)
-      if (expr === null) continue
+      if (expr === null) {
+        throw new Error(unsupportedPropertyMessage(kind, target, prop))
+      }
       if (expr.includes('refSchema(')) usesRefSchema = true
       // Track enum usage only when a per-target enum identifier actually
       // appears in the emitted expression — CONSTANT / itemPropertyType=CONSTANT
