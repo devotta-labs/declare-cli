@@ -14,3 +14,11 @@ export type {
   ImportMode,
 } from './client.ts'
 export type { ImportReport } from './report.ts'
+export {
+  ProgramRuleValidationError,
+  buildRuleEngine,
+  checkProgramRules,
+  evaluateRule,
+  formatRuleDiagnostics,
+} from './rules.ts'
+export type { EvaluatedRuleEffect, RuleDiagnostic, RuleEvaluator } from './rules.ts'

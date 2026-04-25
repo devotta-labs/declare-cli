@@ -59,6 +59,9 @@ importers:
       '@devotta-labs/declare':
         specifier: workspace:*
         version: link:../declare
+      '@dhis2/rule-engine':
+        specifier: 3.8.0
+        version: 3.8.0
       execa:
         specifier: ^9.5.2
         version: 9.6.1
@@ -138,6 +141,9 @@ packages:
 
   '@clack/prompts@0.8.2':
     resolution: {integrity: sha512-6b9Ab2UiZwJYA9iMyboYyW9yJvAO9V753ZhS+DHKEjZRKAxPPOb7MXXu84lsPFG+vZt6FRFniZ8rXi+zCIw4yQ==}
+
+  '@dhis2/rule-engine@3.8.0':
+    resolution: {integrity: sha512-JRNDQydV/6abhQxCpN7o3WB0aytY3R2kSsEyDniqgdtAfyMnVkF1MzChLZ6b6t/NOxUvlIbC45OXHWKoQzTl7g==}
 
   '@emnapi/core@1.9.2':
     resolution: {integrity: sha512-UC+ZhH3XtczQYfOlu3lNEkdW/p4dsJ1r/bP7H8+rhao3TTTMO1ATq/4DdIi23XuGoFY+Cz0JmCbdVl0hz9jZcA==}
@@ -315,6 +321,9 @@ packages:
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
+
+  '@js-joda/core@3.2.0':
+    resolution: {integrity: sha512-PMqgJ0sw5B7FKb2d5bWYIoxjri+QlW/Pys7+Rw82jSH0QN3rB05jZ/VrrsUdh1w4+i2kw9JOejXGq/KhDOX7Kg==}
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -1312,6 +1321,10 @@ snapshots:
       picocolors: 1.1.1
       sisteransi: 1.0.5
 
+  '@dhis2/rule-engine@3.8.0':
+    dependencies:
+      '@js-joda/core': 3.2.0
+
   '@emnapi/core@1.9.2':
     dependencies:
       '@emnapi/wasi-threads': 1.2.1
@@ -1414,6 +1427,8 @@ snapshots:
       '@types/node': 22.19.17
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
+
+  '@js-joda/core@3.2.0': {}
 
   '@manypkg/find-root@1.1.0':
     dependencies:

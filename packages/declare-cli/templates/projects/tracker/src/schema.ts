@@ -2,7 +2,13 @@ import { defineSchema } from '@devotta-labs/declare'
 import { dataElements } from './dataElements.ts'
 import { optionSets } from './optionSets.ts'
 import { organisationUnits, organisationUnitLevels } from './organisationUnits.ts'
-import { programs, programStages } from './program.ts'
+import {
+  programRuleVariables,
+  programRules,
+  programs,
+  programStages,
+  ruleTests,
+} from './program.ts'
 import { trackedEntityAttributes, trackedEntityTypes } from './trackedEntity.ts'
 import { userGroups } from './userGroups.ts'
 import { userRoles } from './userRoles.ts'
@@ -17,6 +23,9 @@ export default defineSchema({
   trackedEntityTypes,
   programs,
   programStages,
+  programRuleVariables,
+  programRules,
+  ruleTests,
   userRoles,
   userGroups,
   users,

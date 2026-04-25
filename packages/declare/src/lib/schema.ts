@@ -15,6 +15,12 @@ import type { TrackedEntityAttribute } from './trackedEntityAttribute.ts'
 import type { TrackedEntityType } from './trackedEntityType.ts'
 import type { Program } from './program.ts'
 import type { ProgramStage } from './programStage.ts'
+import type {
+  ProgramRule,
+  ProgramRuleAction,
+  ProgramRuleVariable,
+  RuleTest,
+} from './programRule.ts'
 
 export type AnyHandle =
   | Category
@@ -32,6 +38,9 @@ export type AnyHandle =
   | TrackedEntityType
   | Program
   | ProgramStage
+  | ProgramRuleVariable
+  | ProgramRuleAction
+  | ProgramRule
 
 export type SchemaInput = {
   categoryOptions?: readonly CategoryOption[]
@@ -49,10 +58,14 @@ export type SchemaInput = {
   trackedEntityTypes?: readonly TrackedEntityType[]
   programs?: readonly Program[]
   programStages?: readonly ProgramStage[]
+  programRuleVariables?: readonly ProgramRuleVariable[]
+  programRules?: readonly ProgramRule[]
+  ruleTests?: readonly RuleTest[]
 }
 
 export type Schema = {
   readonly byKind: Readonly<Record<MetadataKind, readonly Handle<MetadataKind, { code: string }>[]>>
+  readonly ruleTests: readonly RuleTest[]
   serialize(): Record<string, unknown[]>
 }
 
@@ -73,6 +86,9 @@ const PAYLOAD_KEY: Record<MetadataKind, string> = {
   TrackedEntityType: 'trackedEntityTypes',
   Program: 'programs',
   ProgramStage: 'programStages',
+  ProgramRuleVariable: 'programRuleVariables',
+  ProgramRuleAction: 'programRuleActions',
+  ProgramRule: 'programRules',
 }
 
 // DHIS2 master validation hooks crash on transient objects with null UIDs; supply
@@ -156,7 +172,14 @@ export function defineSchema(input: SchemaInput): Schema {
     TrackedEntityType: [],
     Program: [],
     ProgramStage: [],
+    ProgramRuleVariable: [],
+    ProgramRuleAction: [],
+    ProgramRule: [],
   }
+
+  const derivedProgramRuleActions = (input.programRules ?? []).flatMap(
+    (rule) => rule.input.programRuleActions ?? [],
+  )
 
   const groups: readonly (readonly AnyHandle[] | undefined)[] = [
     input.categoryOptions,
@@ -174,6 +197,9 @@ export function defineSchema(input: SchemaInput): Schema {
     input.trackedEntityTypes,
     input.programs,
     input.programStages,
+    input.programRuleVariables,
+    input.programRules,
+    derivedProgramRuleActions,
   ]
 
   const seen = new Set<string>()
@@ -201,8 +227,19 @@ export function defineSchema(input: SchemaInput): Schema {
     }
   }
 
+  const actionToRule = new Map<string, Handle<'ProgramRule', { code: string }>>()
+  for (const rule of byKind.ProgramRule as Handle<'ProgramRule', { code: string }>[]) {
+    const ruleInput = rule.input as {
+      programRuleActions?: readonly { code: string }[]
+    }
+    for (const actionRef of ruleInput.programRuleActions ?? []) {
+      actionToRule.set(actionRef.code, rule)
+    }
+  }
+
   return {
     byKind,
+    ruleTests: input.ruleTests ?? [],
     serialize() {
       const payload: Record<string, unknown[]> = {}
       const hoistedOptions: Record<string, unknown>[] = []
@@ -238,6 +275,15 @@ export function defineSchema(input: SchemaInput): Schema {
               if (owner) {
                 withId.program = {
                   id: stableUid(`Program:${owner.code}`),
+                  code: owner.code,
+                }
+              }
+            }
+            if (kind === 'ProgramRuleAction' && !('programRule' in withId)) {
+              const owner = actionToRule.get(h.code)
+              if (owner) {
+                withId.programRule = {
+                  id: stableUid(`ProgramRule:${owner.code}`),
                   code: owner.code,
                 }
               }

@@ -18,6 +18,9 @@ export type MetadataKind =
   | 'TrackedEntityType'
   | 'Program'
   | 'ProgramStage'
+  | 'ProgramRuleVariable'
+  | 'ProgramRuleAction'
+  | 'ProgramRule'
 
 declare const __kind: unique symbol
 declare const __brand: unique symbol
