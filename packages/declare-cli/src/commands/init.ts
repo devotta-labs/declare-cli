@@ -170,7 +170,6 @@ async function runScaffold(
   const declareDep = (await detectMonorepo(cwd)) ? 'workspace:*' : '^0.1.0'
   await scaffold(template, projectDir, { name, port, target, declareDep })
 
-  // Avoid loadConfig here: the scaffolded project may not have installed dependencies yet.
   await writeDeclareEnv(projectDir, target)
 }
 
