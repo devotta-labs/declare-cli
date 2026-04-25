@@ -1,6 +1,6 @@
 import type { LoadedConfig } from '../config-loader.ts'
 import { assertDockerAvailable, composeLogs } from '../docker.ts'
-import { stackEnvFor } from './start.ts'
+import { stackEnvFor } from '../local-stack.ts'
 
 export async function logs(loaded: LoadedConfig, args: readonly string[]): Promise<void> {
   await assertDockerAvailable()

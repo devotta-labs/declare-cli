@@ -1,9 +1,15 @@
 import type { LoadedConfig } from '../config-loader.ts'
 import { assertDockerAvailable, webContainerState } from '../docker.ts'
+import {
+  LOCAL_CREDENTIALS_LABEL,
+  baseUrlFor,
+  stackEnvFor,
+} from '../local-stack.ts'
 import { ui, pc } from '../ui.ts'
-import { baseUrlFor, stackEnvFor } from './start.ts'
+import { expectNoArgs } from './args.ts'
 
-export async function status(loaded: LoadedConfig, _args: readonly string[]): Promise<void> {
+export async function status(loaded: LoadedConfig, args: readonly string[]): Promise<void> {
+  expectNoArgs('status', args)
   const env = stackEnvFor(loaded)
   await assertDockerAvailable()
 
@@ -14,7 +20,7 @@ export async function status(loaded: LoadedConfig, _args: readonly string[]): Pr
   ui.raw(`${pc.bold('Project:')}   ${env.project}`)
   ui.raw(`${pc.bold('State:')}     ${formatState(state)}`)
   ui.raw(`${pc.bold('URL:')}       ${baseUrl}`)
-  ui.raw(`${pc.bold('Admin:')}     admin / district`)
+  ui.raw(`${pc.bold('Admin:')}     ${LOCAL_CREDENTIALS_LABEL}`)
   ui.raw('')
 
   if (state !== 'running') {

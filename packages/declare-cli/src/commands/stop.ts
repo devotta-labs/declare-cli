@@ -1,9 +1,11 @@
 import type { LoadedConfig } from '../config-loader.ts'
 import { assertDockerAvailable, composeDownWipe, webContainerState } from '../docker.ts'
+import { stackEnvFor } from '../local-stack.ts'
 import { ui, pc } from '../ui.ts'
-import { stackEnvFor } from './start.ts'
+import { expectNoArgs } from './args.ts'
 
-export async function stop(loaded: LoadedConfig, _args: readonly string[]): Promise<void> {
+export async function stop(loaded: LoadedConfig, args: readonly string[]): Promise<void> {
+  expectNoArgs('stop', args)
   const env = stackEnvFor(loaded)
   await assertDockerAvailable()
 

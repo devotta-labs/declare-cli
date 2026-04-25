@@ -4,25 +4,21 @@ import {
   assertDockerAvailable,
   composeUp,
   isPortFree,
-  type StackEnv,
   waitUntilReady,
   webContainerState,
 } from '../docker.ts'
+import {
+  LOCAL_CREDENTIALS,
+  LOCAL_CREDENTIALS_LABEL,
+  baseUrlFor,
+  stackEnvFor,
+} from '../local-stack.ts'
 import { ui, pc } from '../ui.ts'
 import { applyLoaded } from './apply.ts'
+import { expectNoArgs } from './args.ts'
 
-export function stackEnvFor(loaded: LoadedConfig): StackEnv {
-  return {
-    project: loaded.config.name,
-    webPort: loaded.config.local.port,
-  }
-}
-
-export function baseUrlFor(loaded: LoadedConfig): string {
-  return `http://localhost:${loaded.config.local.port}`
-}
-
-export async function start(loaded: LoadedConfig, _args: readonly string[]): Promise<void> {
+export async function start(loaded: LoadedConfig, args: readonly string[]): Promise<void> {
+  expectNoArgs('start', args)
   const env = stackEnvFor(loaded)
   const baseUrl = baseUrlFor(loaded)
 
@@ -58,7 +54,7 @@ export async function start(loaded: LoadedConfig, _args: readonly string[]): Pro
 
   s.start('Starting up DHIS2')
   try {
-    await waitUntilReady(baseUrl)
+    await waitUntilReady(baseUrl, LOCAL_CREDENTIALS)
   } catch (err) {
     s.stop('DHIS2 failed to become ready', 1)
     throw err
@@ -68,6 +64,6 @@ export async function start(loaded: LoadedConfig, _args: readonly string[]): Pro
   await applyLoaded(loaded, { silent: true })
 
   ui.raw('')
-  ui.raw(`${pc.bold('Credentials:')} admin / district`)
+  ui.raw(`${pc.bold('Credentials:')} ${LOCAL_CREDENTIALS_LABEL}`)
   ui.raw(`${pc.bold('URL:')}         ${baseUrl}`)
 }

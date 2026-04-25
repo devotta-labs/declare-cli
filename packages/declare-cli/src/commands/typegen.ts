@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import type { Target } from '@devotta-labs/declare'
 import type { LoadedConfig } from '../config-loader.ts'
 import { pc, ui } from '../ui.ts'
+import { expectNoArgs } from './args.ts'
 
 const ENV_FILE = 'declare-env.d.ts'
 
@@ -16,7 +17,8 @@ const ENV_FILE = 'declare-env.d.ts'
  * Safe to run on every invocation: we read the existing file and skip writing
  * if the contents are unchanged, so TS's incremental build isn't invalidated.
  */
-export async function typegen(loaded: LoadedConfig, _args: readonly string[] = []): Promise<void> {
+export async function typegen(loaded: LoadedConfig, args: readonly string[] = []): Promise<void> {
+  expectNoArgs('typegen', args)
   await writeDeclareEnv(loaded.projectRoot, loaded.config.target)
 }
 

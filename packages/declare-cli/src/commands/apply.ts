@@ -1,11 +1,12 @@
 import { spinner } from '@clack/prompts'
 import { loadSchema, type LoadedConfig } from '../config-loader.ts'
+import { assertLocalStackRunning, baseUrlFor, localClient } from '../local-stack.ts'
 import { printReport } from '../report.ts'
 import { pc, ui } from '../ui.ts'
-import { assertLocalStackRunning, localClient } from './_local-client.ts'
-import { baseUrlFor } from './start.ts'
+import { expectNoArgs } from './args.ts'
 
-export async function apply(loaded: LoadedConfig, _args: readonly string[]): Promise<void> {
+export async function apply(loaded: LoadedConfig, args: readonly string[]): Promise<void> {
+  expectNoArgs('apply', args)
   await assertLocalStackRunning(loaded)
   await applyLoaded(loaded)
 }
