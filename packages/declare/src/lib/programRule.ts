@@ -2,6 +2,9 @@ import { createHash } from 'node:crypto'
 import { z } from 'zod'
 import { ValueTypeByTarget } from '../generated/enums.ts'
 import type { ValueType } from '../generated/enums.ts'
+import { ProgramRuleActionBaseByTarget } from '../generated/programRuleAction.ts'
+import { ProgramRuleBaseByTarget } from '../generated/programRule.ts'
+import { ProgramRuleVariableBaseByTarget } from '../generated/programRuleVariable.ts'
 import { getTarget, type Target } from '../generated/runtime.ts'
 import type { CurrentTarget } from './currentTarget.ts'
 import {
@@ -100,14 +103,23 @@ const VariableNameSchema = z
 
 const ValueTypeSchema = (target: Target) => ValueTypeByTarget[target]
 
+// Build the common variable schema from the generated base, omitting fields
+// whose optionality varies per source-type variant. Each discriminated union
+// branch re-declares them with the correct required/optional semantics.
 const CommonVariableSchema = (target: Target) =>
-  z.object({
-    code: CodeSchema,
-    name: VariableNameSchema,
-    program: refSchema('Program'),
-    valueType: ValueTypeSchema(target).optional(),
-    useCodeForOptionSet: z.boolean().default(false),
-  })
+  ProgramRuleVariableBaseByTarget[target]
+    .omit({
+      programRuleVariableSourceType: true,
+      dataElement: true,
+      trackedEntityAttribute: true,
+      programStage: true,
+    })
+    .extend({
+      code: CodeSchema,
+      name: VariableNameSchema,
+      valueType: ValueTypeSchema(target).optional(),
+      useCodeForOptionSet: z.boolean().default(false),
+    })
 
 const DataElementVariableSchema = (target: Target) =>
   CommonVariableSchema(target).extend({
@@ -265,31 +277,25 @@ export type ProgramRuleActionSpec = {
   readonly priority?: number | undefined
 }
 
-const ProgramRuleActionSchema = (target: Target) =>
-  z.object({
-    code: CodeSchema,
-    programRuleActionType: ProgramRuleActionTypeByTarget[target],
-    evaluationTime: ProgramRuleActionEvaluationTime.default('ALWAYS'),
-    data: z.string().optional(),
-    content: z.string().optional(),
-    dataElement: refSchema('DataElement').optional(),
-    trackedEntityAttribute: refSchema('TrackedEntityAttribute').optional(),
-    programStage: refSchema('ProgramStage').optional(),
-    programRule: refSchema('ProgramRule').optional(),
-    // Program stage sections and option groups are intentionally loose in the
-    // MVP because declare does not model those metadata kinds yet.
-    programStageSection: z.string().optional(),
-    location: z.string().max(255).optional(),
-    option: z.string().optional(),
-    optionGroup: z.string().optional(),
-    templateUid: z.string().optional(),
-    priority: z.number().int().optional(),
-  })
+const programRuleActionOverrides = (target: Target) => ({
+  code: CodeSchema,
+  programRuleActionType: ProgramRuleActionTypeByTarget[target],
+  evaluationTime: ProgramRuleActionEvaluationTime.default('ALWAYS'),
+  // Program stage sections and option groups are intentionally loose in the
+  // MVP because declare does not model those metadata kinds yet.
+  option: z.string().optional(),
+  programStageSection: z.string().optional(),
+  optionGroup: z.string().optional(),
+  templateUid: z.string().optional(),
+  // priority is only in the generated base for 2.42; include it for all
+  // targets so the hand layer surface is consistent.
+  priority: z.number().int().optional(),
+})
 
 const ProgramRuleActionSchemas = {
-  '2.40': ProgramRuleActionSchema('2.40'),
-  '2.41': ProgramRuleActionSchema('2.41'),
-  '2.42': ProgramRuleActionSchema('2.42'),
+  '2.40': ProgramRuleActionBaseByTarget['2.40'].extend(programRuleActionOverrides('2.40')),
+  '2.41': ProgramRuleActionBaseByTarget['2.41'].extend(programRuleActionOverrides('2.41')),
+  '2.42': ProgramRuleActionBaseByTarget['2.42'].extend(programRuleActionOverrides('2.42')),
 } as const
 
 type ProgramRuleActionOutput = Omit<
@@ -530,16 +536,19 @@ export const action: ActionFactories<CurrentTarget> = {
   }),
 }
 
-const ProgramRuleSchema = z.object({
+const programRuleOverrides = {
   code: CodeSchema,
   name: NameSchema,
   description: DescriptionSchema.optional(),
-  program: refSchema('Program'),
-  programStage: refSchema('ProgramStage').optional(),
   condition: z.string().default(''),
-  priority: z.number().int().optional(),
   programRuleActions: z.array(refSchema('ProgramRuleAction')),
-})
+}
+
+const ProgramRuleSchemas = {
+  '2.40': ProgramRuleBaseByTarget['2.40'].extend(programRuleOverrides),
+  '2.41': ProgramRuleBaseByTarget['2.41'].extend(programRuleOverrides),
+  '2.42': ProgramRuleBaseByTarget['2.42'].extend(programRuleOverrides),
+} as const
 
 export type ProgramRuleInput = {
   code: string
@@ -553,7 +562,7 @@ export type ProgramRuleInput = {
 }
 
 type ProgramRuleOutput = Omit<
-  z.output<typeof ProgramRuleSchema>,
+  z.output<(typeof ProgramRuleSchemas)[CurrentTarget]>,
   'program' | 'programStage' | 'programRuleActions'
 > & {
   program: Program
@@ -582,7 +591,7 @@ export function defineProgramRule(input: ProgramRuleInput): ProgramRule {
       ...spec,
     }),
   )
-  const parsed = ProgramRuleSchema.parse({
+  const parsed = ProgramRuleSchemas[getTarget()].parse({
     code: input.code,
     name: input.name,
     description: input.description,
