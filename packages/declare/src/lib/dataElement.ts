@@ -20,11 +20,7 @@ import { SharingSchema } from './sharing.ts'
 
 export { DomainType }
 
-// Hand-layer overrides applied on top of each per-target generated Base:
-// stricter `code`, authoring-time defaults, the Sharing DSL, and the
-// cross-field refinement DHIS2 enforces only at import time. CONSTANT
-// fields pull from `<Enum>ByTarget[target]` so defaults don't clobber
-// the versioned enum with the unversioned union.
+// Defaults use per-target enums so removed constants stay rejected.
 const overridesFor = (target: Target) => ({
   code: CodeSchema,
   name: NameSchema,
@@ -63,9 +59,6 @@ const SCHEMAS = {
     .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
 } as const
 
-// Input/output types are narrowed to the target the user configured via
-// `declare-cli typegen`. Without typegen, CurrentTarget falls back to the
-// full Target union.
 export type DataElementInput = z.input<(typeof SCHEMAS)[CurrentTarget]>
 export type DataElement = Handle<
   'DataElement',

@@ -3,24 +3,12 @@ import type { EntityCollection } from './collect.ts'
 import type { SnapshotProperty } from './snapshot.ts'
 
 export type EnumDef = {
-  /** Stable TS identifier derived from the Java klass name. */
   readonly name: string
-  /** Full klass string from the snapshot — used only for debugging/diagnostics. */
   readonly klass: string
-  /** Constants observed in each target (ordered as the snapshot ordered them). */
   readonly valuesByTarget: Readonly<Record<Target, readonly string[]>>
-  /** Deduplicated union across all observed targets (stable order). */
   readonly union: readonly string[]
 }
 
-/**
- * Scan every CONSTANT property across every target, group by klass, and
- * build one EnumDef per distinct klass.
- *
- * Name clashes (two different klasses with the same last segment) are a
- * hard error — the generator is small enough that picking fully-qualified
- * names is easier than silently merging.
- */
 export function collectEnums(
   collection: EntityCollection,
   targets: readonly Target[],
@@ -77,7 +65,6 @@ function walkConstants(
     add(sink, prop.klass, target, [...prop.constants])
     return
   }
-  // CONSTANT collections exist (e.g. program.accessLevels when it's a set of enum).
   if (
     prop.propertyType === 'COLLECTION' &&
     prop.itemPropertyType === 'CONSTANT' &&
@@ -99,7 +86,6 @@ function add(
     perKlass = new Map()
     sink.set(klass, perKlass)
   }
-  // De-dupe within a (klass, target) but keep first-seen order.
   const existing = perKlass.get(target) ?? []
   const seen = new Set(existing)
   for (const v of values) {
@@ -111,11 +97,6 @@ function add(
   perKlass.set(target, existing)
 }
 
-/**
- * Last segment of a Java FQN, with a couple of renames for readability.
- * `DataElementDomain` → `DomainType` matches the hand-layer name users
- * already import from lib/dataElement.ts.
- */
 export function enumNameFromKlass(klass: string): string {
   const last = klass.split('.').pop()!
   return ENUM_RENAMES[last] ?? last

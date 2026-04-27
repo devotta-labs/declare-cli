@@ -63,7 +63,6 @@ async function main(argv: readonly string[]): Promise<void> {
   }
 
   if (cmd === '-v' || cmd === '--version') {
-    // Read version from the CLI's own package.json at runtime to avoid import assertions.
     const { readFileSync } = await import('node:fs')
     const { fileURLToPath } = await import('node:url')
     const { resolve, dirname } = await import('node:path')

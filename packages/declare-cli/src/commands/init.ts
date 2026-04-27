@@ -170,11 +170,6 @@ async function runScaffold(
   const declareDep = (await detectMonorepo(cwd)) ? 'workspace:*' : '^0.1.0'
   await scaffold(template, projectDir, { name, port, target, declareDep })
 
-  // Generate declare-env.d.ts immediately so a fresh `pnpm install && pnpm
-  // exec tsc --noEmit` works without a preceding `declare-cli check`. We use
-  // the already-known target directly rather than loadConfig, since the
-  // scaffolded project hasn't run `pnpm install` yet and jiti.import would
-  // fail to resolve @devotta-labs/declare-cli from it.
   await writeDeclareEnv(projectDir, target)
 }
 

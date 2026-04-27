@@ -70,9 +70,7 @@ export async function loadSchema(loaded: LoadedConfig): Promise<Schema> {
     )
   }
 
-  // Scope the target before the user schema file imports defineX(), so the
-  // right per-version Zod validator is selected at parse time without leaking
-  // that target to later schema loads.
+  // The schema import must happen inside withTarget so defineX uses target-specific validators.
   return await withTarget(loaded.config.target, async () => {
     const mod = await jiti.import<unknown>(pathToFileURL(schemaPath).href)
     const schema =

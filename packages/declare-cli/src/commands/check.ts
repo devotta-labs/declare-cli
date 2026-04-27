@@ -12,10 +12,6 @@ function hasProgramRuleContent(schema: Schema): boolean {
 }
 
 export async function check(loaded: LoadedConfig, _args: readonly string[]): Promise<void> {
-  // Refresh declare-env.d.ts first so the user's editor TS narrows to the
-  // configured target on the next reload. Fast (a single file write that
-  // no-ops when unchanged); the runtime parse below still enforces the target
-  // regardless of TS state.
   await typegen(loaded)
   const schema = await loadSchema(loaded)
   if (hasProgramRuleContent(schema)) {
