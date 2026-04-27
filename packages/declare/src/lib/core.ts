@@ -1,7 +1,6 @@
 import { createHash } from 'node:crypto'
 import { z } from 'zod'
 import type { MetadataKind } from './entities.ts'
-
 export type { MetadataKind } from './entities.ts'
 
 declare const __kind: unique symbol

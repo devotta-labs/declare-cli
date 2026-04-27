@@ -23,7 +23,7 @@ describe('emitEntity', () => {
     }
 
     expect(() => emitEntity('DataSet', perTarget)).toThrow(
-      /Cannot emit DataSet\.dataEntryForm for DHIS2 2\.40/,
+      /Cannot emit DataSet\.form for DHIS2 2\.40/,
     )
   })
 })

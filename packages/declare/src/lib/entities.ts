@@ -102,6 +102,24 @@ export const ENTITY_DEFINITIONS = {
     klass: 'org.hisp.dhis.program.ProgramStage',
     authoring: true,
   },
+  ProgramRuleVariable: {
+    schemaName: 'programRuleVariable',
+    payloadKey: 'programRuleVariables',
+    klass: 'org.hisp.dhis.programrule.ProgramRuleVariable',
+    authoring: true,
+  },
+  ProgramRuleAction: {
+    schemaName: 'programRuleAction',
+    payloadKey: 'programRuleActions',
+    klass: 'org.hisp.dhis.programrule.ProgramRuleAction',
+    authoring: false,
+  },
+  ProgramRule: {
+    schemaName: 'programRule',
+    payloadKey: 'programRules',
+    klass: 'org.hisp.dhis.programrule.ProgramRule',
+    authoring: true,
+  },
 } as const satisfies Record<string, EntityDefinition>
 
 export type MetadataKind = keyof typeof ENTITY_DEFINITIONS

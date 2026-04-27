@@ -19,6 +19,23 @@ export {
 export { defineTrackedEntityType, type TrackedEntityType } from './trackedEntityType.ts'
 export { defineProgram, ProgramType, ProgramAccessLevel, type Program } from './program.ts'
 export { defineProgramStage, ValidationStrategy, type ProgramStage } from './programStage.ts'
+export {
+  action,
+  effect,
+  defineProgramRule,
+  defineProgramRuleVariable,
+  defineRuleTest,
+  ProgramRuleActionEvaluationTime,
+  ProgramRuleActionType,
+  ProgramRuleVariableSourceType,
+  type ProgramRule,
+  type ProgramRuleAction,
+  type ProgramRuleActionSpec,
+  type ProgramRuleVariable,
+  type RuleEffectSpec,
+  type RuleTest,
+  type RuleTestGiven,
+} from './programRule.ts'
 export { Authority } from './authorities.ts'
 export {
   Access,
@@ -30,6 +47,7 @@ export {
   type SharingInput,
 } from './sharing.ts'
 export { defineSchema, type Schema, type AnyHandle } from './schema.ts'
+export type { Handle, Ref } from './core.ts'
 export {
   AUTHORING_METADATA_KINDS,
   ENTITY_DEFINITIONS,

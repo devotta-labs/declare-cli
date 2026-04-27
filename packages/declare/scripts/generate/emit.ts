@@ -113,13 +113,16 @@ function targetSuffix(target: Target): string {
  * properties this is `collectionName` (e.g. DataSet.organisationUnits,
  * Program.programTrackedEntityAttributes) — using `fieldName` would emit the
  * Java field name instead (`sources`, `programAttributes`) which the API
- * silently ignores on import.
+ * silently ignores on import. For non-COLLECTION properties the canonical
+ * `name` is the correct wire-format key — `fieldName` is the Java field name
+ * which can differ (e.g. ProgramRuleVariable has `name=trackedEntityAttribute`
+ * but `fieldName=attribute`).
  */
 function apiFieldName(prop: SnapshotProperty): string {
   if (prop.propertyType === 'COLLECTION' && prop.collectionName) {
     return prop.collectionName
   }
-  return prop.fieldName ?? prop.name
+  return prop.name
 }
 
 export function emitEnums(enums: readonly EnumDef[]): string {
