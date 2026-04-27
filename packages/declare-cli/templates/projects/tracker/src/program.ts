@@ -1,4 +1,12 @@
-import { defineProgram, defineProgramStage } from '@devotta-labs/declare'
+import {
+  action,
+  defineProgram,
+  defineProgramRule,
+  defineProgramRuleVariable,
+  defineProgramStage,
+  defineRuleTest,
+  effect,
+} from '@devotta-labs/declare'
 import { visitNotes } from './dataElements.ts'
 import { country, facility } from './organisationUnits.ts'
 import { captureSharing } from './sharing.ts'
@@ -47,3 +55,43 @@ export const examplePrograms = defineProgram({
 })
 
 export const programs = [examplePrograms]
+
+export const visitNotesVariable = defineProgramRuleVariable({
+  code: 'EX_PRV_VISIT_NOTES',
+  name: 'visitNotes',
+  program: examplePrograms,
+  programRuleVariableSourceType: 'DATAELEMENT_CURRENT_EVENT',
+  dataElement: visitNotes,
+})
+
+export const reviewNoteRule = defineProgramRule({
+  code: 'EX_PR_REVIEW_NOTE',
+  name: 'Review note warning',
+  program: examplePrograms,
+  condition: "#{visitNotes} == 'review'",
+  actions: [
+    action.showWarning({
+      on: visitNotes,
+      content: 'This note needs review.',
+    }),
+  ],
+})
+
+export const programRuleVariables = [visitNotesVariable]
+export const programRules = [reviewNoteRule]
+
+export const ruleTests = [
+  defineRuleTest({
+    rule: reviewNoteRule,
+    given: {
+      programStage: visitStage,
+      event: [[visitNotes, 'review']],
+    },
+    expect: [
+      effect.showWarning({
+        on: visitNotes,
+        content: 'This note needs review.',
+      }),
+    ],
+  }),
+]

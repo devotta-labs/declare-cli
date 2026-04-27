@@ -150,4 +150,12 @@ export const ENTITY_SKIP_FIELDS: Readonly<Record<MetadataKind, ReadonlySet<strin
     'notificationTemplates',
     'program',                                                    // back-ref injected at serialize time
   ]),
+  ProgramRuleVariable: new Set<string>(),
+  ProgramRuleAction: new Set<string>([
+    'legendSet',
+    'optionGroup',
+    'programIndicator',
+    'programStageSection',
+  ]),
+  ProgramRule: new Set<string>(),
 }

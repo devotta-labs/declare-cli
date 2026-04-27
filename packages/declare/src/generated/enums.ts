@@ -67,6 +67,42 @@ export const ProgramAccessLevelByTarget = {
   '2.42': ProgramAccessLevel_2_42,
 } as const
 
+// org.hisp.dhis.programrule.ProgramRuleActionEvaluationTime
+export const ProgramRuleActionEvaluationTime = z.enum(['ON_DATA_ENTRY', 'ON_COMPLETE', 'ALWAYS'])
+export type ProgramRuleActionEvaluationTime = z.infer<typeof ProgramRuleActionEvaluationTime>
+export const ProgramRuleActionEvaluationTime_2_40 = z.enum(['ON_DATA_ENTRY', 'ON_COMPLETE', 'ALWAYS'])
+export const ProgramRuleActionEvaluationTime_2_41 = z.enum(['ON_DATA_ENTRY', 'ON_COMPLETE', 'ALWAYS'])
+export const ProgramRuleActionEvaluationTime_2_42 = z.enum(['ON_DATA_ENTRY', 'ON_COMPLETE', 'ALWAYS'])
+export const ProgramRuleActionEvaluationTimeByTarget = {
+  '2.40': ProgramRuleActionEvaluationTime_2_40,
+  '2.41': ProgramRuleActionEvaluationTime_2_41,
+  '2.42': ProgramRuleActionEvaluationTime_2_42,
+} as const
+
+// org.hisp.dhis.programrule.ProgramRuleActionType
+export const ProgramRuleActionType = z.enum(['DISPLAYTEXT', 'DISPLAYKEYVALUEPAIR', 'HIDEFIELD', 'HIDESECTION', 'HIDEPROGRAMSTAGE', 'ASSIGN', 'SHOWWARNING', 'WARNINGONCOMPLETE', 'SHOWERROR', 'ERRORONCOMPLETE', 'CREATEEVENT', 'SETMANDATORYFIELD', 'SENDMESSAGE', 'SCHEDULEMESSAGE', 'HIDEOPTION', 'SHOWOPTIONGROUP', 'HIDEOPTIONGROUP', 'SCHEDULEEVENT'])
+export type ProgramRuleActionType = z.infer<typeof ProgramRuleActionType>
+export const ProgramRuleActionType_2_40 = z.enum(['DISPLAYTEXT', 'DISPLAYKEYVALUEPAIR', 'HIDEFIELD', 'HIDESECTION', 'HIDEPROGRAMSTAGE', 'ASSIGN', 'SHOWWARNING', 'WARNINGONCOMPLETE', 'SHOWERROR', 'ERRORONCOMPLETE', 'CREATEEVENT', 'SETMANDATORYFIELD', 'SENDMESSAGE', 'SCHEDULEMESSAGE', 'HIDEOPTION', 'SHOWOPTIONGROUP', 'HIDEOPTIONGROUP'])
+export const ProgramRuleActionType_2_41 = z.enum(['DISPLAYTEXT', 'DISPLAYKEYVALUEPAIR', 'HIDEFIELD', 'HIDESECTION', 'HIDEPROGRAMSTAGE', 'ASSIGN', 'SHOWWARNING', 'WARNINGONCOMPLETE', 'SHOWERROR', 'ERRORONCOMPLETE', 'CREATEEVENT', 'SETMANDATORYFIELD', 'SENDMESSAGE', 'SCHEDULEMESSAGE', 'HIDEOPTION', 'SHOWOPTIONGROUP', 'HIDEOPTIONGROUP'])
+export const ProgramRuleActionType_2_42 = z.enum(['DISPLAYTEXT', 'DISPLAYKEYVALUEPAIR', 'HIDEFIELD', 'HIDESECTION', 'HIDEPROGRAMSTAGE', 'ASSIGN', 'SHOWWARNING', 'WARNINGONCOMPLETE', 'SHOWERROR', 'ERRORONCOMPLETE', 'SCHEDULEEVENT', 'CREATEEVENT', 'SETMANDATORYFIELD', 'SENDMESSAGE', 'SCHEDULEMESSAGE', 'HIDEOPTION', 'SHOWOPTIONGROUP', 'HIDEOPTIONGROUP'])
+export const ProgramRuleActionTypeByTarget = {
+  '2.40': ProgramRuleActionType_2_40,
+  '2.41': ProgramRuleActionType_2_41,
+  '2.42': ProgramRuleActionType_2_42,
+} as const
+
+// org.hisp.dhis.programrule.ProgramRuleVariableSourceType
+export const ProgramRuleVariableSourceType = z.enum(['DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE', 'DATAELEMENT_NEWEST_EVENT_PROGRAM', 'DATAELEMENT_CURRENT_EVENT', 'DATAELEMENT_PREVIOUS_EVENT', 'CALCULATED_VALUE', 'TEI_ATTRIBUTE'])
+export type ProgramRuleVariableSourceType = z.infer<typeof ProgramRuleVariableSourceType>
+export const ProgramRuleVariableSourceType_2_40 = z.enum(['DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE', 'DATAELEMENT_NEWEST_EVENT_PROGRAM', 'DATAELEMENT_CURRENT_EVENT', 'DATAELEMENT_PREVIOUS_EVENT', 'CALCULATED_VALUE', 'TEI_ATTRIBUTE'])
+export const ProgramRuleVariableSourceType_2_41 = z.enum(['DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE', 'DATAELEMENT_NEWEST_EVENT_PROGRAM', 'DATAELEMENT_CURRENT_EVENT', 'DATAELEMENT_PREVIOUS_EVENT', 'CALCULATED_VALUE', 'TEI_ATTRIBUTE'])
+export const ProgramRuleVariableSourceType_2_42 = z.enum(['DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE', 'DATAELEMENT_NEWEST_EVENT_PROGRAM', 'DATAELEMENT_CURRENT_EVENT', 'DATAELEMENT_PREVIOUS_EVENT', 'CALCULATED_VALUE', 'TEI_ATTRIBUTE'])
+export const ProgramRuleVariableSourceTypeByTarget = {
+  '2.40': ProgramRuleVariableSourceType_2_40,
+  '2.41': ProgramRuleVariableSourceType_2_41,
+  '2.42': ProgramRuleVariableSourceType_2_42,
+} as const
+
 // org.hisp.dhis.program.ProgramType
 export const ProgramType = z.enum(['WITH_REGISTRATION', 'WITHOUT_REGISTRATION'])
 export type ProgramType = z.infer<typeof ProgramType>

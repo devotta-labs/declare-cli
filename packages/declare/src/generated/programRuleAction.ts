@@ -1,0 +1,64 @@
+// AUTO-GENERATED — do not edit by hand.
+//
+// Source: packages/declare/snapshots/schemas-<target>.json
+// Tool:   packages/declare/scripts/generate.ts
+//
+// Re-run `pnpm --filter @devotta-labs/declare gen:schemas` to refresh.
+
+import { z } from 'zod'
+import { refSchema } from '../lib/core.ts'
+import { ProgramRuleActionEvaluationTime_2_40, ProgramRuleActionEvaluationTime_2_41, ProgramRuleActionEvaluationTime_2_42, ProgramRuleActionType_2_40, ProgramRuleActionType_2_41, ProgramRuleActionType_2_42 } from './enums.ts'
+
+export const ProgramRuleActionBase_2_40 = z.object({
+  code: z.string().max(50).optional(),
+  content: z.string().optional(),
+  data: z.string().optional(),
+  dataElement: refSchema('DataElement').optional(),
+  evaluationEnvironments: z.array(z.string()).optional(),
+  evaluationTime: ProgramRuleActionEvaluationTime_2_40,
+  location: z.string().max(255).optional(),
+  option: refSchema('Option').optional(),
+  programRule: refSchema('ProgramRule').optional(),
+  programRuleActionType: ProgramRuleActionType_2_40,
+  programStage: refSchema('ProgramStage').optional(),
+  templateUid: z.string().max(255).optional(),
+  trackedEntityAttribute: refSchema('TrackedEntityAttribute').optional(),
+})
+
+export const ProgramRuleActionBase_2_41 = z.object({
+  code: z.string().max(50).optional(),
+  content: z.string().optional(),
+  data: z.string().optional(),
+  dataElement: refSchema('DataElement').optional(),
+  evaluationEnvironments: z.array(z.string()).optional(),
+  evaluationTime: ProgramRuleActionEvaluationTime_2_41,
+  location: z.string().max(255).optional(),
+  option: refSchema('Option').optional(),
+  programRule: refSchema('ProgramRule').optional(),
+  programRuleActionType: ProgramRuleActionType_2_41,
+  programStage: refSchema('ProgramStage').optional(),
+  templateUid: z.string().max(255).optional(),
+  trackedEntityAttribute: refSchema('TrackedEntityAttribute').optional(),
+})
+
+export const ProgramRuleActionBase_2_42 = z.object({
+  code: z.string().max(50).optional(),
+  content: z.string().optional(),
+  data: z.string().optional(),
+  dataElement: refSchema('DataElement').optional(),
+  evaluationEnvironments: z.array(z.string()).optional(),
+  evaluationTime: ProgramRuleActionEvaluationTime_2_42,
+  location: z.string().max(255).optional(),
+  option: refSchema('Option').optional(),
+  priority: z.number().int().optional(),
+  programRule: refSchema('ProgramRule').optional(),
+  programRuleActionType: ProgramRuleActionType_2_42,
+  programStage: refSchema('ProgramStage').optional(),
+  trackedEntityAttribute: refSchema('TrackedEntityAttribute').optional(),
+})
+
+export const ProgramRuleActionBaseByTarget = {
+  '2.40': ProgramRuleActionBase_2_40,
+  '2.41': ProgramRuleActionBase_2_41,
+  '2.42': ProgramRuleActionBase_2_42,
+} as const

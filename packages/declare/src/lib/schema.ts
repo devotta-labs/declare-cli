@@ -23,6 +23,12 @@ import type { TrackedEntityAttribute } from './trackedEntityAttribute.ts'
 import type { TrackedEntityType } from './trackedEntityType.ts'
 import type { Program } from './program.ts'
 import type { ProgramStage } from './programStage.ts'
+import type {
+  ProgramRule,
+  ProgramRuleAction,
+  ProgramRuleVariable,
+  RuleTest,
+} from './programRule.ts'
 
 type HandleByKind = {
   Category: Category
@@ -40,16 +46,22 @@ type HandleByKind = {
   TrackedEntityType: TrackedEntityType
   Program: Program
   ProgramStage: ProgramStage
+  ProgramRuleVariable: ProgramRuleVariable
+  ProgramRuleAction: ProgramRuleAction
+  ProgramRule: ProgramRule
 }
 
 export type AnyHandle = HandleByKind[AuthoringMetadataKind]
 
 export type SchemaInput = {
   [K in AuthoringMetadataKind as (typeof ENTITY_DEFINITIONS)[K]['payloadKey']]?: readonly HandleByKind[K][]
+} & {
+  ruleTests?: readonly RuleTest[]
 }
 
 export type Schema = {
   readonly byKind: Readonly<Record<MetadataKind, readonly Handle<MetadataKind, { code: string }>[]>>
+  readonly ruleTests: readonly RuleTest[]
   serialize(): Record<string, unknown[]>
 }
 
@@ -125,18 +137,29 @@ function toPayload(value: unknown): unknown {
 export function defineSchema(input: SchemaInput): Schema {
   const byKind = emptyByKind()
 
+  const derivedProgramRuleActions = (input.programRules ?? []).flatMap(
+    (rule) => rule.input.programRuleActions ?? [],
+  )
+
   const seen = new Set<string>()
+  const addHandle = (handle: Handle<MetadataKind, { code: string }>) => {
+    const key = `${handle.kind}:${handle.code}`
+    if (seen.has(key)) {
+      throw new Error(`Duplicate ${handle.kind} with code '${handle.code}' in schema.`)
+    }
+    seen.add(key)
+    byKind[handle.kind].push(handle)
+  }
+
   for (const kind of AUTHORING_METADATA_KINDS) {
     const group = input[payloadKeyFor(kind)] as readonly AnyHandle[] | undefined
     if (!group) continue
     for (const handle of group) {
-      const key = `${handle.kind}:${handle.code}`
-      if (seen.has(key)) {
-        throw new Error(`Duplicate ${handle.kind} with code '${handle.code}' in schema.`)
-      }
-      seen.add(key)
-      byKind[handle.kind].push(handle as Handle<MetadataKind, { code: string }>)
+      addHandle(handle as Handle<MetadataKind, { code: string }>)
     }
+  }
+  for (const action of derivedProgramRuleActions) {
+    addHandle(action as Handle<MetadataKind, { code: string }>)
   }
 
   // DHIS2 needs a reciprocal `program` back-ref on each ProgramStage; inject it
@@ -151,8 +174,19 @@ export function defineSchema(input: SchemaInput): Schema {
     }
   }
 
+  const actionToRule = new Map<string, Handle<'ProgramRule', { code: string }>>()
+  for (const rule of byKind.ProgramRule as Handle<'ProgramRule', { code: string }>[]) {
+    const ruleInput = rule.input as {
+      programRuleActions?: readonly { code: string }[]
+    }
+    for (const actionRef of ruleInput.programRuleActions ?? []) {
+      actionToRule.set(actionRef.code, rule)
+    }
+  }
+
   return {
     byKind,
+    ruleTests: input.ruleTests ?? [],
     serialize() {
       const payload: Record<string, unknown[]> = {}
       const hoistedOptions: Record<string, unknown>[] = []
@@ -188,6 +222,15 @@ export function defineSchema(input: SchemaInput): Schema {
               if (owner) {
                 withId.program = {
                   id: stableUid(`Program:${owner.code}`),
+                  code: owner.code,
+                }
+              }
+            }
+            if (kind === 'ProgramRuleAction' && !('programRule' in withId)) {
+              const owner = actionToRule.get(h.code)
+              if (owner) {
+                withId.programRule = {
+                  id: stableUid(`ProgramRule:${owner.code}`),
                   code: owner.code,
                 }
               }
