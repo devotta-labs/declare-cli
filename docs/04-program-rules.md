@@ -1,6 +1,6 @@
 # Program Rules
 
-Program rules add dynamic behaviour to data entry forms — hiding fields, showing warnings, assigning calculated values, and more. Rules are defined in TypeScript alongside the rest of your metadata and are validated locally during `declare-cli check`.
+Program rules add dynamic behavior to data entry forms — hiding fields, showing warnings, assigning calculated values, and more. Rules are defined in TypeScript alongside the rest of your metadata and are validated locally during `declare-cli check`.
 
 ## Variables
 
@@ -23,10 +23,10 @@ const ageVariable = defineProgramRuleVariable({
 | Source type | Reads from | Use case |
 | --- | --- | --- |
 | `DATAELEMENT_CURRENT_EVENT` | Current event's data element | Most common — reacts to the value being entered right now |
-| `DATAELEMENT_NEWEST_EVENT_PROGRAM` | Most recent event across the programme | Cross-event lookups |
+| `DATAELEMENT_NEWEST_EVENT_PROGRAM` | Most recent event across the program | Cross-event lookups |
 | `DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE` | Most recent event in a specific stage (requires `programStage`) | Stage-specific lookups |
 | `DATAELEMENT_PREVIOUS_EVENT` | Previous event | Comparing with prior visit |
-| `TEI_ATTRIBUTE` | Tracked entity attribute (requires `trackedEntityAttribute`) | Rules based on enrolment data |
+| `TEI_ATTRIBUTE` | Tracked entity attribute (requires `trackedEntityAttribute`) | Rules based on enrollment data |
 | `CALCULATED_VALUE` | No source field — value is assigned by another rule | Intermediate computed values (requires explicit `valueType`) |
 
 ## Rules
@@ -96,7 +96,7 @@ const minorWarningTest = defineRuleTest({
 | `attributes` | `[TrackedEntityAttribute, value][]` | TEA values for the enrolled entity |
 | `programStage` | `ProgramStage` | The stage being evaluated |
 | `eventDate` | `string` | Event execution date |
-| `enrollmentDate` | `string` | Enrolment date |
+| `enrollmentDate` | `string` | Enrollment date |
 
 ### The `effect` Namespace
 

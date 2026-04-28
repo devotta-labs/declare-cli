@@ -1,10 +1,10 @@
 # Tracker and Event Programs
 
-This guide covers both tracker programmes (`WITH_REGISTRATION`) and event programmes (`WITHOUT_REGISTRATION`). All examples reference the [tb-tracker](../examples/tb-tracker) project.
+This guide covers both tracker programs (`WITH_REGISTRATION`) and event programs (`WITHOUT_REGISTRATION`). All examples reference the [tb-tracker](../examples/tb-tracker) project.
 
 ## Program Types
 
-| Type | Registration | Enrolment | Use case |
+| Type | Registration | Enrollment | Use case |
 | --- | --- | --- | --- |
 | `WITH_REGISTRATION` (Tracker) | Yes — tracked entity | Yes — entity is enrolled | Longitudinal case tracking (e.g. TB follow-up) |
 | `WITHOUT_REGISTRATION` (Event) | No | No | One-off anonymous events (e.g. disease notification) |
@@ -17,7 +17,7 @@ Tracked entity attributes (TEAs) are the fields that describe an enrolled indivi
 import { defineTrackedEntityAttribute } from '@devotta-labs/declare'
 
 export const firstNameTea = defineTrackedEntityAttribute({
-  code: 'TEA_FIRST_NAME',
+  code: 'TB_TEA_FIRST_NAME',
   name: 'First name',
   shortName: 'First name',
   valueType: 'TEXT',
@@ -25,7 +25,7 @@ export const firstNameTea = defineTrackedEntityAttribute({
 })
 
 export const nationalIdTea = defineTrackedEntityAttribute({
-  code: 'TEA_NATIONAL_ID',
+  code: 'TB_TEA_NATIONAL_ID',
   name: 'National ID',
   shortName: 'National ID',
   valueType: 'TEXT',
@@ -44,10 +44,10 @@ A tracked entity type (TET) defines the kind of entity being tracked (e.g. Perso
 import { defineTrackedEntityType } from '@devotta-labs/declare'
 
 export const personTrackedEntityType = defineTrackedEntityType({
-  code: 'TET_PERSON',
+  code: 'TB_TET_PERSON',
   name: 'Person',
   shortName: 'Person',
-  description: 'A human being enrolled in one or more DHIS2 tracker programmes.',
+  description: 'A human being enrolled in one or more DHIS2 tracker programs.',
   featureType: 'NONE',
   minAttributesRequiredToSearch: 1,
   trackedEntityTypeAttributes: [
@@ -62,7 +62,7 @@ export const personTrackedEntityType = defineTrackedEntityType({
 })
 ```
 
-Core demographic TEAs belong on the TET so they can be reused across multiple programmes for the same person.
+Core demographic TEAs belong on the TET so they can be reused across multiple programs for the same person.
 
 ## Program Stages
 
@@ -72,7 +72,7 @@ A program stage represents a discrete step or visit. It holds the data elements 
 import { defineProgramStage } from '@devotta-labs/declare'
 
 export const initialScreeningStage = defineProgramStage({
-  code: 'PS_TB_INITIAL_SCREENING',
+  code: 'TB_PS_INITIAL_SCREENING',
   name: 'Initial screening',
   shortName: 'Initial screen',
   description: 'First encounter with a TB-presumptive patient.',
@@ -94,20 +94,20 @@ export const initialScreeningStage = defineProgramStage({
 
 Key options:
 
-- `repeatable` — whether the stage can occur more than once per enrolment.
+- `repeatable` — whether the stage can occur more than once per enrollment.
 - `autoGenerateEvent` — automatically create an event when the entity is enrolled.
-- `openAfterEnrollment` — open the stage form immediately after enrolment.
+- `openAfterEnrollment` — open the stage form immediately after enrollment.
 - `validationStrategy` — `'ON_COMPLETE'` or `'ON_UPDATE_AND_INSERT'`.
 
 ## Defining a Tracker Program
 
-A tracker program ties together the tracked entity type, program stages, and programme-level TEAs:
+A tracker program ties together the tracked entity type, program stages, and program-level TEAs:
 
 ```ts
 import { defineProgram } from '@devotta-labs/declare'
 
 export const tbProgram = defineProgram({
-  code: 'PRG_TB_TRACKER',
+  code: 'TB_PRG_TRACKER',
   name: 'TB tracker',
   shortName: 'TB tracker',
   programType: 'WITH_REGISTRATION',
@@ -128,11 +128,11 @@ export const tbProgram = defineProgram({
 })
 ```
 
-`programTrackedEntityAttributes` controls which TEAs appear in the enrolment form and how they behave (display order, mandatory, searchable). Programme-scoped TEAs (like `hivStatusTea`) that only apply to this programme go here rather than on the TET.
+`programTrackedEntityAttributes` controls which TEAs appear in the enrollment form and how they behave (display order, mandatory, searchable). Program-scoped TEAs (like `hivStatusTea`) that only apply to this program go here rather than on the TET.
 
 ## Event Programs
 
-Event programmes are simpler — no tracked entity, no enrolment. Drop the `trackedEntityType` and `programTrackedEntityAttributes` and set `programType` to `'WITHOUT_REGISTRATION'`:
+Event programs are simpler — no tracked entity, no enrollment. Drop the `trackedEntityType` and `programTrackedEntityAttributes` and set `programType` to `'WITHOUT_REGISTRATION'`:
 
 ```ts
 export const notificationProgram = defineProgram({
@@ -147,7 +147,7 @@ export const notificationProgram = defineProgram({
 
 ## Wiring into the Schema
 
-For a tracker programme, include all the tracker-specific metadata in `defineSchema`:
+For a tracker program, include all the tracker-specific metadata in `defineSchema`:
 
 ```ts
 import { defineSchema } from '@devotta-labs/declare'

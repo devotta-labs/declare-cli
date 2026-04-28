@@ -24,19 +24,17 @@ pnpm install
 pnpm start        # boots local DHIS2, waits for readiness, applies your schema
 ```
 
-First boot pulls ~1 GB of Docker images and runs migrations — expect several minutes. Subsequent starts are fast.
-
 ## Building Blocks
 
-DHIS2 metadata falls into three programme types. Each requires a different set of metadata objects.
+DHIS2 metadata falls into three program types. Each requires a different set of metadata objects.
 
 **Aggregate** — periodic data collection forms (e.g. monthly facility reports). Typical objects: option sets, category options, categories, category combos, data elements, data sets, organisation units, user roles, and user groups.
 
-**Tracker** (`WITH_REGISTRATION`) — longitudinal case tracking where individuals are enrolled and followed over time. Typical objects: tracked entity types, tracked entity attributes, program stages with data elements, the program itself (with enrolment attributes), organisation units, user roles, and user groups.
+**Tracker** (`WITH_REGISTRATION`) — longitudinal case tracking where individuals are enrolled and followed over time. Typical objects: tracked entity types, tracked entity attributes, program stages with data elements, the program itself (with enrollment attributes), organisation units, user roles, and user groups.
 
-**Event** (`WITHOUT_REGISTRATION`) — one-off anonymous data capture events with no enrolment or tracked entity. Typical objects: program stages with data elements, the program itself, organisation units, user roles, and user groups.
+**Event** (`WITHOUT_REGISTRATION`) — one-off anonymous data capture events with no enrollment or tracked entity. Typical objects: program stages with data elements, the program itself, organisation units, user roles, and user groups.
 
-All three types can use **program rules** to add dynamic form behaviour such as hiding fields, showing warnings, or assigning calculated values. See [04-program-rules.md](./04-program-rules.md).
+Tracker and event programs can use **program rules** to add dynamic form behavior such as hiding fields, showing warnings, or assigning calculated values. See [04-program-rules.md](./04-program-rules.md).
 
 ## Project Structure
 
@@ -98,4 +96,4 @@ Projects expose these as npm scripts too, so `pnpm start`, `pnpm check`, etc. wo
 The repo ships two complete examples you can use as reference:
 
 - [`examples/malaria-monthly-reporting`](../examples/malaria-monthly-reporting) — aggregate data set with categories and disaggregation.
-- [`examples/tb-tracker`](../examples/tb-tracker) — tracker programme with tracked entity types, attributes, and programme stages.
+- [`examples/tb-tracker`](../examples/tb-tracker) — tracker program with tracked entity types, attributes, and program stages.
