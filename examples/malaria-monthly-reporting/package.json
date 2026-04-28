@@ -1,6 +1,6 @@
 {
   "name": "malaria-monthly-reporting",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "Example DHIS2 metadata schema for a malaria monthly reporting program, consuming @devotta-labs/declare.",
   "type": "module",

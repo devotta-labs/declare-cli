@@ -1,6 +1,6 @@
 {
   "name": "tb-tracker",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "Example DHIS2 tracker metadata schema for a tuberculosis registration programme, consuming @devotta-labs/declare.",
   "type": "module",
