@@ -1,6 +1,6 @@
 {
   "name": "@devotta-labs/declare-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI for @devotta-labs/declare — scaffold DHIS2 metadata projects, run a local DHIS2, and apply schemas.",
   "license": "MIT",
   "repository": {
