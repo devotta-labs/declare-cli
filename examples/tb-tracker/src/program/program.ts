@@ -1,4 +1,4 @@
-import { defineProgram } from '@devotta-labs/declare'
+import { defineProgram, defineProgramSection } from '@devotta-labs/declare'
 import {
   bergen,
   bodo,
@@ -25,6 +25,27 @@ import {
 import { personTrackedEntityType } from '../trackedEntity/trackedEntityType.ts'
 import { initialScreeningStage } from './programStages.ts'
 
+export const identitySection = defineProgramSection({
+  code: 'PRS_TB_IDENTITY',
+  name: 'Identity',
+  sortOrder: 1,
+  trackedEntityAttributes: [
+    firstNameTea,
+    lastNameTea,
+    dateOfBirthTea,
+    sexTea,
+    nationalIdTea,
+    phoneNumberTea,
+  ],
+})
+
+export const riskProfileSection = defineProgramSection({
+  code: 'PRS_TB_RISK_PROFILE',
+  name: 'Risk profile',
+  sortOrder: 2,
+  trackedEntityAttributes: [hivStatusTea, previousTbTreatmentTea],
+})
+
 export const tbProgram = defineProgram({
   code: 'PRG_TB_TRACKER',
   name: 'TB tracker',
@@ -42,6 +63,8 @@ export const tbProgram = defineProgram({
   accessLevel: 'OPEN',
   minAttributesRequiredToSearch: 1,
   enrollmentDateLabel: 'Enrollment date',
+  formType: 'SECTION',
+  programSections: [identitySection, riskProfileSection],
   programTrackedEntityAttributes: [
     {
       trackedEntityAttribute: firstNameTea,
@@ -104,3 +127,4 @@ export const tbProgram = defineProgram({
 })
 
 export const programs = [tbProgram]
+export const programSections = [identitySection, riskProfileSection]

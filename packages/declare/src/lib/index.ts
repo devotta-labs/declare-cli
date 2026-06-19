@@ -17,7 +17,15 @@ export {
   type TrackedEntityAttribute,
 } from './trackedEntityAttribute.ts'
 export { defineTrackedEntityType, type TrackedEntityType } from './trackedEntityType.ts'
+export {
+  defineProgramSection,
+  type ProgramSection,
+} from './programSection.ts'
 export { defineProgram, ProgramType, ProgramAccessLevel, type Program } from './program.ts'
+export {
+  defineProgramStageSection,
+  type ProgramStageSection,
+} from './programStageSection.ts'
 export { defineProgramStage, ValidationStrategy, type ProgramStage } from './programStage.ts'
 export {
   action,
@@ -77,4 +85,5 @@ export type { ConfiguredTargets, CurrentTarget } from './currentTarget.ts'
 export { ValueType, AggregationType, FeatureType } from './core.ts'
 export { DomainType } from './dataElement.ts'
 export { PeriodType } from './dataSet.ts'
+export { FormType } from './form.ts'
 export { DataDimensionType } from './category.ts'

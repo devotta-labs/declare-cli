@@ -14,6 +14,7 @@ import {
   type Handle,
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
+import { FormType, validateSectionForm } from './form.ts'
 
 export { ProgramAccessLevel, ProgramType }
 
@@ -38,7 +39,9 @@ const overridesFor = (target: Target) => ({
   enrollmentCategoryCombo: refSchema('CategoryCombo').optional(),
   organisationUnits: z.array(refSchema('OrganisationUnit')).min(1),
   programStages: z.array(refSchema('ProgramStage')).optional(),
+  programSections: z.array(refSchema('ProgramSection')).optional(),
   programTrackedEntityAttributes: z.array(ProgramTrackedEntityAttributeSchema).optional(),
+  formType: FormType.optional(),
   accessLevel: ProgramAccessLevelByTarget[target].default('OPEN'),
   displayFrontPageList: z.boolean().default(false),
   displayIncidentDate: z.boolean().default(false),
@@ -66,9 +69,18 @@ const trackerRefineMessage = {
 }
 
 const SCHEMAS = {
-  '2.40': ProgramBaseByTarget['2.40'].extend(overridesFor('2.40')).refine(trackerRefine, trackerRefineMessage),
-  '2.41': ProgramBaseByTarget['2.41'].extend(overridesFor('2.41')).refine(trackerRefine, trackerRefineMessage),
-  '2.42': ProgramBaseByTarget['2.42'].extend(overridesFor('2.42')).refine(trackerRefine, trackerRefineMessage),
+  '2.40': ProgramBaseByTarget['2.40']
+    .extend(overridesFor('2.40'))
+    .refine(trackerRefine, trackerRefineMessage)
+    .superRefine((value, ctx) => validateSectionForm(value, ctx, 'programSections')),
+  '2.41': ProgramBaseByTarget['2.41']
+    .extend(overridesFor('2.41'))
+    .refine(trackerRefine, trackerRefineMessage)
+    .superRefine((value, ctx) => validateSectionForm(value, ctx, 'programSections')),
+  '2.42': ProgramBaseByTarget['2.42']
+    .extend(overridesFor('2.42'))
+    .refine(trackerRefine, trackerRefineMessage)
+    .superRefine((value, ctx) => validateSectionForm(value, ctx, 'programSections')),
 } as const
 
 export type ProgramInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

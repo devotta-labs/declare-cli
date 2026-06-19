@@ -1,4 +1,4 @@
-import { defineProgramStage } from '@devotta-labs/declare'
+import { defineProgramStage, defineProgramStageSection } from '@devotta-labs/declare'
 import {
   coughGt2Weeks,
   feverGt2Weeks,
@@ -12,6 +12,20 @@ import {
 } from '../dataElements.ts'
 import { captureSharing } from '../sharing.ts'
 
+export const symptomsSection = defineProgramStageSection({
+  code: 'PSS_TB_SYMPTOMS',
+  name: 'Symptoms',
+  sortOrder: 1,
+  dataElements: [coughGt2Weeks, feverGt2Weeks, weightLoss, nightSweats, knownTbContact],
+})
+
+export const measurementsSection = defineProgramStageSection({
+  code: 'PSS_TB_MEASUREMENTS',
+  name: 'Measurements and outcome',
+  sortOrder: 2,
+  dataElements: [weightKg, heightCm, screeningResult, screeningNotes],
+})
+
 export const initialScreeningStage = defineProgramStage({
   code: 'PS_TB_INITIAL_SCREENING',
   name: 'Initial screening',
@@ -24,6 +38,7 @@ export const initialScreeningStage = defineProgramStage({
   openAfterEnrollment: true,
   validationStrategy: 'ON_COMPLETE',
   executionDateLabel: 'Screening date',
+  formType: 'SECTION',
   programStageDataElements: [
     { dataElement: coughGt2Weeks, compulsory: true, sortOrder: 1 },
     { dataElement: feverGt2Weeks, compulsory: false, sortOrder: 2 },
@@ -35,7 +50,9 @@ export const initialScreeningStage = defineProgramStage({
     { dataElement: screeningResult, compulsory: true, sortOrder: 8 },
     { dataElement: screeningNotes, compulsory: false, sortOrder: 9 },
   ],
+  programStageSections: [symptomsSection, measurementsSection],
   sharing: captureSharing,
 })
 
 export const programStages = [initialScreeningStage]
+export const programStageSections = [symptomsSection, measurementsSection]

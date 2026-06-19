@@ -14,6 +14,7 @@ import {
   type Handle,
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
+import { FormType, validateSectionForm } from './form.ts'
 
 export { ValidationStrategy }
 
@@ -54,13 +55,21 @@ const overridesFor = (target: Target) => ({
   executionDateLabel: z.string().max(230).optional(),
   dueDateLabel: z.string().max(230).optional(),
   programStageDataElements: z.array(ProgramStageDataElementSchema).optional(),
+  programStageSections: z.array(refSchema('ProgramStageSection')).optional(),
+  formType: FormType.optional(),
   sharing: SharingSchema.optional(),
 })
 
 const SCHEMAS = {
-  '2.40': ProgramStageBaseByTarget['2.40'].extend(overridesFor('2.40')),
-  '2.41': ProgramStageBaseByTarget['2.41'].extend(overridesFor('2.41')),
-  '2.42': ProgramStageBaseByTarget['2.42'].extend(overridesFor('2.42')),
+  '2.40': ProgramStageBaseByTarget['2.40']
+    .extend(overridesFor('2.40'))
+    .superRefine((value, ctx) => validateSectionForm(value, ctx, 'programStageSections')),
+  '2.41': ProgramStageBaseByTarget['2.41']
+    .extend(overridesFor('2.41'))
+    .superRefine((value, ctx) => validateSectionForm(value, ctx, 'programStageSections')),
+  '2.42': ProgramStageBaseByTarget['2.42']
+    .extend(overridesFor('2.42'))
+    .superRefine((value, ctx) => validateSectionForm(value, ctx, 'programStageSections')),
 } as const
 
 export type ProgramStageInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

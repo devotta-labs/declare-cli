@@ -3,8 +3,8 @@ import { dataElements } from './dataElements.ts'
 import { optionSets } from './optionSets.ts'
 import { organisationUnitLevels } from './organisationUnits/organisationUnitLevels.ts'
 import { organisationUnits } from './organisationUnits/organisationUnits.ts'
-import { programs } from './program/program.ts'
-import { programStages } from './program/programStages.ts'
+import { programSections, programs } from './program/program.ts'
+import { programStageSections, programStages } from './program/programStages.ts'
 import { trackedEntityAttributes } from './trackedEntity/trackedEntityAttributes.ts'
 import { trackedEntityTypes } from './trackedEntity/trackedEntityType.ts'
 import { userGroups } from './userGroups/userGroups.ts'
@@ -22,5 +22,7 @@ export default defineSchema({
   trackedEntityAttributes,
   trackedEntityTypes,
   programs,
+  programSections,
   programStages,
+  programStageSections,
 })

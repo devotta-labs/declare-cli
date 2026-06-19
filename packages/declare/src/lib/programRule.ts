@@ -13,12 +13,14 @@ import {
   NameSchema,
   makeHandle,
   refSchema,
+  stableUid,
   type Handle,
   type Ref,
 } from './core.ts'
 import type { DataElement } from './dataElement.ts'
 import type { Program } from './program.ts'
 import type { ProgramStage } from './programStage.ts'
+import type { ProgramStageSection } from './programStageSection.ts'
 import type { TrackedEntityAttribute } from './trackedEntityAttribute.ts'
 
 export const ProgramRuleVariableSourceType = z.enum([
@@ -238,6 +240,7 @@ export function defineProgramRuleVariable(
 }
 
 type FieldTarget = DataElement | TrackedEntityAttribute
+type SectionTarget = string | ProgramStageSection
 
 type FieldTargetFields =
   | { dataElement: DataElement; trackedEntityAttribute?: never }
@@ -250,6 +253,10 @@ function fieldTarget(target: FieldTarget): FieldTargetFields {
 
 function fieldName(target: FieldTarget): string {
   return target.code
+}
+
+function sectionId(section: SectionTarget): string {
+  return typeof section === 'string' ? section : stableUid(`ProgramStageSection:${section.code}`)
 }
 
 function expressionTarget(target: FieldTarget | ProgramRuleVariable): {
@@ -432,7 +439,7 @@ type ActionFactories<T extends Target> = {
   displayKeyValuePair(input: DisplayInput): ProgramRuleActionSpec
   hideField(input: TargetOnlyInput): ProgramRuleActionSpec
   hideSection(input: {
-    section: string
+    section: SectionTarget
     evaluationTime?: ProgramRuleActionEvaluationTime
     priority?: number
   }): ProgramRuleActionSpec
@@ -475,7 +482,7 @@ export const action: ActionFactories<CurrentTarget> = {
   hideField: (input) => targetAction('HIDEFIELD', input),
   hideSection: (input) => ({
     programRuleActionType: 'HIDESECTION',
-    programStageSection: input.section,
+    programStageSection: sectionId(input.section),
     evaluationTime: input.evaluationTime,
     priority: input.priority,
   }),
@@ -658,8 +665,8 @@ export const effect = {
   hideField(input: { on: FieldTarget }) {
     return effectFor('HIDEFIELD', { values: valuesForTarget(input.on) })
   },
-  hideSection(input: { section: string }) {
-    return effectFor('HIDESECTION', { values: { programStageSection: input.section } })
+  hideSection(input: { section: SectionTarget }) {
+    return effectFor('HIDESECTION', { values: { programStageSection: sectionId(input.section) } })
   },
   hideProgramStage(input: { programStage: ProgramStage }) {
     return effectFor('HIDEPROGRAMSTAGE', {

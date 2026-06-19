@@ -104,12 +104,25 @@ export const ENTITY_SKIP_FIELDS: Readonly<Record<MetadataKind, ReadonlySet<strin
     'programRuleVariables',
     'userRoles',
   ]),
+  ProgramSection: new Set<string>([
+    'program',
+    'trackedEntityAttributes',
+    'renderType',
+    'style',
+  ]),
   ProgramStage: new Set<string>([
     'dataEntryForm',
     'programStageDataElements',
     'programStageSections',
     'notificationTemplates',
     'program',
+  ]),
+  ProgramStageSection: new Set<string>([
+    'programStage',
+    'dataElements',
+    'programIndicators',
+    'renderType',
+    'style',
   ]),
   ProgramRuleVariable: new Set<string>(),
   ProgramRuleAction: new Set<string>([

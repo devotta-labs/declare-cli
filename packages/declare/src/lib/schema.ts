@@ -22,7 +22,9 @@ import type { User } from './user.ts'
 import type { TrackedEntityAttribute } from './trackedEntityAttribute.ts'
 import type { TrackedEntityType } from './trackedEntityType.ts'
 import type { Program } from './program.ts'
+import type { ProgramSection } from './programSection.ts'
 import type { ProgramStage } from './programStage.ts'
+import type { ProgramStageSection } from './programStageSection.ts'
 import type {
   ProgramRule,
   ProgramRuleAction,
@@ -45,7 +47,9 @@ type HandleByKind = {
   TrackedEntityAttribute: TrackedEntityAttribute
   TrackedEntityType: TrackedEntityType
   Program: Program
+  ProgramSection: ProgramSection
   ProgramStage: ProgramStage
+  ProgramStageSection: ProgramStageSection
   ProgramRuleVariable: ProgramRuleVariable
   ProgramRuleAction: ProgramRuleAction
   ProgramRule: ProgramRule
@@ -134,6 +138,18 @@ function toPayload(value: unknown): unknown {
   return value
 }
 
+function serializableInput(
+  kind: MetadataKind,
+  input: Record<string, unknown>,
+): Record<string, unknown> {
+  const out = { ...input }
+  delete out.sharing
+  if (kind === 'Program' || kind === 'ProgramStage') {
+    delete out.formType
+  }
+  return out
+}
+
 export function defineSchema(input: SchemaInput): Schema {
   const byKind = emptyByKind()
 
@@ -165,12 +181,27 @@ export function defineSchema(input: SchemaInput): Schema {
   // DHIS2 needs a reciprocal `program` back-ref on each ProgramStage; inject it
   // at serialize time rather than making callers tie the knot.
   const stageToProgram = new Map<string, Handle<'Program', { code: string }>>()
+  const sectionToProgram = new Map<string, Handle<'Program', { code: string }>>()
   for (const program of byKind.Program as Handle<'Program', { code: string }>[]) {
     const programInput = program.input as {
       programStages?: readonly { code: string }[]
+      programSections?: readonly { code: string }[]
     }
     for (const stageRef of programInput.programStages ?? []) {
       stageToProgram.set(stageRef.code, program)
+    }
+    for (const sectionRef of programInput.programSections ?? []) {
+      sectionToProgram.set(sectionRef.code, program)
+    }
+  }
+
+  const stageSectionToStage = new Map<string, Handle<'ProgramStage', { code: string }>>()
+  for (const stage of byKind.ProgramStage as Handle<'ProgramStage', { code: string }>[]) {
+    const stageInput = stage.input as {
+      programStageSections?: readonly { code: string }[]
+    }
+    for (const sectionRef of stageInput.programStageSections ?? []) {
+      stageSectionToStage.set(sectionRef.code, stage)
     }
   }
 
@@ -197,11 +228,9 @@ export function defineSchema(input: SchemaInput): Schema {
           payload[payloadKeyFor(kind)] = items.map((h) => {
             const rawInput = h.input as Record<string, unknown>
             const originalSharing = rawInput.sharing as SharingInput | undefined
-            const bodyWithoutSharing = { ...rawInput }
-            delete bodyWithoutSharing.sharing
             const { optionSet, options } = splitOptionSet(
               h.code,
-              toPayload(bodyWithoutSharing),
+              toPayload(serializableInput(kind, rawInput)),
             )
             hoistedOptions.push(...options)
             const sharingPayload = toSharingPayload(originalSharing)
@@ -213,15 +242,31 @@ export function defineSchema(input: SchemaInput): Schema {
             // conversion strips the brands toSharingPayload needs.
             const rawInput = h.input as Record<string, unknown>
             const originalSharing = rawInput.sharing as SharingInput | undefined
-            const bodyWithoutSharing = { ...rawInput }
-            delete bodyWithoutSharing.sharing
-            const converted = toPayload(bodyWithoutSharing) as Record<string, unknown>
+            const converted = toPayload(serializableInput(kind, rawInput)) as Record<string, unknown>
             const withId = withTopLevelId(h.kind, h.code, converted) as Record<string, unknown>
             if (kind === 'ProgramStage' && !('program' in withId)) {
               const owner = stageToProgram.get(h.code)
               if (owner) {
                 withId.program = {
                   id: stableUid(`Program:${owner.code}`),
+                  code: owner.code,
+                }
+              }
+            }
+            if (kind === 'ProgramSection' && !('program' in withId)) {
+              const owner = sectionToProgram.get(h.code)
+              if (owner) {
+                withId.program = {
+                  id: stableUid(`Program:${owner.code}`),
+                  code: owner.code,
+                }
+              }
+            }
+            if (kind === 'ProgramStageSection' && !('programStage' in withId)) {
+              const owner = stageSectionToStage.get(h.code)
+              if (owner) {
+                withId.programStage = {
+                  id: stableUid(`ProgramStage:${owner.code}`),
                   code: owner.code,
                 }
               }

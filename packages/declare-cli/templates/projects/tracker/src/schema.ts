@@ -5,6 +5,8 @@ import { organisationUnits, organisationUnitLevels } from './organisationUnits.t
 import {
   programRuleVariables,
   programRules,
+  programSections,
+  programStageSections,
   programs,
   programStages,
   ruleTests,
@@ -22,7 +24,9 @@ export default defineSchema({
   trackedEntityAttributes,
   trackedEntityTypes,
   programs,
+  programSections,
   programStages,
+  programStageSections,
   programRuleVariables,
   programRules,
   ruleTests,
