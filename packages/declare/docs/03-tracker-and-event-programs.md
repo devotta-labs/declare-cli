@@ -99,6 +99,43 @@ Key options:
 - `openAfterEnrollment` — open the stage form immediately after enrollment.
 - `validationStrategy` — `'ON_COMPLETE'` or `'ON_UPDATE_AND_INSERT'`.
 
+## Section Forms
+
+Tracker enrollment forms and program stage forms can be grouped into sections. Use `formType: 'SECTION'`, define section metadata, and reference those sections from the owning program or stage.
+
+Program sections group tracked entity attributes on the enrollment form:
+
+```ts
+import { defineProgramSection } from '@devotta-labs/declare'
+
+export const identitySection = defineProgramSection({
+  code: 'TB_PRS_IDENTITY',
+  name: 'Identity',
+  sortOrder: 1,
+  trackedEntityAttributes: [firstNameTea, lastNameTea, dateOfBirthTea, sexTea],
+})
+
+export const riskProfileSection = defineProgramSection({
+  code: 'TB_PRS_RISK_PROFILE',
+  name: 'Risk profile',
+  sortOrder: 2,
+  trackedEntityAttributes: [hivStatusTea, previousTbTreatmentTea],
+})
+```
+
+Program stage sections group event data elements:
+
+```ts
+import { defineProgramStageSection } from '@devotta-labs/declare'
+
+export const symptomsSection = defineProgramStageSection({
+  code: 'TB_PSS_SYMPTOMS',
+  name: 'Symptoms',
+  sortOrder: 1,
+  dataElements: [coughGt2Weeks, feverGt2Weeks, weightLoss],
+})
+```
+
 ## Defining a Tracker Program
 
 A tracker program ties together the tracked entity type, program stages, and program-level TEAs:
@@ -119,6 +156,8 @@ export const tbProgram = defineProgram({
   accessLevel: 'OPEN',
   minAttributesRequiredToSearch: 1,
   enrollmentDateLabel: 'Enrollment date',
+  formType: 'SECTION',
+  programSections: [identitySection, riskProfileSection],
   programTrackedEntityAttributes: [
     { trackedEntityAttribute: firstNameTea, displayInList: true, mandatory: true, searchable: true, sortOrder: 1 },
     { trackedEntityAttribute: lastNameTea, displayInList: true, mandatory: true, searchable: true, sortOrder: 2 },
@@ -129,6 +168,22 @@ export const tbProgram = defineProgram({
 ```
 
 `programTrackedEntityAttributes` controls which TEAs appear in the enrollment form and how they behave (display order, mandatory, searchable). Program-scoped TEAs (like `hivStatusTea`) that only apply to this program go here rather than on the TET.
+
+For stage section forms, reference the sections from the stage:
+
+```ts
+export const initialScreeningStage = defineProgramStage({
+  code: 'TB_PS_INITIAL_SCREENING',
+  name: 'Initial screening',
+  formType: 'SECTION',
+  programStageDataElements: [
+    { dataElement: coughGt2Weeks, compulsory: true, sortOrder: 1 },
+    { dataElement: feverGt2Weeks, compulsory: false, sortOrder: 2 },
+    { dataElement: weightLoss, compulsory: false, sortOrder: 3 },
+  ],
+  programStageSections: [symptomsSection],
+})
+```
 
 ## Event Programs
 
@@ -163,6 +218,8 @@ export default defineSchema({
   trackedEntityAttributes,
   trackedEntityTypes,
   programs,
+  programSections,
   programStages,
+  programStageSections,
 })
 ```

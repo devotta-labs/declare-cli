@@ -3,7 +3,9 @@ import {
   defineProgram,
   defineProgramRule,
   defineProgramRuleVariable,
+  defineProgramSection,
   defineProgramStage,
+  defineProgramStageSection,
   defineRuleTest,
   effect,
 } from '@devotta-labs/declare'
@@ -11,6 +13,13 @@ import { visitNotes } from './dataElements.ts'
 import { country, facility } from './organisationUnits.ts'
 import { captureSharing } from './sharing.ts'
 import { firstNameTea, lastNameTea, personTrackedEntityType } from './trackedEntity.ts'
+
+export const visitDetailsSection = defineProgramStageSection({
+  code: 'EX_PSS_VISIT_DETAILS',
+  name: 'Visit details',
+  sortOrder: 1,
+  dataElements: [visitNotes],
+})
 
 export const visitStage = defineProgramStage({
   code: 'EX_PS_VISIT',
@@ -23,13 +32,23 @@ export const visitStage = defineProgramStage({
   openAfterEnrollment: false,
   validationStrategy: 'ON_COMPLETE',
   executionDateLabel: 'Visit date',
+  formType: 'SECTION',
   programStageDataElements: [
     { dataElement: visitNotes, compulsory: false, sortOrder: 1 },
   ],
+  programStageSections: [visitDetailsSection],
   sharing: captureSharing,
 })
 
 export const programStages = [visitStage]
+export const programStageSections = [visitDetailsSection]
+
+export const identitySection = defineProgramSection({
+  code: 'EX_PRS_IDENTITY',
+  name: 'Identity',
+  sortOrder: 1,
+  trackedEntityAttributes: [firstNameTea, lastNameTea],
+})
 
 export const examplePrograms = defineProgram({
   code: 'EX_PRG_EXAMPLE',
@@ -47,6 +66,8 @@ export const examplePrograms = defineProgram({
   accessLevel: 'OPEN',
   minAttributesRequiredToSearch: 1,
   enrollmentDateLabel: 'Enrollment date',
+  formType: 'SECTION',
+  programSections: [identitySection],
   programTrackedEntityAttributes: [
     { trackedEntityAttribute: firstNameTea, displayInList: true, mandatory: true, searchable: true, sortOrder: 1 },
     { trackedEntityAttribute: lastNameTea, displayInList: true, mandatory: true, searchable: true, sortOrder: 2 },
@@ -55,6 +76,7 @@ export const examplePrograms = defineProgram({
 })
 
 export const programs = [examplePrograms]
+export const programSections = [identitySection]
 
 export const visitNotesVariable = defineProgramRuleVariable({
   code: 'EX_PRV_VISIT_NOTES',

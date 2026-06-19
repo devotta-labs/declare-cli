@@ -96,10 +96,22 @@ export const ENTITY_DEFINITIONS = {
     klass: 'org.hisp.dhis.program.Program',
     authoring: true,
   },
+  ProgramSection: {
+    schemaName: 'programSection',
+    payloadKey: 'programSections',
+    klass: 'org.hisp.dhis.program.ProgramSection',
+    authoring: true,
+  },
   ProgramStage: {
     schemaName: 'programStage',
     payloadKey: 'programStages',
     klass: 'org.hisp.dhis.program.ProgramStage',
+    authoring: true,
+  },
+  ProgramStageSection: {
+    schemaName: 'programStageSection',
+    payloadKey: 'programStageSections',
+    klass: 'org.hisp.dhis.program.ProgramStageSection',
     authoring: true,
   },
   ProgramRuleVariable: {

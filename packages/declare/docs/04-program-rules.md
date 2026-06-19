@@ -54,7 +54,7 @@ The `action` namespace provides type-safe factories for every supported action t
 | Factory | Description |
 | --- | --- |
 | `action.hideField({ on })` | Hide a data element or TEA |
-| `action.hideSection({ section })` | Hide a form section by ID |
+| `action.hideSection({ section })` | Hide a program stage section by section handle or UID |
 | `action.hideProgramStage({ programStage })` | Hide an entire program stage |
 | `action.assign({ target, value })` | Assign a computed value to a field or variable |
 | `action.showWarning({ on, content })` | Show a non-blocking warning on a field |
