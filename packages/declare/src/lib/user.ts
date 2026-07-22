@@ -39,6 +39,7 @@ const SCHEMAS = {
   '2.40': UserBaseByTarget['2.40'].extend(overrides),
   '2.41': UserBaseByTarget['2.41'].extend(overrides),
   '2.42': UserBaseByTarget['2.42'].extend(overrides),
+  '2.43': UserBaseByTarget['2.43'].extend(overrides),
 } as const
 
 export type UserInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

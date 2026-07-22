@@ -11,7 +11,7 @@ const ENV_FILE = 'declare-env.d.ts'
  * Write the declare-env.d.ts that narrows @devotta-labs/declare's
  * `ConfiguredTargets` interface to the single target configured in
  * declare.config.ts. Authoring types in defineX() resolve via CurrentTarget,
- * so `valueType: 'TRACKER_ASSOCIATE'` now fails `tsc --noEmit` on a 2.42
+ * so `valueType: 'TRACKER_ASSOCIATE'` now fails `tsc --noEmit` on a 2.42+
  * project without needing to run `declare-cli check` first.
  *
  * Safe to run on every invocation: we read the existing file and skip writing

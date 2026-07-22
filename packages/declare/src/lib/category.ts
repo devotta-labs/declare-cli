@@ -33,6 +33,7 @@ const SCHEMAS = {
   '2.40': CategoryBaseByTarget['2.40'].extend(overridesFor('2.40')),
   '2.41': CategoryBaseByTarget['2.41'].extend(overridesFor('2.41')),
   '2.42': CategoryBaseByTarget['2.42'].extend(overridesFor('2.42')),
+  '2.43': CategoryBaseByTarget['2.43'].extend(overridesFor('2.43')),
 } as const
 
 export type CategoryInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

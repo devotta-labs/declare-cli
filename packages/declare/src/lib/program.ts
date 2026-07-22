@@ -81,6 +81,10 @@ const SCHEMAS = {
     .extend(overridesFor('2.42'))
     .refine(trackerRefine, trackerRefineMessage)
     .superRefine((value, ctx) => validateSectionForm(value, ctx, 'programSections')),
+  '2.43': ProgramBaseByTarget['2.43']
+    .extend(overridesFor('2.43'))
+    .refine(trackerRefine, trackerRefineMessage)
+    .superRefine((value, ctx) => validateSectionForm(value, ctx, 'programSections')),
 } as const
 
 export type ProgramInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

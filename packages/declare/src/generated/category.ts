@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { refSchema } from '../lib/core.ts'
-import { DataDimensionType_2_40, DataDimensionType_2_41, DataDimensionType_2_42 } from './enums.ts'
+import { DataDimensionType_2_40, DataDimensionType_2_41, DataDimensionType_2_42, DataDimensionType_2_43 } from './enums.ts'
 
 export const CategoryBase_2_40 = z.object({
   categoryOptions: z.array(refSchema('CategoryOption')).optional(),
@@ -34,8 +34,19 @@ export const CategoryBase_2_42 = z.object({
   shortName: z.string().max(50),
 })
 
+export const CategoryBase_2_43 = z.object({
+  categoryOptions: z.array(refSchema('CategoryOption')).optional(),
+  code: z.string().max(50).optional(),
+  dataDimension: z.boolean(),
+  dataDimensionType: DataDimensionType_2_43,
+  description: z.string().optional(),
+  name: z.string().max(230),
+  shortName: z.string().max(50),
+})
+
 export const CategoryBaseByTarget = {
   '2.40': CategoryBase_2_40,
   '2.41': CategoryBase_2_41,
   '2.42': CategoryBase_2_42,
+  '2.43': CategoryBase_2_43,
 } as const

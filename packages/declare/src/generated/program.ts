@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { refSchema } from '../lib/core.ts'
-import { FeatureType_2_40, FeatureType_2_41, FeatureType_2_42, ProgramAccessLevel_2_40, ProgramAccessLevel_2_41, ProgramAccessLevel_2_42, ProgramType_2_40, ProgramType_2_41, ProgramType_2_42 } from './enums.ts'
+import { FeatureType_2_40, FeatureType_2_41, FeatureType_2_42, FeatureType_2_43, ProgramAccessLevel_2_40, ProgramAccessLevel_2_41, ProgramAccessLevel_2_42, ProgramAccessLevel_2_43, ProgramType_2_40, ProgramType_2_41, ProgramType_2_42, ProgramType_2_43 } from './enums.ts'
 
 export const ProgramBase_2_40 = z.object({
   accessLevel: ProgramAccessLevel_2_40.optional(),
@@ -118,8 +118,53 @@ export const ProgramBase_2_42 = z.object({
   version: z.number().int().optional(),
 })
 
+export const ProgramBase_2_43 = z.object({
+  accessLevel: ProgramAccessLevel_2_43.optional(),
+  categoryCombo: refSchema('CategoryCombo'),
+  code: z.string().max(50).optional(),
+  completeEventsExpiryDays: z.number().int().optional(),
+  description: z.string().max(255).optional(),
+  displayFrontPageList: z.boolean().optional(),
+  displayIncidentDate: z.boolean().optional(),
+  enableChangeLog: z.boolean().optional(),
+  enrollmentCategoryCombo: refSchema('CategoryCombo'),
+  enrollmentDateLabel: z.string().max(255).optional(),
+  enrollmentLabel: z.string().max(255).optional(),
+  enrollmentsLabel: z.string().max(255).optional(),
+  eventLabel: z.string().max(255).optional(),
+  eventsLabel: z.string().max(255).optional(),
+  expiryDays: z.number().int().optional(),
+  featureType: FeatureType_2_43.optional(),
+  followUpLabel: z.string().max(255).optional(),
+  formName: z.string().max(255).optional(),
+  ignoreOverdueEvents: z.boolean().optional(),
+  incidentDateLabel: z.string().max(255).optional(),
+  maxTeiCountToReturn: z.number().int().optional(),
+  minAttributesRequiredToSearch: z.number().int().optional(),
+  name: z.string().max(230),
+  noteLabel: z.string().max(255).optional(),
+  onlyEnrollOnce: z.boolean().optional(),
+  openDaysAfterCoEndDate: z.number().int().optional(),
+  organisationUnits: z.array(refSchema('OrganisationUnit')).optional(),
+  orgUnitLabel: z.string().max(255).optional(),
+  programStageLabel: z.string().max(255).optional(),
+  programStagesLabel: z.string().max(255).optional(),
+  programType: ProgramType_2_43,
+  relatedProgram: refSchema('Program').optional(),
+  relationshipLabel: z.string().max(255).optional(),
+  selectEnrollmentDatesInFuture: z.boolean().optional(),
+  selectIncidentDatesInFuture: z.boolean().optional(),
+  shortName: z.string().max(50),
+  skipOffline: z.boolean(),
+  trackedEntityAttributeLabel: z.string().max(255).optional(),
+  trackedEntityType: refSchema('TrackedEntityType').optional(),
+  useFirstStageDuringRegistration: z.boolean().optional(),
+  version: z.number().int().optional(),
+})
+
 export const ProgramBaseByTarget = {
   '2.40': ProgramBase_2_40,
   '2.41': ProgramBase_2_41,
   '2.42': ProgramBase_2_42,
+  '2.43': ProgramBase_2_43,
 } as const

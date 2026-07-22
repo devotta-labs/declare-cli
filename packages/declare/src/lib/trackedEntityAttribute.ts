@@ -51,6 +51,9 @@ const SCHEMAS = {
   '2.42': TrackedEntityAttributeBaseByTarget['2.42']
     .extend(overridesFor('2.42'))
     .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
+  '2.43': TrackedEntityAttributeBaseByTarget['2.43']
+    .extend(overridesFor('2.43'))
+    .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
 } as const
 
 export type TrackedEntityAttributeInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

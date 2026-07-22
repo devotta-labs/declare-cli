@@ -48,12 +48,14 @@ import { defineConfig } from '@devotta-labs/declare-cli'
 export default defineConfig({
   name: 'my-project',
   schema: './src/schema.ts',
-  target: '2.42',
+  target: '2.43',
   local: {
     port: 8080,
   },
 })
 ```
+
+Supported targets are DHIS2 2.40, 2.41, 2.42, and 2.43. New projects default to 2.43.
 
 **`src/schema.ts`** — assembles all metadata and exports it via `defineSchema`:
 

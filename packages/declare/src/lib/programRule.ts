@@ -76,13 +76,16 @@ const ProgramRuleActionType_2_42 = z.enum([
   'HIDEOPTIONGROUP',
 ])
 
-export const ProgramRuleActionType = ProgramRuleActionType_2_42
+const ProgramRuleActionType_2_43 = ProgramRuleActionType_2_42
+
+export const ProgramRuleActionType = ProgramRuleActionType_2_43
 export type ProgramRuleActionType = z.infer<typeof ProgramRuleActionType>
 
 const ProgramRuleActionTypeByTarget = {
   '2.40': ProgramRuleActionType_2_40,
   '2.41': ProgramRuleActionType_2_41,
   '2.42': ProgramRuleActionType_2_42,
+  '2.43': ProgramRuleActionType_2_43,
 } as const
 
 export const ProgramRuleActionEvaluationTime = z.enum([
@@ -180,6 +183,7 @@ const VariableSchemas = {
   '2.40': variableSchemaFor('2.40'),
   '2.41': variableSchemaFor('2.41'),
   '2.42': variableSchemaFor('2.42'),
+  '2.43': variableSchemaFor('2.43'),
 } as const
 
 type DataElementVariableOutput = Omit<
@@ -294,7 +298,7 @@ const programRuleActionOverrides = (target: Target) => ({
   programStageSection: z.string().optional(),
   optionGroup: z.string().optional(),
   templateUid: z.string().optional(),
-  // priority is only in the generated base for 2.42; include it for all
+  // priority is only in the generated base since 2.42; include it for all
   // targets so the hand layer surface is consistent.
   priority: z.number().int().optional(),
 })
@@ -303,6 +307,7 @@ const ProgramRuleActionSchemas = {
   '2.40': ProgramRuleActionBaseByTarget['2.40'].extend(programRuleActionOverrides('2.40')),
   '2.41': ProgramRuleActionBaseByTarget['2.41'].extend(programRuleActionOverrides('2.41')),
   '2.42': ProgramRuleActionBaseByTarget['2.42'].extend(programRuleActionOverrides('2.42')),
+  '2.43': ProgramRuleActionBaseByTarget['2.43'].extend(programRuleActionOverrides('2.43')),
 } as const
 
 type ProgramRuleActionOutput = Omit<
@@ -430,7 +435,7 @@ function assertTargetSupportsAction(type: ProgramRuleActionType): void {
   }
 }
 
-type ScheduleEventFactory<T extends Target> = T extends '2.42'
+type ScheduleEventFactory<T extends Target> = T extends '2.42' | '2.43'
   ? (input: ProgramStageInput) => ProgramRuleActionSpec
   : never
 
@@ -555,6 +560,7 @@ const ProgramRuleSchemas = {
   '2.40': ProgramRuleBaseByTarget['2.40'].extend(programRuleOverrides),
   '2.41': ProgramRuleBaseByTarget['2.41'].extend(programRuleOverrides),
   '2.42': ProgramRuleBaseByTarget['2.42'].extend(programRuleOverrides),
+  '2.43': ProgramRuleBaseByTarget['2.43'].extend(programRuleOverrides),
 } as const
 
 export type ProgramRuleInput = {

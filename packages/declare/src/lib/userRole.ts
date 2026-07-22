@@ -24,6 +24,7 @@ const SCHEMAS = {
   '2.40': UserRoleBaseByTarget['2.40'].extend(overrides),
   '2.41': UserRoleBaseByTarget['2.41'].extend(overrides),
   '2.42': UserRoleBaseByTarget['2.42'].extend(overrides),
+  '2.43': UserRoleBaseByTarget['2.43'].extend(overrides),
 } as const
 
 export type UserRoleInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

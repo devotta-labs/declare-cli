@@ -2,7 +2,7 @@ import { readFile, rm, writeFile, mkdir } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { TARGETS, type Target } from './generate/config.ts'
+import { DEFAULT_TARGET, TARGETS, type Target } from './generate/config.ts'
 import { collectEntities } from './generate/collect.ts'
 import { collectEnums } from './generate/enums.ts'
 import {
@@ -27,7 +27,7 @@ async function loadSnapshots(): Promise<Record<Target, Snapshot>> {
     const path = resolve(SNAPSHOT_DIR, `schemas-${target}.json`)
     if (!existsSync(path)) {
       throw new Error(
-        `Missing snapshot ${path}. Run \`declare-cli sync-schemas --target ${target}\` first.`,
+        `Missing snapshot ${path}. See packages/declare/snapshots/README.md for refresh instructions.`,
       )
     }
     const raw = await readFile(path, 'utf8')
@@ -62,9 +62,9 @@ async function main(): Promise<void> {
 
   await writeOut('index.ts', emitIndex())
 
-  const counts = kinds.map((k) => `${k}:${collection[k]['2.42'].length}`).join(' ')
+  const counts = kinds.map((k) => `${k}:${collection[k][DEFAULT_TARGET].length}`).join(' ')
   process.stdout.write(`Generated ${kinds.length} entities into ${OUT_DIR}\n`)
-  process.stdout.write(`Field counts (2.42): ${counts}\n`)
+  process.stdout.write(`Field counts (${DEFAULT_TARGET}): ${counts}\n`)
 }
 
 main().catch((err: unknown) => {

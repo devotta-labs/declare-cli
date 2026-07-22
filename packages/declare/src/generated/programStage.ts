@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { refSchema } from '../lib/core.ts'
-import { FeatureType_2_40, FeatureType_2_41, FeatureType_2_42, ValidationStrategy_2_40, ValidationStrategy_2_41, ValidationStrategy_2_42 } from './enums.ts'
+import { FeatureType_2_40, FeatureType_2_41, FeatureType_2_42, FeatureType_2_43, ValidationStrategy_2_40, ValidationStrategy_2_41, ValidationStrategy_2_42, ValidationStrategy_2_43 } from './enums.ts'
 
 export const ProgramStageBase_2_40 = z.object({
   allowGenerateNextVisit: z.boolean().optional(),
@@ -96,8 +96,41 @@ export const ProgramStageBase_2_42 = z.object({
   validationStrategy: ValidationStrategy_2_42.optional(),
 })
 
+export const ProgramStageBase_2_43 = z.object({
+  allowGenerateNextVisit: z.boolean().optional(),
+  autoGenerateEvent: z.boolean().optional(),
+  blockEntryForm: z.boolean().optional(),
+  code: z.string().max(50).optional(),
+  description: z.string().optional(),
+  displayGenerateEventBox: z.boolean().optional(),
+  dueDateLabel: z.string().max(255).optional(),
+  enableUserAssignment: z.boolean().optional(),
+  eventLabel: z.string().max(255).optional(),
+  eventsLabel: z.string().max(255).optional(),
+  executionDateLabel: z.string().max(255).optional(),
+  featureType: FeatureType_2_43.optional(),
+  formName: z.string().optional(),
+  generatedByEnrollmentDate: z.boolean().optional(),
+  hideDueDate: z.boolean().optional(),
+  minDaysFromStart: z.number().int(),
+  name: z.string().max(230),
+  nextScheduleDate: refSchema('DataElement').optional(),
+  openAfterEnrollment: z.boolean().optional(),
+  periodType: z.string().max(255).optional(),
+  preGenerateUID: z.boolean().optional(),
+  programStageLabel: z.string().max(255).optional(),
+  referral: z.boolean(),
+  remindCompleted: z.boolean().optional(),
+  repeatable: z.boolean(),
+  reportDateToUse: z.string().max(255).optional(),
+  sortOrder: z.number().int().optional(),
+  standardInterval: z.number().int().optional(),
+  validationStrategy: ValidationStrategy_2_43.optional(),
+})
+
 export const ProgramStageBaseByTarget = {
   '2.40': ProgramStageBase_2_40,
   '2.41': ProgramStageBase_2_41,
   '2.42': ProgramStageBase_2_42,
+  '2.43': ProgramStageBase_2_43,
 } as const

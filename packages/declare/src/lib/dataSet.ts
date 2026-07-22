@@ -81,6 +81,7 @@ const SCHEMAS = {
   '2.40': DataSetBaseByTarget['2.40'].extend(overrides),
   '2.41': DataSetBaseByTarget['2.41'].extend(overrides),
   '2.42': DataSetBaseByTarget['2.42'].extend(overrides),
+  '2.43': DataSetBaseByTarget['2.43'].extend(overrides),
 } as const
 
 export type DataSetInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

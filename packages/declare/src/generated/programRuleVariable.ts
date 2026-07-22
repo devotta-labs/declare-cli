@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { refSchema } from '../lib/core.ts'
-import { ProgramRuleVariableSourceType_2_40, ProgramRuleVariableSourceType_2_41, ProgramRuleVariableSourceType_2_42, ValueType_2_40, ValueType_2_41, ValueType_2_42 } from './enums.ts'
+import { ProgramRuleVariableSourceType_2_40, ProgramRuleVariableSourceType_2_41, ProgramRuleVariableSourceType_2_42, ProgramRuleVariableSourceType_2_43, ValueType_2_40, ValueType_2_41, ValueType_2_42, ValueType_2_43 } from './enums.ts'
 
 export const ProgramRuleVariableBase_2_40 = z.object({
   code: z.string().max(50).optional(),
@@ -40,8 +40,21 @@ export const ProgramRuleVariableBase_2_42 = z.object({
   valueType: ValueType_2_42,
 })
 
+export const ProgramRuleVariableBase_2_43 = z.object({
+  code: z.string().max(50).optional(),
+  dataElement: refSchema('DataElement').optional(),
+  name: z.string().max(230),
+  program: refSchema('Program'),
+  programRuleVariableSourceType: ProgramRuleVariableSourceType_2_43,
+  programStage: refSchema('ProgramStage').optional(),
+  trackedEntityAttribute: refSchema('TrackedEntityAttribute').optional(),
+  useCodeForOptionSet: z.boolean().optional(),
+  valueType: ValueType_2_43,
+})
+
 export const ProgramRuleVariableBaseByTarget = {
   '2.40': ProgramRuleVariableBase_2_40,
   '2.41': ProgramRuleVariableBase_2_41,
   '2.42': ProgramRuleVariableBase_2_42,
+  '2.43': ProgramRuleVariableBase_2_43,
 } as const

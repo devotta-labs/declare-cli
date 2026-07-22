@@ -27,6 +27,7 @@ const SCHEMAS = {
   '2.40': CategoryComboBaseByTarget['2.40'].extend(overridesFor('2.40')),
   '2.41': CategoryComboBaseByTarget['2.41'].extend(overridesFor('2.41')),
   '2.42': CategoryComboBaseByTarget['2.42'].extend(overridesFor('2.42')),
+  '2.43': CategoryComboBaseByTarget['2.43'].extend(overridesFor('2.43')),
 } as const
 
 export type CategoryComboInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

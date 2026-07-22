@@ -18,8 +18,15 @@ export const UserGroupBase_2_42 = z.object({
   name: z.string().max(230),
 })
 
+export const UserGroupBase_2_43 = z.object({
+  code: z.string().max(50).optional(),
+  description: z.string().max(255).optional(),
+  name: z.string().max(230),
+})
+
 export const UserGroupBaseByTarget = {
   '2.40': UserGroupBase_2_40,
   '2.41': UserGroupBase_2_41,
   '2.42': UserGroupBase_2_42,
+  '2.43': UserGroupBase_2_43,
 } as const

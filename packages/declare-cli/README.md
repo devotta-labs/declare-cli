@@ -50,9 +50,12 @@ import { defineConfig } from '@devotta-labs/declare-cli'
 export default defineConfig({
   name: 'my-program',        // Docker project name — isolates containers/volume
   schema: './src/schema.ts', // default export must be a defineSchema(...) result
+  target: '2.43',            // supported: 2.40, 2.41, 2.42, 2.43
   local: { port: 8080 },     // host port on 127.0.0.1
 })
 ```
+
+New projects default to DHIS2 2.43.
 
 Pick different `local.port` values across projects to run multiple DHIS2 stacks side-by-side.
 
