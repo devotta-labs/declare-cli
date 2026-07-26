@@ -60,3 +60,33 @@ New projects default to DHIS2 2.43.
 Pick different `local.port` values across projects to run multiple DHIS2 stacks side-by-side.
 
 See the [repository](https://github.com/devotta-labs/declare-cli) for examples and more documentation.
+
+## Real DHIS2 integration matrix
+
+The repository exercises the CLI against the pinned stable DHIS2 2.40, 2.41,
+2.42, and 2.43 Docker images before Changesets can publish. Each matrix job
+starts an isolated empty DHIS2, runs `check`, sends a real `plan` (VALIDATE),
+verifies that planning made no changes, applies one representative data
+element, and applies it again. The second response must be successful, exactly
+one object with the fixture code must remain, and its UID must be unchanged.
+When a DHIS2 version exposes populated import counters, the second response
+must also report no creates or deletes.
+
+Run one version locally from the repository root (Docker and Node 22+ required):
+
+```bash
+pnpm install --frozen-lockfile
+pnpm integration:dhis2 -- 2.43
+```
+
+The accepted versions are `2.40`, `2.41`, `2.42`, and `2.43`. The runner uses
+the exact pinned image documented in
+[`packages/declare/snapshots/README.md`](../declare/snapshots/README.md), waits
+up to 15 minutes for authenticated API readiness, captures diagnostics under
+`packages/declare-cli/integration/artifacts/`, and always removes the Compose
+containers and database volume. Use `--port` and `--project` to avoid conflicts
+with another local stack:
+
+```bash
+pnpm integration:dhis2 -- 2.40 --port 18040 --project declare-integration-local
+```

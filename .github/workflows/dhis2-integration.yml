@@ -1,0 +1,98 @@
+name: DHIS2 integration
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/dhis2-integration.yml"
+      - ".github/workflows/release.yml"
+      - "packages/declare/**"
+      - "packages/declare-cli/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+  workflow_call:
+  workflow_dispatch:
+
+concurrency:
+  group: dhis2-integration-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    name: DHIS2 ${{ matrix.dhis2 }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - dhis2: "2.40"
+            image: dhis2/core:2.40.11
+            port: 8040
+            project: declare-integration-240
+          - dhis2: "2.41"
+            image: dhis2/core:2.41.8
+            port: 8041
+            project: declare-integration-241
+          - dhis2: "2.42"
+            image: dhis2/core:2.42.4
+            port: 8042
+            project: declare-integration-242
+          - dhis2: "2.43"
+            image: dhis2/core:2.43.0.1
+            port: 8043
+            project: declare-integration-243
+    env:
+      COMPOSE_FILE: packages/declare-cli/templates/docker/docker-compose.yml
+      DHIS2_IMAGE: ${{ matrix.image }}
+      DHIS2_WEB_PORT: ${{ matrix.port }}
+      COMPOSE_PROJECT_NAME: ${{ matrix.project }}-${{ github.run_id }}-${{ github.run_attempt }}
+      ARTIFACTS_DIR: packages/declare-cli/integration/artifacts/dhis2-${{ matrix.dhis2 }}
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run real metadata scenario
+        run: >-
+          pnpm integration:dhis2 --
+          ${{ matrix.dhis2 }}
+          --image ${{ matrix.image }}
+          --port ${{ matrix.port }}
+          --project "$COMPOSE_PROJECT_NAME"
+          --artifacts-dir "$ARTIFACTS_DIR"
+
+      - name: Clean up Docker containers and volumes
+        if: always()
+        run: >-
+          docker compose
+          -f "$COMPOSE_FILE"
+          -p "$COMPOSE_PROJECT_NAME"
+          down --volumes --remove-orphans
+
+      - name: Upload diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dhis2-${{ matrix.dhis2 }}-logs
+          path: ${{ env.ARTIFACTS_DIR }}
+          if-no-files-found: warn
+          retention-days: 7

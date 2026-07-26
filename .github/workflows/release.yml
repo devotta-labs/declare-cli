@@ -12,12 +12,19 @@ permissions:
   id-token: write
 
 jobs:
+  integration:
+    name: DHIS2 integration matrix
+    uses: ./.github/workflows/dhis2-integration.yml
+
   release:
     name: Release
+    needs: integration
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4

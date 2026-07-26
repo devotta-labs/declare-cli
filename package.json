@@ -8,6 +8,7 @@
     "plan": "turbo run plan",
     "apply": "turbo run apply",
     "changeset": "changeset",
+    "integration:dhis2": "node packages/declare-cli/integration/run.mjs",
     "version-packages": "changeset version",
     "release": "changeset publish",
     "typecheck": "turbo run typecheck",
