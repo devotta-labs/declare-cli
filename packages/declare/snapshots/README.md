@@ -22,6 +22,10 @@ Tear down the stack and its database volume after capturing the snapshot.
 Re-run `pnpm --filter @devotta-labs/declare gen:schemas` after any snapshot
 refresh to keep the generated code in sync.
 
+`pnpm check:generated` validates the snapshot structure and registered entity
+coverage, regenerates `packages/declare/src/generated/`, and fails when the
+result differs from the checked-in files. CI runs the same deterministic check.
+
 ## Target matrix (stable only)
 
 | Target | Docker image          |

@@ -14,40 +14,43 @@ const cases = defineDataElement({
 })
 
 defineDataSet({
-  code: 'DS_OK',
-  name: 'Dataset ok',
+  code: 'DS_241',
+  name: 'Dataset 2.41',
   periodType: 'Monthly',
   dataSetElements: [{ dataElement: cases }],
-})
-
-defineDataSet({
-  code: 'DS_BAD',
-  name: 'Dataset bad',
-  periodType: 'Monthly',
-  dataSetElements: [{ dataElement: cases }],
-  // @ts-expect-error displayOptions is not available on DHIS2 2.40.
+  // @ts-expect-error displayOptions first appears in the pinned 2.42 DataSet schema.
   displayOptions: 'sectionTabs',
 })
 
 defineTrackedEntityAttribute({
   code: 'TEA_LEGACY_ASSOCIATE',
   name: 'Legacy associate',
-  // Present in the pinned 2.40 ValueType constants.
+  // Retained by the pinned 2.41 ValueType constants.
   valueType: 'TRACKER_ASSOCIATE',
 })
 
+defineTrackedEntityAttribute({
+  code: 'TEA_SEARCH_TOO_NEW',
+  name: 'Search config too new',
+  valueType: 'TEXT',
+  // @ts-expect-error blockedSearchOperators first appears in the pinned 2.42 schema.
+  blockedSearchOperators: ['SW'],
+})
+
 defineProgram({
-  code: 'PROGRAM_240',
-  name: 'Program 2.40',
+  code: 'PROGRAM_241',
+  name: 'Program 2.41',
   programType: 'WITHOUT_REGISTRATION',
   organisationUnits: [],
-  // @ts-expect-error enrollmentLabel first appears in the pinned 2.41 Program schema.
+  // First present as a writable field in the pinned 2.41 Program schema.
   enrollmentLabel: 'Enrollment',
 })
 
 const stage = defineProgramStage({
   code: 'STAGE',
   name: 'Stage',
+  // First present as a writable field in the pinned 2.41 ProgramStage schema.
+  eventLabel: 'Event',
 })
 
 // @ts-expect-error SCHEDULEEVENT first appears in the pinned 2.42 action constants.
