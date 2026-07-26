@@ -40,6 +40,7 @@ const SCHEMAS = {
   '2.40': TrackedEntityTypeBaseByTarget['2.40'].extend(overridesFor('2.40')),
   '2.41': TrackedEntityTypeBaseByTarget['2.41'].extend(overridesFor('2.41')),
   '2.42': TrackedEntityTypeBaseByTarget['2.42'].extend(overridesFor('2.42')),
+  '2.43': TrackedEntityTypeBaseByTarget['2.43'].extend(overridesFor('2.43')),
 } as const
 
 export type TrackedEntityTypeInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

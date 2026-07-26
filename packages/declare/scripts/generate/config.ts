@@ -4,10 +4,10 @@ import {
   type MetadataKind,
 } from '../../src/lib/entities.ts'
 
-export const TARGETS = ['2.40', '2.41', '2.42'] as const
+export const TARGETS = ['2.40', '2.41', '2.42', '2.43'] as const
 export type Target = (typeof TARGETS)[number]
 
-export const DEFAULT_TARGET: Target = '2.42'
+export const DEFAULT_TARGET: Target = '2.43'
 
 export const ENTITY_SCHEMAS: Readonly<Record<string, MetadataKind>> = ENTITY_SCHEMA_TO_KIND
 

@@ -36,8 +36,20 @@ export const ProgramRuleBase_2_42 = z.object({
   programStage: refSchema('ProgramStage').optional(),
 })
 
+export const ProgramRuleBase_2_43 = z.object({
+  code: z.string().max(50).optional(),
+  condition: z.string().optional(),
+  description: z.string().max(255).optional(),
+  name: z.string().max(230),
+  priority: z.number().int().optional(),
+  program: refSchema('Program'),
+  programRuleActions: z.array(refSchema('ProgramRuleAction')).optional(),
+  programStage: refSchema('ProgramStage').optional(),
+})
+
 export const ProgramRuleBaseByTarget = {
   '2.40': ProgramRuleBase_2_40,
   '2.41': ProgramRuleBase_2_41,
   '2.42': ProgramRuleBase_2_42,
+  '2.43': ProgramRuleBase_2_43,
 } as const

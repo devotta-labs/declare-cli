@@ -34,6 +34,7 @@ const SCHEMAS = {
   '2.40': OptionSetBaseByTarget['2.40'].extend(overrides),
   '2.41': OptionSetBaseByTarget['2.41'].extend(overrides),
   '2.42': OptionSetBaseByTarget['2.42'].extend(overrides),
+  '2.43': OptionSetBaseByTarget['2.43'].extend(overrides),
 } as const
 
 export type OptionInput = z.infer<typeof OptionSchema>

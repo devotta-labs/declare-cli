@@ -7,10 +7,12 @@ export type AggregationType = z.infer<typeof AggregationType>
 export const AggregationType_2_40 = z.enum(['SUM', 'AVERAGE', 'AVERAGE_SUM_ORG_UNIT', 'LAST', 'LAST_AVERAGE_ORG_UNIT', 'LAST_LAST_ORG_UNIT', 'LAST_IN_PERIOD', 'LAST_IN_PERIOD_AVERAGE_ORG_UNIT', 'FIRST', 'FIRST_AVERAGE_ORG_UNIT', 'FIRST_FIRST_ORG_UNIT', 'COUNT', 'STDDEV', 'VARIANCE', 'MIN', 'MAX', 'MIN_SUM_ORG_UNIT', 'MAX_SUM_ORG_UNIT', 'NONE', 'CUSTOM', 'DEFAULT'])
 export const AggregationType_2_41 = z.enum(['SUM', 'AVERAGE', 'AVERAGE_SUM_ORG_UNIT', 'LAST', 'LAST_AVERAGE_ORG_UNIT', 'LAST_LAST_ORG_UNIT', 'LAST_IN_PERIOD', 'LAST_IN_PERIOD_AVERAGE_ORG_UNIT', 'FIRST', 'FIRST_AVERAGE_ORG_UNIT', 'FIRST_FIRST_ORG_UNIT', 'COUNT', 'STDDEV', 'VARIANCE', 'MIN', 'MAX', 'MIN_SUM_ORG_UNIT', 'MAX_SUM_ORG_UNIT', 'NONE', 'CUSTOM', 'DEFAULT'])
 export const AggregationType_2_42 = z.enum(['SUM', 'AVERAGE', 'AVERAGE_SUM_ORG_UNIT', 'LAST', 'LAST_AVERAGE_ORG_UNIT', 'LAST_LAST_ORG_UNIT', 'LAST_IN_PERIOD', 'LAST_IN_PERIOD_AVERAGE_ORG_UNIT', 'FIRST', 'FIRST_AVERAGE_ORG_UNIT', 'FIRST_FIRST_ORG_UNIT', 'COUNT', 'STDDEV', 'VARIANCE', 'MIN', 'MAX', 'MIN_SUM_ORG_UNIT', 'MAX_SUM_ORG_UNIT', 'NONE', 'CUSTOM', 'DEFAULT'])
+export const AggregationType_2_43 = z.enum(['SUM', 'AVERAGE', 'AVERAGE_SUM_ORG_UNIT', 'LAST', 'LAST_AVERAGE_ORG_UNIT', 'LAST_LAST_ORG_UNIT', 'LAST_IN_PERIOD', 'LAST_IN_PERIOD_AVERAGE_ORG_UNIT', 'FIRST', 'FIRST_AVERAGE_ORG_UNIT', 'FIRST_FIRST_ORG_UNIT', 'COUNT', 'STDDEV', 'VARIANCE', 'MIN', 'MAX', 'MIN_SUM_ORG_UNIT', 'MAX_SUM_ORG_UNIT', 'NONE', 'CUSTOM', 'DEFAULT'])
 export const AggregationTypeByTarget = {
   '2.40': AggregationType_2_40,
   '2.41': AggregationType_2_41,
   '2.42': AggregationType_2_42,
+  '2.43': AggregationType_2_43,
 } as const
 
 export const DataDimensionType = z.enum(['DISAGGREGATION', 'ATTRIBUTE'])
@@ -18,10 +20,12 @@ export type DataDimensionType = z.infer<typeof DataDimensionType>
 export const DataDimensionType_2_40 = z.enum(['DISAGGREGATION', 'ATTRIBUTE'])
 export const DataDimensionType_2_41 = z.enum(['DISAGGREGATION', 'ATTRIBUTE'])
 export const DataDimensionType_2_42 = z.enum(['DISAGGREGATION', 'ATTRIBUTE'])
+export const DataDimensionType_2_43 = z.enum(['DISAGGREGATION', 'ATTRIBUTE'])
 export const DataDimensionTypeByTarget = {
   '2.40': DataDimensionType_2_40,
   '2.41': DataDimensionType_2_41,
   '2.42': DataDimensionType_2_42,
+  '2.43': DataDimensionType_2_43,
 } as const
 
 export const DomainType = z.enum(['AGGREGATE', 'TRACKER'])
@@ -29,10 +33,12 @@ export type DomainType = z.infer<typeof DomainType>
 export const DomainType_2_40 = z.enum(['AGGREGATE', 'TRACKER'])
 export const DomainType_2_41 = z.enum(['AGGREGATE', 'TRACKER'])
 export const DomainType_2_42 = z.enum(['AGGREGATE', 'TRACKER'])
+export const DomainType_2_43 = z.enum(['AGGREGATE', 'TRACKER'])
 export const DomainTypeByTarget = {
   '2.40': DomainType_2_40,
   '2.41': DomainType_2_41,
   '2.42': DomainType_2_42,
+  '2.43': DomainType_2_43,
 } as const
 
 export const FeatureType = z.enum(['NONE', 'MULTI_POLYGON', 'POLYGON', 'POINT', 'SYMBOL'])
@@ -40,10 +46,12 @@ export type FeatureType = z.infer<typeof FeatureType>
 export const FeatureType_2_40 = z.enum(['NONE', 'MULTI_POLYGON', 'POLYGON', 'POINT', 'SYMBOL'])
 export const FeatureType_2_41 = z.enum(['NONE', 'MULTI_POLYGON', 'POLYGON', 'POINT', 'SYMBOL'])
 export const FeatureType_2_42 = z.enum(['NONE', 'MULTI_POLYGON', 'POLYGON', 'POINT', 'SYMBOL'])
+export const FeatureType_2_43 = z.enum(['NONE', 'MULTI_POLYGON', 'POLYGON', 'POINT', 'SYMBOL'])
 export const FeatureTypeByTarget = {
   '2.40': FeatureType_2_40,
   '2.41': FeatureType_2_41,
   '2.42': FeatureType_2_42,
+  '2.43': FeatureType_2_43,
 } as const
 
 export const ProgramAccessLevel = z.enum(['OPEN', 'AUDITED', 'PROTECTED', 'CLOSED'])
@@ -51,10 +59,12 @@ export type ProgramAccessLevel = z.infer<typeof ProgramAccessLevel>
 export const ProgramAccessLevel_2_40 = z.enum(['OPEN', 'AUDITED', 'PROTECTED', 'CLOSED'])
 export const ProgramAccessLevel_2_41 = z.enum(['OPEN', 'AUDITED', 'PROTECTED', 'CLOSED'])
 export const ProgramAccessLevel_2_42 = z.enum(['OPEN', 'AUDITED', 'PROTECTED', 'CLOSED'])
+export const ProgramAccessLevel_2_43 = z.enum(['OPEN', 'AUDITED', 'PROTECTED', 'CLOSED'])
 export const ProgramAccessLevelByTarget = {
   '2.40': ProgramAccessLevel_2_40,
   '2.41': ProgramAccessLevel_2_41,
   '2.42': ProgramAccessLevel_2_42,
+  '2.43': ProgramAccessLevel_2_43,
 } as const
 
 export const ProgramRuleActionEvaluationTime = z.enum(['ON_DATA_ENTRY', 'ON_COMPLETE', 'ALWAYS'])
@@ -62,10 +72,12 @@ export type ProgramRuleActionEvaluationTime = z.infer<typeof ProgramRuleActionEv
 export const ProgramRuleActionEvaluationTime_2_40 = z.enum(['ON_DATA_ENTRY', 'ON_COMPLETE', 'ALWAYS'])
 export const ProgramRuleActionEvaluationTime_2_41 = z.enum(['ON_DATA_ENTRY', 'ON_COMPLETE', 'ALWAYS'])
 export const ProgramRuleActionEvaluationTime_2_42 = z.enum(['ON_DATA_ENTRY', 'ON_COMPLETE', 'ALWAYS'])
+export const ProgramRuleActionEvaluationTime_2_43 = z.enum(['ON_DATA_ENTRY', 'ON_COMPLETE', 'ALWAYS'])
 export const ProgramRuleActionEvaluationTimeByTarget = {
   '2.40': ProgramRuleActionEvaluationTime_2_40,
   '2.41': ProgramRuleActionEvaluationTime_2_41,
   '2.42': ProgramRuleActionEvaluationTime_2_42,
+  '2.43': ProgramRuleActionEvaluationTime_2_43,
 } as const
 
 export const ProgramRuleActionType = z.enum(['DISPLAYTEXT', 'DISPLAYKEYVALUEPAIR', 'HIDEFIELD', 'HIDESECTION', 'HIDEPROGRAMSTAGE', 'ASSIGN', 'SHOWWARNING', 'WARNINGONCOMPLETE', 'SHOWERROR', 'ERRORONCOMPLETE', 'CREATEEVENT', 'SETMANDATORYFIELD', 'SENDMESSAGE', 'SCHEDULEMESSAGE', 'HIDEOPTION', 'SHOWOPTIONGROUP', 'HIDEOPTIONGROUP', 'SCHEDULEEVENT'])
@@ -73,10 +85,12 @@ export type ProgramRuleActionType = z.infer<typeof ProgramRuleActionType>
 export const ProgramRuleActionType_2_40 = z.enum(['DISPLAYTEXT', 'DISPLAYKEYVALUEPAIR', 'HIDEFIELD', 'HIDESECTION', 'HIDEPROGRAMSTAGE', 'ASSIGN', 'SHOWWARNING', 'WARNINGONCOMPLETE', 'SHOWERROR', 'ERRORONCOMPLETE', 'CREATEEVENT', 'SETMANDATORYFIELD', 'SENDMESSAGE', 'SCHEDULEMESSAGE', 'HIDEOPTION', 'SHOWOPTIONGROUP', 'HIDEOPTIONGROUP'])
 export const ProgramRuleActionType_2_41 = z.enum(['DISPLAYTEXT', 'DISPLAYKEYVALUEPAIR', 'HIDEFIELD', 'HIDESECTION', 'HIDEPROGRAMSTAGE', 'ASSIGN', 'SHOWWARNING', 'WARNINGONCOMPLETE', 'SHOWERROR', 'ERRORONCOMPLETE', 'CREATEEVENT', 'SETMANDATORYFIELD', 'SENDMESSAGE', 'SCHEDULEMESSAGE', 'HIDEOPTION', 'SHOWOPTIONGROUP', 'HIDEOPTIONGROUP'])
 export const ProgramRuleActionType_2_42 = z.enum(['DISPLAYTEXT', 'DISPLAYKEYVALUEPAIR', 'HIDEFIELD', 'HIDESECTION', 'HIDEPROGRAMSTAGE', 'ASSIGN', 'SHOWWARNING', 'WARNINGONCOMPLETE', 'SHOWERROR', 'ERRORONCOMPLETE', 'SCHEDULEEVENT', 'CREATEEVENT', 'SETMANDATORYFIELD', 'SENDMESSAGE', 'SCHEDULEMESSAGE', 'HIDEOPTION', 'SHOWOPTIONGROUP', 'HIDEOPTIONGROUP'])
+export const ProgramRuleActionType_2_43 = z.enum(['DISPLAYTEXT', 'DISPLAYKEYVALUEPAIR', 'HIDEFIELD', 'HIDESECTION', 'HIDEPROGRAMSTAGE', 'ASSIGN', 'SHOWWARNING', 'WARNINGONCOMPLETE', 'SHOWERROR', 'ERRORONCOMPLETE', 'SCHEDULEEVENT', 'CREATEEVENT', 'SETMANDATORYFIELD', 'SENDMESSAGE', 'SCHEDULEMESSAGE', 'HIDEOPTION', 'SHOWOPTIONGROUP', 'HIDEOPTIONGROUP'])
 export const ProgramRuleActionTypeByTarget = {
   '2.40': ProgramRuleActionType_2_40,
   '2.41': ProgramRuleActionType_2_41,
   '2.42': ProgramRuleActionType_2_42,
+  '2.43': ProgramRuleActionType_2_43,
 } as const
 
 export const ProgramRuleVariableSourceType = z.enum(['DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE', 'DATAELEMENT_NEWEST_EVENT_PROGRAM', 'DATAELEMENT_CURRENT_EVENT', 'DATAELEMENT_PREVIOUS_EVENT', 'CALCULATED_VALUE', 'TEI_ATTRIBUTE'])
@@ -84,10 +98,12 @@ export type ProgramRuleVariableSourceType = z.infer<typeof ProgramRuleVariableSo
 export const ProgramRuleVariableSourceType_2_40 = z.enum(['DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE', 'DATAELEMENT_NEWEST_EVENT_PROGRAM', 'DATAELEMENT_CURRENT_EVENT', 'DATAELEMENT_PREVIOUS_EVENT', 'CALCULATED_VALUE', 'TEI_ATTRIBUTE'])
 export const ProgramRuleVariableSourceType_2_41 = z.enum(['DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE', 'DATAELEMENT_NEWEST_EVENT_PROGRAM', 'DATAELEMENT_CURRENT_EVENT', 'DATAELEMENT_PREVIOUS_EVENT', 'CALCULATED_VALUE', 'TEI_ATTRIBUTE'])
 export const ProgramRuleVariableSourceType_2_42 = z.enum(['DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE', 'DATAELEMENT_NEWEST_EVENT_PROGRAM', 'DATAELEMENT_CURRENT_EVENT', 'DATAELEMENT_PREVIOUS_EVENT', 'CALCULATED_VALUE', 'TEI_ATTRIBUTE'])
+export const ProgramRuleVariableSourceType_2_43 = z.enum(['DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE', 'DATAELEMENT_NEWEST_EVENT_PROGRAM', 'DATAELEMENT_CURRENT_EVENT', 'DATAELEMENT_PREVIOUS_EVENT', 'CALCULATED_VALUE', 'TEI_ATTRIBUTE'])
 export const ProgramRuleVariableSourceTypeByTarget = {
   '2.40': ProgramRuleVariableSourceType_2_40,
   '2.41': ProgramRuleVariableSourceType_2_41,
   '2.42': ProgramRuleVariableSourceType_2_42,
+  '2.43': ProgramRuleVariableSourceType_2_43,
 } as const
 
 export const ProgramType = z.enum(['WITH_REGISTRATION', 'WITHOUT_REGISTRATION'])
@@ -95,10 +111,12 @@ export type ProgramType = z.infer<typeof ProgramType>
 export const ProgramType_2_40 = z.enum(['WITH_REGISTRATION', 'WITHOUT_REGISTRATION'])
 export const ProgramType_2_41 = z.enum(['WITH_REGISTRATION', 'WITHOUT_REGISTRATION'])
 export const ProgramType_2_42 = z.enum(['WITH_REGISTRATION', 'WITHOUT_REGISTRATION'])
+export const ProgramType_2_43 = z.enum(['WITH_REGISTRATION', 'WITHOUT_REGISTRATION'])
 export const ProgramTypeByTarget = {
   '2.40': ProgramType_2_40,
   '2.41': ProgramType_2_41,
   '2.42': ProgramType_2_42,
+  '2.43': ProgramType_2_43,
 } as const
 
 export const QueryOperator = z.enum(['EQ', 'GT', 'GE', 'LT', 'LE', 'LIKE', 'IN', 'SW', 'EW', 'NULL', 'NNULL', 'IEQ', 'NE', 'NEQ', 'NIEQ', 'NLIKE', 'ILIKE', 'NILIKE'])
@@ -106,10 +124,12 @@ export type QueryOperator = z.infer<typeof QueryOperator>
 export const QueryOperator_2_40 = QueryOperator
 export const QueryOperator_2_41 = QueryOperator
 export const QueryOperator_2_42 = z.enum(['EQ', 'GT', 'GE', 'LT', 'LE', 'LIKE', 'IN', 'SW', 'EW', 'NULL', 'NNULL', 'IEQ', 'NE', 'NEQ', 'NIEQ', 'NLIKE', 'ILIKE', 'NILIKE'])
+export const QueryOperator_2_43 = z.enum(['EQ', 'GT', 'GE', 'LT', 'LE', 'LIKE', 'IN', 'SW', 'EW', 'NULL', 'NNULL', 'IEQ', 'NE', 'NEQ', 'NIEQ', 'NLIKE', 'ILIKE', 'NILIKE'])
 export const QueryOperatorByTarget = {
   '2.40': QueryOperator_2_40,
   '2.41': QueryOperator_2_41,
   '2.42': QueryOperator_2_42,
+  '2.43': QueryOperator_2_43,
 } as const
 
 export const ValidationStrategy = z.enum(['ON_COMPLETE', 'ON_UPDATE_AND_INSERT'])
@@ -117,10 +137,12 @@ export type ValidationStrategy = z.infer<typeof ValidationStrategy>
 export const ValidationStrategy_2_40 = z.enum(['ON_COMPLETE', 'ON_UPDATE_AND_INSERT'])
 export const ValidationStrategy_2_41 = z.enum(['ON_COMPLETE', 'ON_UPDATE_AND_INSERT'])
 export const ValidationStrategy_2_42 = z.enum(['ON_COMPLETE', 'ON_UPDATE_AND_INSERT'])
+export const ValidationStrategy_2_43 = z.enum(['ON_COMPLETE', 'ON_UPDATE_AND_INSERT'])
 export const ValidationStrategyByTarget = {
   '2.40': ValidationStrategy_2_40,
   '2.41': ValidationStrategy_2_41,
   '2.42': ValidationStrategy_2_42,
+  '2.43': ValidationStrategy_2_43,
 } as const
 
 export const ValueType = z.enum(['TEXT', 'LONG_TEXT', 'MULTI_TEXT', 'LETTER', 'PHONE_NUMBER', 'EMAIL', 'BOOLEAN', 'TRUE_ONLY', 'DATE', 'DATETIME', 'TIME', 'NUMBER', 'UNIT_INTERVAL', 'PERCENTAGE', 'INTEGER', 'INTEGER_POSITIVE', 'INTEGER_NEGATIVE', 'INTEGER_ZERO_OR_POSITIVE', 'TRACKER_ASSOCIATE', 'USERNAME', 'COORDINATE', 'ORGANISATION_UNIT', 'REFERENCE', 'AGE', 'URL', 'FILE_RESOURCE', 'IMAGE', 'GEOJSON'])
@@ -128,8 +150,10 @@ export type ValueType = z.infer<typeof ValueType>
 export const ValueType_2_40 = z.enum(['TEXT', 'LONG_TEXT', 'MULTI_TEXT', 'LETTER', 'PHONE_NUMBER', 'EMAIL', 'BOOLEAN', 'TRUE_ONLY', 'DATE', 'DATETIME', 'TIME', 'NUMBER', 'UNIT_INTERVAL', 'PERCENTAGE', 'INTEGER', 'INTEGER_POSITIVE', 'INTEGER_NEGATIVE', 'INTEGER_ZERO_OR_POSITIVE', 'TRACKER_ASSOCIATE', 'USERNAME', 'COORDINATE', 'ORGANISATION_UNIT', 'REFERENCE', 'AGE', 'URL', 'FILE_RESOURCE', 'IMAGE', 'GEOJSON'])
 export const ValueType_2_41 = z.enum(['TEXT', 'LONG_TEXT', 'MULTI_TEXT', 'LETTER', 'PHONE_NUMBER', 'EMAIL', 'BOOLEAN', 'TRUE_ONLY', 'DATE', 'DATETIME', 'TIME', 'NUMBER', 'UNIT_INTERVAL', 'PERCENTAGE', 'INTEGER', 'INTEGER_POSITIVE', 'INTEGER_NEGATIVE', 'INTEGER_ZERO_OR_POSITIVE', 'TRACKER_ASSOCIATE', 'USERNAME', 'COORDINATE', 'ORGANISATION_UNIT', 'REFERENCE', 'AGE', 'URL', 'FILE_RESOURCE', 'IMAGE', 'GEOJSON'])
 export const ValueType_2_42 = z.enum(['TEXT', 'LONG_TEXT', 'MULTI_TEXT', 'LETTER', 'PHONE_NUMBER', 'EMAIL', 'BOOLEAN', 'TRUE_ONLY', 'DATE', 'DATETIME', 'TIME', 'NUMBER', 'UNIT_INTERVAL', 'PERCENTAGE', 'INTEGER', 'INTEGER_POSITIVE', 'INTEGER_NEGATIVE', 'INTEGER_ZERO_OR_POSITIVE', 'USERNAME', 'COORDINATE', 'ORGANISATION_UNIT', 'REFERENCE', 'AGE', 'URL', 'FILE_RESOURCE', 'IMAGE', 'GEOJSON'])
+export const ValueType_2_43 = z.enum(['TEXT', 'LONG_TEXT', 'MULTI_TEXT', 'LETTER', 'PHONE_NUMBER', 'EMAIL', 'BOOLEAN', 'TRUE_ONLY', 'DATE', 'DATETIME', 'TIME', 'NUMBER', 'UNIT_INTERVAL', 'PERCENTAGE', 'INTEGER', 'INTEGER_POSITIVE', 'INTEGER_NEGATIVE', 'INTEGER_ZERO_OR_POSITIVE', 'USERNAME', 'COORDINATE', 'ORGANISATION_UNIT', 'REFERENCE', 'AGE', 'URL', 'FILE_RESOURCE', 'IMAGE', 'GEOJSON'])
 export const ValueTypeByTarget = {
   '2.40': ValueType_2_40,
   '2.41': ValueType_2_41,
   '2.42': ValueType_2_42,
+  '2.43': ValueType_2_43,
 } as const

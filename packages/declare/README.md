@@ -4,6 +4,8 @@ Type-safe DHIS2 metadata-as-code framework. Declare categories, data elements, o
 
 Usually consumed together with [`@devotta-labs/declare-cli`](https://www.npmjs.com/package/@devotta-labs/declare-cli), which runs a local DHIS2 and applies the schema.
 
+Supports DHIS2 2.40, 2.41, 2.42, and 2.43, with target-specific validation and TypeScript types.
+
 ## Install
 
 ```bash

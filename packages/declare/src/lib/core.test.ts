@@ -3,7 +3,7 @@ import { defineDataElement } from './dataElement.ts'
 import { defineOptionSet } from './optionSet.ts'
 import { defineTrackedEntityAttribute } from './trackedEntityAttribute.ts'
 import { stableUid } from './core.ts'
-import { DEFAULT_TARGET } from '../generated/targets.ts'
+import { DEFAULT_TARGET, TARGETS } from '../generated/targets.ts'
 import { getTarget, setTarget, withTarget } from '../generated/runtime.ts'
 
 describe('stableUid', () => {
@@ -98,20 +98,28 @@ describe('target-versioned valueType enforcement', () => {
     ).not.toThrow()
   })
 
-  it('rejects TRACKER_ASSOCIATE on 2.42 (removed upstream)', () => {
-    setTarget('2.42')
-    expect(() =>
-      defineTrackedEntityAttribute({
-        code: 'EX_TEA_BAD',
-        name: 'Bad TEA',
-        valueType: 'TRACKER_ASSOCIATE',
-      }),
-    ).toThrow(/valueType/)
-  })
+  it.each(['2.42', '2.43'] as const)(
+    'rejects TRACKER_ASSOCIATE on %s (removed upstream)',
+    (target) => {
+      setTarget(target)
+      expect(() =>
+        defineTrackedEntityAttribute({
+          code: 'EX_TEA_BAD',
+          name: 'Bad TEA',
+          valueType: 'TRACKER_ASSOCIATE',
+        }),
+      ).toThrow(/valueType/)
+    },
+  )
 })
 
 describe('target context', () => {
   afterEach(() => setTarget(DEFAULT_TARGET))
+
+  it('supports DHIS2 2.40 through 2.43 and defaults to the newest target', () => {
+    expect(TARGETS).toEqual(['2.40', '2.41', '2.42', '2.43'])
+    expect(DEFAULT_TARGET).toBe('2.43')
+  })
 
   it('isolates overlapping async withTarget calls', async () => {
     const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -121,14 +129,14 @@ describe('target context', () => {
         await wait(10)
         return getTarget()
       }),
-      withTarget('2.42', async () => {
+      withTarget('2.43', async () => {
         await wait(1)
         return getTarget()
       }),
     ])
 
     expect(first).toBe('2.40')
-    expect(second).toBe('2.42')
+    expect(second).toBe('2.43')
     expect(getTarget()).toBe(DEFAULT_TARGET)
   })
 })

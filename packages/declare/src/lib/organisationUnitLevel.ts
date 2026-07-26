@@ -15,6 +15,7 @@ const SCHEMAS = {
   '2.40': OrganisationUnitLevelBaseByTarget['2.40'].extend(overrides),
   '2.41': OrganisationUnitLevelBaseByTarget['2.41'].extend(overrides),
   '2.42': OrganisationUnitLevelBaseByTarget['2.42'].extend(overrides),
+  '2.43': OrganisationUnitLevelBaseByTarget['2.43'].extend(overrides),
 } as const
 
 export type OrganisationUnitLevelInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

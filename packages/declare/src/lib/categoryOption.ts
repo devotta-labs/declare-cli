@@ -30,6 +30,7 @@ const SCHEMAS = {
   '2.40': CategoryOptionBaseByTarget['2.40'].extend(overrides),
   '2.41': CategoryOptionBaseByTarget['2.41'].extend(overrides),
   '2.42': CategoryOptionBaseByTarget['2.42'].extend(overrides),
+  '2.43': CategoryOptionBaseByTarget['2.43'].extend(overrides),
 } as const
 
 export type CategoryOptionInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { refSchema } from '../lib/core.ts'
-import { AggregationType_2_40, AggregationType_2_41, AggregationType_2_42, QueryOperator_2_40, QueryOperator_2_41, QueryOperator_2_42, ValueType_2_40, ValueType_2_41, ValueType_2_42 } from './enums.ts'
+import { AggregationType_2_40, AggregationType_2_41, AggregationType_2_42, AggregationType_2_43, QueryOperator_2_40, QueryOperator_2_41, QueryOperator_2_42, QueryOperator_2_43, ValueType_2_40, ValueType_2_41, ValueType_2_42, ValueType_2_43 } from './enums.ts'
 
 export const TrackedEntityAttributeBase_2_40 = z.object({
   aggregationType: AggregationType_2_40,
@@ -81,8 +81,38 @@ export const TrackedEntityAttributeBase_2_42 = z.object({
   valueType: ValueType_2_42,
 })
 
+export const TrackedEntityAttributeBase_2_43 = z.object({
+  aggregationType: AggregationType_2_43,
+  blockedSearchOperators: z.array(z.string()).optional(),
+  code: z.string().max(50).optional(),
+  confidential: z.boolean().optional(),
+  description: z.string().optional(),
+  displayInListNoProgram: z.boolean().optional(),
+  displayOnVisitSchedule: z.boolean().optional(),
+  expression: z.string().max(255).optional(),
+  fieldMask: z.string().max(255).optional(),
+  formName: z.string().optional(),
+  generated: z.boolean().optional(),
+  inherit: z.boolean().optional(),
+  minCharactersToSearch: z.number().int().optional(),
+  name: z.string().max(230),
+  optionSet: refSchema('OptionSet').optional(),
+  orgunitScope: z.boolean().optional(),
+  pattern: z.string().max(255).optional(),
+  preferredSearchOperator: QueryOperator_2_43.optional(),
+  shortName: z.string().max(50),
+  skipAnalytics: z.boolean().optional(),
+  skipSynchronization: z.boolean().optional(),
+  sortOrderInListNoProgram: z.number().int().optional(),
+  sortOrderInVisitSchedule: z.number().int().optional(),
+  trigramIndexable: z.boolean(),
+  unique: z.boolean().optional(),
+  valueType: ValueType_2_43,
+})
+
 export const TrackedEntityAttributeBaseByTarget = {
   '2.40': TrackedEntityAttributeBase_2_40,
   '2.41': TrackedEntityAttributeBase_2_41,
   '2.42': TrackedEntityAttributeBase_2_42,
+  '2.43': TrackedEntityAttributeBase_2_43,
 } as const

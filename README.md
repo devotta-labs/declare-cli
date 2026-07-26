@@ -37,6 +37,7 @@ import { defineConfig } from '@devotta-labs/declare-cli'
 export default defineConfig({
   name: 'malaria-monthly-reporting',
   schema: './src/schema.ts',
+  target: '2.43',
   local: {
     port: 8080,
   },
@@ -45,6 +46,7 @@ export default defineConfig({
 
 - `name` — Docker Compose project name; isolates each project's containers and DB volume.
 - `schema` — module whose default export is a `defineSchema(…)` result.
+- `target` — DHIS2 target version (`2.40`, `2.41`, `2.42`, or `2.43`); new projects default to `2.43`.
 - `local.port` — host port the local DHIS2 binds to on `127.0.0.1`.
 
 ## Commands

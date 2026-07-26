@@ -20,6 +20,7 @@ describe('emitEntity', () => {
       '2.40': [unsupportedReference],
       '2.41': [],
       '2.42': [],
+      '2.43': [],
     }
 
     expect(() => emitEntity('DataSet', perTarget)).toThrow(

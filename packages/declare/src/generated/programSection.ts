@@ -26,8 +26,17 @@ export const ProgramSectionBase_2_42 = z.object({
   sortOrder: z.number().int(),
 })
 
+export const ProgramSectionBase_2_43 = z.object({
+  code: z.string().max(50).optional(),
+  description: z.string().optional(),
+  formName: z.string().optional(),
+  name: z.string().max(230),
+  sortOrder: z.number().int(),
+})
+
 export const ProgramSectionBaseByTarget = {
   '2.40': ProgramSectionBase_2_40,
   '2.41': ProgramSectionBase_2_41,
   '2.42': ProgramSectionBase_2_42,
+  '2.43': ProgramSectionBase_2_43,
 } as const

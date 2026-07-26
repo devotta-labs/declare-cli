@@ -70,6 +70,9 @@ const SCHEMAS = {
   '2.42': ProgramStageBaseByTarget['2.42']
     .extend(overridesFor('2.42'))
     .superRefine((value, ctx) => validateSectionForm(value, ctx, 'programStageSections')),
+  '2.43': ProgramStageBaseByTarget['2.43']
+    .extend(overridesFor('2.43'))
+    .superRefine((value, ctx) => validateSectionForm(value, ctx, 'programStageSections')),
 } as const
 
 export type ProgramStageInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

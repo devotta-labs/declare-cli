@@ -57,6 +57,10 @@ const SCHEMAS = {
     .extend(overridesFor('2.42'))
     .refine(numericAggRefine, numericAggMessage)
     .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
+  '2.43': DataElementBaseByTarget['2.43']
+    .extend(overridesFor('2.43'))
+    .refine(numericAggRefine, numericAggMessage)
+    .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
 } as const
 
 export type DataElementInput = z.input<(typeof SCHEMAS)[CurrentTarget]>

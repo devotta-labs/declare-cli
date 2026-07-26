@@ -29,6 +29,7 @@ const SCHEMAS = {
   '2.40': ProgramSectionBaseByTarget['2.40'].extend(overrides),
   '2.41': ProgramSectionBaseByTarget['2.41'].extend(overrides),
   '2.42': ProgramSectionBaseByTarget['2.42'].extend(overrides),
+  '2.43': ProgramSectionBaseByTarget['2.43'].extend(overrides),
 } as const
 
 type ProgramSectionOutput = Omit<

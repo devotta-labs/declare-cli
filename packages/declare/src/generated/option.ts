@@ -30,8 +30,18 @@ export const OptionBase_2_42 = z.object({
   sortOrder: z.number().int().optional(),
 })
 
+export const OptionBase_2_43 = z.object({
+  code: z.string().max(230),
+  description: z.string().optional(),
+  formName: z.string().optional(),
+  name: z.string().max(230),
+  optionSet: refSchema('OptionSet').optional(),
+  sortOrder: z.number().int().optional(),
+})
+
 export const OptionBaseByTarget = {
   '2.40': OptionBase_2_40,
   '2.41': OptionBase_2_41,
   '2.42': OptionBase_2_42,
+  '2.43': OptionBase_2_43,
 } as const
