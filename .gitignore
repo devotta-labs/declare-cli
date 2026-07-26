@@ -6,3 +6,5 @@ node_modules
 logs.txt
 logs/
 .turbo/
+/packages/declare-cli/integration/artifacts/
+/packages/declare-cli/integration/fixture/declare-env.d.ts
