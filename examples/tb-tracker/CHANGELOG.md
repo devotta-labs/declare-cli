@@ -1,5 +1,14 @@
 # tb-tracker
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [b9588db]
+- Updated dependencies [5906e77]
+  - @devotta-labs/declare@0.2.0
+  - @devotta-labs/declare-cli@0.2.0
+
 ## 0.0.2
 
 ### Patch Changes
