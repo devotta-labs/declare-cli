@@ -14,7 +14,7 @@ import {
 } from './generate/emit.ts'
 import { ENTITY_SCHEMAS } from './generate/config.ts'
 import type { MetadataKind } from '../src/lib/entities.ts'
-import type { Snapshot } from './generate/snapshot.ts'
+import { validateSnapshot, type Snapshot } from './generate/snapshot.ts'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const PKG_ROOT = resolve(HERE, '..')
@@ -31,7 +31,9 @@ async function loadSnapshots(): Promise<Record<Target, Snapshot>> {
       )
     }
     const raw = await readFile(path, 'utf8')
-    out[target] = JSON.parse(raw) as Snapshot
+    const snapshot: unknown = JSON.parse(raw)
+    validateSnapshot(target, snapshot)
+    out[target] = snapshot
   }
   return out
 }
@@ -56,7 +58,7 @@ async function main(): Promise<void> {
 
   const kinds = Object.values(ENTITY_SCHEMAS) as readonly MetadataKind[]
   for (const kind of kinds) {
-    const { filename, contents } = emitEntity(kind, collection[kind])
+    const { filename, contents } = emitEntity(kind, collection[kind], enums)
     await writeOut(filename, contents)
   }
 

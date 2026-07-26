@@ -54,7 +54,7 @@ export const TrackedEntityAttributeBase_2_41 = z.object({
 
 export const TrackedEntityAttributeBase_2_42 = z.object({
   aggregationType: AggregationType_2_42,
-  blockedSearchOperators: z.array(z.string()).optional(),
+  blockedSearchOperators: z.array(QueryOperator_2_42).optional(),
   code: z.string().max(50).optional(),
   confidential: z.boolean().optional(),
   description: z.string().optional(),
@@ -83,7 +83,7 @@ export const TrackedEntityAttributeBase_2_42 = z.object({
 
 export const TrackedEntityAttributeBase_2_43 = z.object({
   aggregationType: AggregationType_2_43,
-  blockedSearchOperators: z.array(z.string()).optional(),
+  blockedSearchOperators: z.array(QueryOperator_2_43).optional(),
   code: z.string().max(50).optional(),
   confidential: z.boolean().optional(),
   description: z.string().optional(),

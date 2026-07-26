@@ -22,7 +22,11 @@ function enumName(prop: SnapshotProperty): string {
   return enumNameFromKlass(klass)
 }
 
-function emitScalar(prop: SnapshotProperty, target: Target): string | null {
+function emitScalar(
+  prop: SnapshotProperty,
+  target: Target,
+  enumsByKlass: ReadonlyMap<string, EnumDef>,
+): string | null {
   switch (prop.propertyType) {
     case 'BOOLEAN':
       return 'z.boolean()'
@@ -44,7 +48,7 @@ function emitScalar(prop: SnapshotProperty, target: Target): string | null {
       return len === null ? 'z.string()' : `z.string().max(${len})`
     }
     case 'CONSTANT': {
-      if (!prop.constants || prop.constants.length === 0) return 'z.string()'
+      if (!hasEnumValues(prop.klass, target, enumsByKlass)) return 'z.string()'
       return `${enumName(prop)}_${targetSuffix(target)}`
     }
     case 'REFERENCE': {
@@ -54,9 +58,10 @@ function emitScalar(prop: SnapshotProperty, target: Target): string | null {
       return `refSchema('${kind}')`
     }
     case 'COMPLEX':
+    case 'COLOR':
       return null
     case 'COLLECTION':
-      return emitCollection(prop, target)
+      return emitCollection(prop, target, enumsByKlass)
   }
 }
 
@@ -78,7 +83,11 @@ function unsupportedPropertyMessage(
   ].join(' ')
 }
 
-function emitCollection(prop: SnapshotProperty, target: Target): string | null {
+function emitCollection(
+  prop: SnapshotProperty,
+  target: Target,
+  enumsByKlass: ReadonlyMap<string, EnumDef>,
+): string | null {
   const item = prop.itemPropertyType
   if (item === 'REFERENCE') {
     const kind = KLASS_TO_KIND[prop.itemKlass ?? '']
@@ -86,7 +95,7 @@ function emitCollection(prop: SnapshotProperty, target: Target): string | null {
     return `z.array(refSchema('${kind}'))`
   }
   if (item === 'CONSTANT') {
-    if (!prop.constants || prop.constants.length === 0) {
+    if (!hasEnumValues(prop.itemKlass, target, enumsByKlass)) {
       return 'z.array(z.string())'
     }
     return `z.array(${enumName(prop)}_${targetSuffix(target)})`
@@ -95,6 +104,18 @@ function emitCollection(prop: SnapshotProperty, target: Target): string | null {
   if (item === 'INTEGER') return 'z.array(z.number().int())'
   if (item === 'NUMBER') return 'z.array(z.number())'
   return null
+}
+
+function hasEnumValues(
+  klass: string | null | undefined,
+  target: Target,
+  enumsByKlass: ReadonlyMap<string, EnumDef>,
+): boolean {
+  return (
+    klass !== null &&
+    klass !== undefined &&
+    (enumsByKlass.get(klass)?.valuesByTarget[target].length ?? 0) > 0
+  )
 }
 
 function reasonableLength(len: number | null | undefined): number | null {
@@ -153,28 +174,29 @@ export function emitEnums(enums: readonly EnumDef[]): string {
 export function emitEntity(
   kind: MetadataKind,
   perTarget: EntityByTarget,
+  enums: readonly EnumDef[] = [],
 ): { filename: string; contents: string; usedEnums: ReadonlySet<string> } {
   const filename = `${lowerFirst(kind)}.ts`
   const usedEnums = new Set<string>()
   let usesRefSchema = false
 
   const perTargetBlocks: string[] = []
+  const enumsByKlass = new Map(enums.map((definition) => [definition.klass, definition]))
   for (const target of TARGETS) {
     const props = perTarget[target]
     const lines: string[] = []
     for (const prop of props) {
-      const expr = emitScalar(prop, target)
+      const expr = emitScalar(prop, target, enumsByKlass)
       if (expr === null) {
         throw new Error(unsupportedPropertyMessage(kind, target, prop))
       }
       if (expr.includes('refSchema(')) usesRefSchema = true
       // Only import per-target enums when the emitted expression uses them.
-      if (
-        (prop.propertyType === 'CONSTANT' || prop.itemPropertyType === 'CONSTANT') &&
-        prop.constants &&
-        prop.constants.length > 0
-      ) {
-        usedEnums.add(enumName(prop))
+      if (prop.propertyType === 'CONSTANT' || prop.itemPropertyType === 'CONSTANT') {
+        const klass = prop.propertyType === 'CONSTANT' ? prop.klass : prop.itemKlass
+        if (hasEnumValues(klass, target, enumsByKlass)) {
+          usedEnums.add(enumName(prop))
+        }
       }
       const optional = prop.required === true ? '' : '.optional()'
       lines.push(`  ${apiFieldName(prop)}: ${expr}${optional},`)

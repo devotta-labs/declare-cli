@@ -17,6 +17,13 @@ import {
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
 
+// The schema endpoint exposes QueryOperator, while the Tracker API only permits
+// starts-with, ends-with, and like to be blocked for an attribute.
+const BlockedSearchOperator = z.enum(['SW', 'EW', 'LIKE'])
+const searchOperatorOverrides = {
+  blockedSearchOperators: z.array(BlockedSearchOperator).optional(),
+}
+
 // Defaults use per-target enums so removed constants stay rejected.
 const overridesFor = (target: Target) => ({
   code: CodeSchema,
@@ -49,10 +56,10 @@ const SCHEMAS = {
     .extend(overridesFor('2.41'))
     .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
   '2.42': TrackedEntityAttributeBaseByTarget['2.42']
-    .extend(overridesFor('2.42'))
+    .extend({ ...overridesFor('2.42'), ...searchOperatorOverrides })
     .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
   '2.43': TrackedEntityAttributeBaseByTarget['2.43']
-    .extend(overridesFor('2.43'))
+    .extend({ ...overridesFor('2.43'), ...searchOperatorOverrides })
     .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
 } as const
 

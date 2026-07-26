@@ -66,3 +66,23 @@ jobs:
             examples/*/node_modules
           key: node-modules-${{ runner.os }}-node22-${{ hashFiles('pnpm-lock.yaml') }}
       - run: pnpm test
+
+  generated:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Restore node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+            examples/*/node_modules
+          key: node-modules-${{ runner.os }}-node22-${{ hashFiles('pnpm-lock.yaml') }}
+      - run: pnpm check:generated

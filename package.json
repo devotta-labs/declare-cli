@@ -11,6 +11,7 @@
     "version-packages": "changeset version",
     "release": "changeset publish",
     "typecheck": "turbo run typecheck",
+    "check:generated": "pnpm --filter @devotta-labs/declare check:generated",
     "test": "turbo run test"
   },
   "devDependencies": {

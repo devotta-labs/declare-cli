@@ -87,16 +87,19 @@ describe('optionSet valueType consistency', () => {
 describe('target-versioned valueType enforcement', () => {
   afterEach(() => setTarget(DEFAULT_TARGET))
 
-  it('accepts TRACKER_ASSOCIATE on 2.40 (field still exists there)', () => {
-    setTarget('2.40')
-    expect(() =>
-      defineTrackedEntityAttribute({
-        code: 'EX_TEA_OK',
-        name: 'Ok TEA',
-        valueType: 'TRACKER_ASSOCIATE',
-      }),
-    ).not.toThrow()
-  })
+  it.each(['2.40', '2.41'] as const)(
+    'accepts TRACKER_ASSOCIATE on %s (field still exists there)',
+    (target) => {
+      setTarget(target)
+      expect(() =>
+        defineTrackedEntityAttribute({
+          code: 'EX_TEA_OK',
+          name: 'Ok TEA',
+          valueType: 'TRACKER_ASSOCIATE',
+        }),
+      ).not.toThrow()
+    },
+  )
 
   it.each(['2.42', '2.43'] as const)(
     'rejects TRACKER_ASSOCIATE on %s (removed upstream)',
@@ -109,6 +112,40 @@ describe('target-versioned valueType enforcement', () => {
           valueType: 'TRACKER_ASSOCIATE',
         }),
       ).toThrow(/valueType/)
+    },
+  )
+})
+
+describe('target-versioned blocked search operators', () => {
+  afterEach(() => setTarget(DEFAULT_TARGET))
+
+  it.each(['2.42', '2.43'] as const)(
+    'accepts the three blockable Tracker operators on %s',
+    (target) => {
+      setTarget(target)
+      expect(() =>
+        defineTrackedEntityAttribute({
+          code: 'EX_TEA_SEARCH_OK',
+          name: 'Searchable TEA',
+          valueType: 'TEXT',
+          blockedSearchOperators: ['SW', 'EW', 'LIKE'],
+        }),
+      ).not.toThrow()
+    },
+  )
+
+  it.each(['2.42', '2.43'] as const)(
+    'rejects the non-blockable EQ operator on %s',
+    (target) => {
+      setTarget(target)
+      expect(() =>
+        defineTrackedEntityAttribute({
+          code: 'EX_TEA_SEARCH_BAD',
+          name: 'Bad searchable TEA',
+          valueType: 'TEXT',
+          blockedSearchOperators: ['EQ'] as never,
+        }),
+      ).toThrow(/blockedSearchOperators/)
     },
   )
 })
